@@ -1,0 +1,1 @@
+this is repository for markdown documentations for llms to digest to help vibe coders along the whole world
