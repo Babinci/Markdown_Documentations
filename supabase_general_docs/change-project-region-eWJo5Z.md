@@ -1,21 +1,22 @@
 # Change Project Region
 
-Last edited: 3/12/2025
+This guide explains how to change the region of an existing Supabase project.
 
-* * *
+## Overview
 
-The process to change the region of a Supabase Project is to create a new project in the desired region and migrate your existing project the [migrations guide](https://supabase.com/docs/guides/platform/migrating-within-supabase).
+Currently, there is no direct way to change the region of an existing Supabase project. Instead, you need to create a new project in your desired region and migrate your data and settings.
 
-If you are using third-party auth(Facebook, Google, etc.), you need to manually copy over your client id/secret pairs in the dashboard. Also, you'd need to change your API URL/Anon or Service Keys, which is usually done via ENV vars on your web host.
+## Migration Process
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+To change the region of your Supabase project:
 
+1. Create a new Supabase project in your desired region
+2. Follow the [migrations guide](https://supabase.com/docs/guides/platform/migrating-within-supabase) to transfer your data and settings
 
+## Important Considerations
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+When migrating to a new region, keep in mind:
 
-
-
-
-
-   AcceptOpt outPrivacy settings
+- **Third-party authentication**: If you're using third-party authentication (Facebook, Google, etc.), you'll need to manually copy over your client ID/secret pairs in the dashboard
+- **API credentials**: You'll need to update your API URL, Anon key, and/or Service Role key, which is typically done via environment variables on your web host
+- **Client applications**: All client applications will need to be updated with the new project credentials

@@ -1,24 +1,27 @@
-Storage
-
 # S3 Compatibility
 
-## Learn about the compatibility of Supabase Storage with S3.
-
-* * *
-
 Supabase Storage is compatible with the S3 protocol. You can use any S3 client to interact with your Storage objects.
+
+## Table of Contents
+
+- [About S3 Compatibility](#about-s3-compatibility)
+- [Implemented Endpoints](#implemented-endpoints)
+  - [Bucket Operations](#bucket-operations)
+  - [Object Operations](#object-operations)
+
+## About S3 Compatibility
 
 Storage supports [standard](https://supabase.com/docs/guides/storage/uploads/standard-uploads), [resumable](https://supabase.com/docs/guides/storage/uploads/resumable-uploads) and [S3 uploads](https://supabase.com/docs/guides/storage/uploads/s3-uploads) and all these protocols are interoperable. You can upload a file with the S3 protocol and list it with the REST API or upload with Resumable uploads and list with S3.
 
 Storage supports presigning a URL using query parameters. Specifically, Supabase Storage expects requests to be made using [AWS Signature Version 4](https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html). To enable this feature, enable the S3 connection via S3 protocol in the Settings page for Supabase Storage.
 
-The S3 protocol is currently in Public Alpha. If you encounter any issues or have feature requests, [contact us](https://supabase.com/dashboard/support/new).
+The S3 protocol is currently in Public Alpha. If you encounter any issues or have feature requests, [contact Supabase support](https://supabase.com/dashboard/support/new).
 
-## Implemented endpoints [\#](https://supabase.com/docs/guides/storage/s3/compatibility\#implemented-endpoints)
+## Implemented Endpoints
 
 The most commonly used endpoints are implemented, and more will be added. Implemented S3 endpoints are marked with ✅ in the following tables.
 
-### Bucket operations [\#](https://supabase.com/docs/guides/storage/s3/compatibility\#bucket-operations)
+### Bucket Operations
 
 | API Name | Feature |
 | --- | --- |
@@ -34,7 +37,7 @@ The most commonly used endpoints are implemented, and more will be added. Implem
 | ❌ [PutBucketCors](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketCors.html) | ❌ Checksums:<br> ❌ x-amz-sdk-checksum-algorithm<br> ❌ x-amz-checksum-algorithm<br>❌ Bucket Owner:<br> ❌ x-amz-expected-bucket-owner |
 | ❌ [PutBucketLifecycleConfiguration](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html) | ❌ Checksums:<br> ❌ x-amz-sdk-checksum-algorithm<br> ❌ x-amz-checksum-algorithm<br>❌ Bucket Owner:<br> ❌ x-amz-expected-bucket-owner |
 
-### Object operations [\#](https://supabase.com/docs/guides/storage/s3/compatibility\#object-operations)
+### Object Operations
 
 | API Name | Feature |
 | --- | --- |
@@ -53,23 +56,3 @@ The most commonly used endpoints are implemented, and more will be added. Implem
 | ✅ [UploadPart](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html) | ✅ System Metadata:<br>❌ Content-MD5<br>❌ SSE-C:<br> ❌ x-amz-server-side-encryption<br> ❌ x-amz-server-side-encryption-customer-algorithm<br> ❌ x-amz-server-side-encryption-customer-key<br> ❌ x-amz-server-side-encryption-customer-key-MD5<br>❌ Request Payer:<br> ❌ x-amz-request-payer<br>❌ Bucket Owner:<br> ❌ x-amz-expected-bucket-owner |
 | ✅ [UploadPartCopy](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html) | ❌ Conditional Operations:<br> ❌ x-amz-copy-source<br> ❌ x-amz-copy-source-if-match<br> ❌ x-amz-copy-source-if-modified-since<br> ❌ x-amz-copy-source-if-none-match<br> ❌ x-amz-copy-source-if-unmodified-since<br>✅ Range:<br> ✅ x-amz-copy-source-range<br>❌ SSE-C:<br> ❌ x-amz-server-side-encryption-customer-algorithm<br> ❌ x-amz-server-side-encryption-customer-key<br> ❌ x-amz-server-side-encryption-customer-key-MD5<br> ❌ x-amz-copy-source-server-side-encryption-customer-algorithm<br> ❌ x-amz-copy-source-server-side-encryption-customer-key<br> ❌ x-amz-copy-source-server-side-encryption-customer-key-MD5<br>❌ Request Payer:<br> ❌ x-amz-request-payer<br>❌ Bucket Owner:<br> ❌ x-amz-expected-bucket-owner<br> ❌ x-amz-source-expected-bucket-owner |
 | ✅ [ListParts](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html) | Query Parameters:<br> ✅ max-parts<br> ✅ part-number-marker<br>❌ Request Payer:<br> ❌ x-amz-request-payer<br>❌ Bucket Owner:<br> ❌ x-amz-expected-bucket-owner |
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Implemented endpoints](https://supabase.com/docs/guides/storage/s3/compatibility#implemented-endpoints) [Bucket operations](https://supabase.com/docs/guides/storage/s3/compatibility#bucket-operations) [Object operations](https://supabase.com/docs/guides/storage/s3/compatibility#object-operations)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

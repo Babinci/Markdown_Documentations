@@ -1,62 +1,43 @@
-31 APR - 04 MAR / 7AM PT
+# Database Configuration
 
-Launch Week 14
+This guide covers updating the default configuration for your PostgreSQL database on Supabase.
 
-03d
+## Table of Contents
 
-:
+- [Default Configuration](#default-configuration)
+- [Timeouts](#timeouts)
+- [Statement Optimization](#statement-optimization)
+- [Managing Timezones](#managing-timezones)
+  - [Change Timezone](#change-timezone)
+  - [Full List of Timezones](#full-list-of-timezones)
+  - [Search for a Specific Timezone](#search-for-a-specific-timezone)
 
-17h
+## Default Configuration
 
-:
+PostgreSQL provides a set of sensible defaults for your database size. In some cases, these defaults can be updated. We do not recommend changing these defaults unless you know what you're doing.
 
-50m
+## Timeouts
 
-:
+See the [Timeouts](https://supabase.com/docs/guides/database/postgres/timeouts) section for more information about configuring query timeouts.
 
-31s
+## Statement Optimization
 
-[Claim ticket](https://supabase.com/launch-week)Dismiss
+All Supabase projects come with the [`pg_stat_statements`](https://www.postgresql.org/docs/current/pgstatstatements.html) extension installed, which tracks planning and execution statistics for all statements executed against it. These statistics can be used to diagnose the performance of your project.
 
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_2DQMEZHm5P9QNZGKAqcszuVSdHSJ)
+This data can further be used in conjunction with the [`explain`](https://www.postgresql.org/docs/current/using-explain.html) functionality of PostgreSQL to optimize your usage.
 
-Database
+## Managing Timezones
 
-# Database configuration
+Every Supabase database is set to UTC timezone by default. We strongly recommend keeping it this way, even if your users are in a different location. This is because it makes it much easier to calculate differences between timezones if you adopt the mental model that everything in your database is in UTC time.
 
-## Updating the default configuration for your Postgres database.
+### Change Timezone
 
-* * *
-
-Postgres provides a set of sensible defaults for you database size. In some cases, these defaults can be updated. We do not recommend changing these defaults unless you know what you're doing.
-
-## Timeouts [\#](https://supabase.com/docs/guides/database/postgres/configuration\#timeouts)
-
-See the [Timeouts](https://supabase.com/docs/guides/database/postgres/timeouts) section.
-
-## Statement optimization [\#](https://supabase.com/docs/guides/database/postgres/configuration\#statement-optimization)
-
-All Supabase projects come with the [`pg_stat_statements`](https://www.postgresql.org/docs/current/pgstatstatements.html) extension installed, which tracks planning and execution statistics for all statements executed against it. These statistics can be used in order to diagnose the performance of your project.
-
-This data can further be used in conjunction with the [`explain`](https://www.postgresql.org/docs/current/using-explain.html) functionality of Postgres to optimize your usage.
-
-## Managing timezones [\#](https://supabase.com/docs/guides/database/postgres/configuration\#managing-timezones)
-
-Every Supabase database is set to UTC timezone by default. We strongly recommend keeping it this way, even if your users are in a different location.
-This is because it makes it much easier to calculate differences between timezones if you adopt the mental model that everything in your database is in UTC time.
-
-### Change timezone [\#](https://supabase.com/docs/guides/database/postgres/configuration\#change-timezone)
-
-SQL
-
-```flex
-
-1
-2
-alter database postgresset timezone to 'America/New_York';
+```sql
+alter database postgres
+set timezone to 'America/New_York';
 ```
 
-### Full list of timezones [\#](https://supabase.com/docs/guides/database/postgres/configuration\#full-list-of-timezones)
+### Full List of Timezones
 
 Get a full list of timezones supported by your database. This will return the following columns:
 
@@ -65,34 +46,18 @@ Get a full list of timezones supported by your database. This will return the fo
 - `utc_offset`: Offset from UTC (positive means east of Greenwich)
 - `is_dst`: True if currently observing daylight savings
 
-SQL
-
-```flex
-
-1
-2
-3
-select name, abbrev, utc_offset, is_dstfrom pg_timezone_names()order by name;
+```sql
+select name, abbrev, utc_offset, is_dst
+from pg_timezone_names()
+order by name;
 ```
 
-### Search for a specific timezone [\#](https://supabase.com/docs/guides/database/postgres/configuration\#search-for-a-specific-timezone)
+### Search for a Specific Timezone
 
 Use `ilike` (case insensitive search) to find specific timezones.
 
-SQL
-
-```flex
-
-1
-2
-3
-select *from pg_timezone_names()where name ilike '%york%';
+```sql
+select *
+from pg_timezone_names()
+where name ilike '%york%';
 ```
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Timeouts](https://supabase.com/docs/guides/database/postgres/configuration#timeouts) [Statement optimization](https://supabase.com/docs/guides/database/postgres/configuration#statement-optimization) [Managing timezones](https://supabase.com/docs/guides/database/postgres/configuration#managing-timezones) [Change timezone](https://supabase.com/docs/guides/database/postgres/configuration#change-timezone) [Full list of timezones](https://supabase.com/docs/guides/database/postgres/configuration#full-list-of-timezones) [Search for a specific timezone](https://supabase.com/docs/guides/database/postgres/configuration#search-for-a-specific-timezone)

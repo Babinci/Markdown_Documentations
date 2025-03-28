@@ -1,16 +1,18 @@
-Database
-
 # Column Level Security
 
-* * *
+PostgreSQL's [Row Level Security (RLS)](https://www.postgresql.org/docs/current/ddl-rowsecurity.html) gives you granular control over who can access rows of data. However, it doesn't give you control over which columns they can access within rows. Column Level Privileges allows you to restrict access to specific columns in your database.
 
-PostgreSQL's [Row Level Security (RLS)](https://www.postgresql.org/docs/current/ddl-rowsecurity.html) gives you granular control over who can access rows of data. However, it doesn't give you control over which columns they can access within rows. Sometimes you want to restrict access to specific columns in your database. Column Level Privileges allows you to do just that.
+> **Note:** This is an advanced feature. We do not recommend using column-level privileges for most users. Instead, we recommend using RLS policies in combination with a dedicated table for handling user roles.
 
-This is an advanced feature. We do not recommend using column-level privileges for most users.
-Instead, we recommend using RLS policies in combination with a dedicated table for handling user
-roles.
+## Table of Contents
 
-## Policies at the row level [\#](https://supabase.com/docs/guides/database/postgres/column-level-security\#policies-at-the-row-level)
+- [Policies at the Row Level](#policies-at-the-row-level)
+- [Privileges at the Column Level](#privileges-at-the-column-level)
+- [Manage Column Privileges in the Dashboard](#manage-column-privileges-in-the-dashboard)
+- [Manage Column Privileges in Migrations](#manage-column-privileges-in-migrations)
+- [Considerations When Using Column-level Privileges](#considerations-when-using-column-level-privileges)
+
+## Policies at the Row Level
 
 Policies in Row Level Security (RLS) are used to restrict access to rows in a table. Think of them like adding a `WHERE` clause to every query.
 
@@ -25,137 +27,102 @@ For example, let's assume you have a `posts` table with the following columns:
 
 You can restrict updates to just the user who created it using [RLS](https://supabase.com/docs/guides/auth#row-level-security), with the following policy:
 
-```flex
-
-1
-2
-3
-create policy "Allow update for owners" on posts forupdate  using ((select auth.uid()) = user_id);
+```sql
+create policy "Allow update for owners" on posts for
+update
+  using ((select auth.uid()) = user_id);
 ```
 
 However, this gives the post owner full access to update the row, including all of the columns.
 
-## Privileges at the column level [\#](https://supabase.com/docs/guides/database/postgres/column-level-security\#privileges-at-the-column-level)
+## Privileges at the Column Level
 
 To restrict access to columns, you can use [Privileges](https://www.postgresql.org/docs/current/ddl-priv.html).
 
 There are two types of privileges in Postgres:
 
 1. **table-level**: Grants the privilege on all columns in the table.
-2. **column-level** Grants the privilege on a specific column in the table.
+2. **column-level**: Grants the privilege on a specific column in the table.
 
 You can have both types of privileges on the same table. If you have both, and you revoke the column-level privilege, the table-level privilege will still be in effect.
 
 By default, our table will have a table-level `UPDATE` privilege, which means that the `authenticated` role can update all the columns in the table.
 
-```flex
+```sql
+revoke
+update
+  on table public.posts
+from
+  authenticated;
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-revokeupdate  on table public.postsfrom  authenticated;grantupdate  (title, content) on table public.posts to authenticated;
+grant
+update
+  (title, content) on table public.posts to authenticated;
 ```
 
 In the above example, we are revoking the table-level `UPDATE` privilege from the `authenticated` role and granting a column-level `UPDATE` privilege on just the `title` and `content` columns.
 
 If we want to restrict access to updating the `title` column:
 
-```flex
-
-1
-2
-3
-4
-5
-revokeupdate  (title) on table public.postsfrom  authenticated;
+```sql
+revoke
+update
+  (title) on table public.posts
+from
+  authenticated;
 ```
 
 This time, we are revoking the column-level `UPDATE` privilege of the `title` column from the `authenticated` role. We didn't need to revoke the table-level `UPDATE` privilege because it's already revoked.
 
-## Manage column privileges in the Dashboard [\#](https://supabase.com/docs/guides/database/postgres/column-level-security\#manage-column-privileges-in-the-dashboard)
+## Manage Column Privileges in the Dashboard
 
 You can view and edit the privileges in the [Supabase Studio](https://supabase.com/dashboard/project/_/database/column-privileges).
 
 ![Column level privileges](https://supabase.com/docs/img/guides/privileges/column-level-privileges-2.png)
 
-## Manage column privileges in migrations [\#](https://supabase.com/docs/guides/database/postgres/column-level-security\#manage-column-privileges-in-migrations)
+## Manage Column Privileges in Migrations
 
 While you can manage privileges directly from the Dashboard, as your project grows you may want to manage them in your migrations. Read about database migrations in the [Local Development](https://supabase.com/docs/guides/deployment/database-migrations) guide.
-
-1
 
 ### Create a migration file
 
 To get started, generate a [new migration](https://supabase.com/docs/reference/cli/supabase-migration-new) to store the SQL needed to create your table along with row and column-level privileges.
 
-```flex
-
-1
+```bash
 supabase migration new create_posts_table
 ```
 
-2
-
 ### Add the SQL to your migration file
 
-This creates a new migration: supabase/migrations/<timestamp>
-\_create\_posts\_table.sql.
+This creates a new migration: supabase/migrations/<timestamp>_create_posts_table.sql.
 
 To that file, add the SQL to create this `posts` table with row and column-level privileges.
 
-```flex
+```sql
+create table
+posts (
+  id bigint primary key generated always as identity,
+  user_id text,
+  title text,
+  content text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-create tableposts (id bigint primary key generated always as identity,user_id text,title text,content text,created_at timestamptz default now()updated_at timestamptz default now());-- Add row-level securitycreate policy "Allow update for owners" on posts forupdateusing ((select auth.uid()) = user_id);-- Add column-level securityrevokeupdate(title) on table public.postsfromauthenticated;
+-- Add row-level security
+create policy "Allow update for owners" on posts for
+update
+  using ((select auth.uid()) = user_id);
+
+-- Add column-level security
+revoke
+update
+  (title) on table public.posts
+from
+  authenticated;
 ```
 
-## Considerations when using column-level privileges [\#](https://supabase.com/docs/guides/database/postgres/column-level-security\#considerations-when-using-column-level-privileges)
+## Considerations When Using Column-level Privileges
 
 - If you turn off a column privilege you won't be able to use that column at all.
 - All operations (insert, update, delete) as well as using `select *` will fail.
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Policies at the row level](https://supabase.com/docs/guides/database/postgres/column-level-security#policies-at-the-row-level) [Privileges at the column level](https://supabase.com/docs/guides/database/postgres/column-level-security#privileges-at-the-column-level) [Manage column privileges in the Dashboard](https://supabase.com/docs/guides/database/postgres/column-level-security#manage-column-privileges-in-the-dashboard) [Manage column privileges in migrations](https://supabase.com/docs/guides/database/postgres/column-level-security#manage-column-privileges-in-migrations) [Considerations when using column-level privileges](https://supabase.com/docs/guides/database/postgres/column-level-security#considerations-when-using-column-level-privileges)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

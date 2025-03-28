@@ -1,38 +1,32 @@
-Platform
-
 # About billing on Supabase
 
-* * *
-
-## Subscription plans [\#](https://supabase.com/docs/guides/platform/billing-on-supabase\#subscription-plans)
+## Subscription plans
 
 Supabase offers different subscription plans—Free, Pro, Team, and Enterprise. For a closer look at each plan's features and pricing, visit our [pricing page](https://supabase.com/pricing).
 
-### Free Plan [\#](https://supabase.com/docs/guides/platform/billing-on-supabase\#free-plan)
+### Free Plan
 
 The Free Plan helps you get started and explore the platform. You are granted two free projects. The project limit applies across all organizations where you are an Owner or Administrator. This means you could have two Free Plan organizations with one project each, or one Free Plan organization with two projects. Paused projects do not count towards your free project limit.
 
-### Paid plans [\#](https://supabase.com/docs/guides/platform/billing-on-supabase\#paid-plans)
+### Paid plans
 
-Upgrading your organization to a paid plan provides additional features, and you receive a higher [usage quota](https://supabase.com/docs/guides/platform/billing-on-supabase#variable-usage-fees-and-quotas). You unlock the benefits of the paid plan for all projects within your organization - for example, no projects in your Pro Plan organization will be paused.
+Upgrading your organization to a paid plan provides additional features, and you receive a higher [usage quota](#variable-usage-fees-and-quotas). You unlock the benefits of the paid plan for all projects within your organization - for example, no projects in your Pro Plan organization will be paused.
 
-## Organization-based billing [\#](https://supabase.com/docs/guides/platform/billing-on-supabase\#organization-based-billing)
+## Organization-based billing
 
 Supabase bills separately for each organization. Each organization has its own subscription, including a unique subscription plan (Free, Pro, Team, or Enterprise), payment method, billing cycle, and invoices.
 
 Different plans cannot be mixed within a single organization. For example, you cannot have both a Pro Plan project and a Free Plan project in the same organization. To have projects on different plans, you must create separate organizations. See [Project Transfers](https://supabase.com/docs/guides/platform/project-transfer) if you need to move a project to a different organization.
 
-![Organization-based billing](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fbilling-overview--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-## Costs [\#](https://supabase.com/docs/guides/platform/billing-on-supabase\#costs)
+## Costs
 
 Monthly costs for paid plans include a fixed subscription fee based on your chosen plan and variable usage fees. To learn more about billing and cost management, refer to the following resources.
 
-- [Your monthly invoice](https://supabase.com/docs/guides/platform/your-monthly-invoice) \- For a detailed breakdown of what a monthly invoice includes
-- [Manage your usage](https://supabase.com/docs/guides/platform/manage-your-usage) \- For details on how the different usage items are billed, and how to optimize usage and reduce costs
-- [Control your costs](https://supabase.com/docs/guides/platform/billing-on-supabase) \- For details on how you can control your costs in case unexpected high usage occurs
+- [Your monthly invoice](https://supabase.com/docs/guides/platform/your-monthly-invoice) - For a detailed breakdown of what a monthly invoice includes
+- [Manage your usage](https://supabase.com/docs/guides/platform/manage-your-usage) - For details on how the different usage items are billed, and how to optimize usage and reduce costs
+- [Control your costs](https://supabase.com/docs/guides/platform/billing-on-supabase) - For details on how you can control your costs in case unexpected high usage occurs
 
-### Compute costs for projects [\#](https://supabase.com/docs/guides/platform/billing-on-supabase\#compute-costs-for-projects)
+### Compute costs for projects
 
 An organization can have multiple projects. Each project includes a dedicated Postgres instance running on its own server. You are charged for the Compute resources of that server, independent of your database usage.
 
@@ -40,7 +34,7 @@ Each project you launch increases your monthly Compute costs.
 
 Read more about [Compute costs](https://supabase.com/docs/guides/platform/manage-your-usage/compute).
 
-## Variable Usage Fees and Quotas [\#](https://supabase.com/docs/guides/platform/billing-on-supabase\#variable-usage-fees-and-quotas)
+## Variable Usage Fees and Quotas
 
 Each subscription plan includes a built-in quota for some selected usage items, such as [Egress](https://supabase.com/docs/guides/platform/manage-your-usage/egress), [Storage Size](https://supabase.com/docs/guides/platform/manage-your-usage/storage-size), or [Edge Function Invocations](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations). This quota represents your free usage allowance. If you stay within it, you incur no extra charges for these items. Only usage beyond the quota is billed as overage.
 
@@ -63,7 +57,7 @@ The quota is applied to your entire organization, independent of how many projec
 
 You can find a detailed breakdown of all usage items and how they are billed on the [Manage your usage](https://supabase.com/docs/guides/platform/manage-your-usage) page.
 
-## Project add-ons [\#](https://supabase.com/docs/guides/platform/billing-on-supabase\#project-add-ons)
+## Project add-ons
 
 While your subscription plan applies to your entire organization and is charged only once, you can enhance individual projects by opting into various add-ons.
 
@@ -75,26 +69,3 @@ While your subscription plan applies to your entire organization and is charged 
 - [PITR](https://supabase.com/docs/guides/platform/backups#point-in-time-recovery) to roll back to any specific point in time, down to the minute
 - [IPv4](https://supabase.com/docs/guides/platform/ipv4-address) for a dedicated IPv4 address
 - [Advanced MFA](https://supabase.com/docs/guides/auth/auth-mfa/phone) to provide other options than TOTP
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Subscription plans](https://supabase.com/docs/guides/platform/billing-on-supabase#subscription-plans) [Free Plan](https://supabase.com/docs/guides/platform/billing-on-supabase#free-plan) [Paid plans](https://supabase.com/docs/guides/platform/billing-on-supabase#paid-plans) [Organization-based billing](https://supabase.com/docs/guides/platform/billing-on-supabase#organization-based-billing) [Costs](https://supabase.com/docs/guides/platform/billing-on-supabase#costs) [Compute costs for projects](https://supabase.com/docs/guides/platform/billing-on-supabase#compute-costs-for-projects) [Variable Usage Fees and Quotas](https://supabase.com/docs/guides/platform/billing-on-supabase#variable-usage-fees-and-quotas) [Project add-ons](https://supabase.com/docs/guides/platform/billing-on-supabase#project-add-ons)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
-
-
-![Organization-based billing](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fbilling-overview--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)

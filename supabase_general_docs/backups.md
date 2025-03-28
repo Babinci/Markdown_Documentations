@@ -1,8 +1,4 @@
-Platform
-
 # Database Backups
-
-* * *
 
 Database backups are an integral part of any disaster recovery plan. Disasters come in many shapes and sizes. It could be as simple as accidentally deleting a table column, the database crashing, or even a natural calamity wiping out the underlying hardware a database is running on. The risks and impact brought by these scenarios can never be fully eliminated, but only minimized or even mitigated. Having database backups is a form of insurance policy. They are essentially snapshots of the database at various points in time. When disaster strikes, database backups allow the project to be brought back to any of these points in time, therefore averting the crisis.
 
@@ -10,13 +6,13 @@ The Supabase team regularly monitors the status of backups. In case of any issue
 
 Once a project is deleted all associated data will be permanently removed, including any backups stored in S3. This action is irreversible and should be carefully considered before proceeding.
 
-## Types of backups [\#](https://supabase.com/docs/guides/platform/backups\#types-of-backups)
+## Types of backups
 
 Database backups can be categorized into two types: **logical** and **physical**. You can learn more about them [here](https://supabase.com/blog/postgresql-physical-logical-backups).
 
 As a general rule of thumb, projects will either have logical or physical backups based on plan, database size, and add-ons:
 
-| Plan | Database Size (0-15GB) | [Database Size (>15GB)](https://supabase.com/docs/guides/platform/backups#backup-process-for-large-databases) | [PITR](https://supabase.com/docs/guides/platform/backups#point-in-time-recovery) | [Read Replicas](https://supabase.com/docs/guides/platform/read-replicas#prerequisites) |
+| Plan | Database Size (0-15GB) | Database Size (>15GB) | PITR | Read Replicas |
 | --- | --- | --- | --- | --- |
 | Pro | logical | physical | physical | physical |
 | Team | logical | physical | physical | physical |
@@ -28,7 +24,7 @@ You can confirm your project's backup type by navigating to [Database Backups > 
 
 However, if your project has the Point-in-Time Recovery (PITR) add-on then the backups are physical and you can view them in [Database Backups > Point in time](https://supabase.com/dashboard/project/_/database/backups/pitr).
 
-## Frequency of backups [\#](https://supabase.com/docs/guides/platform/backups\#frequency-of-backups)
+## Frequency of backups
 
 When deciding how often a database should be backed up, the key business metric Recovery Point Objective (RPO) should be considered. RPO is the threshold for how much data, measured in time, a business could lose when disaster strikes. This amount is fully dependent on a business and its underlying requirements. A low RPO would mean that database backups would have to be taken at an increased cadence throughout the day. Each Supabase project has access to two forms of backups, Daily Backups and Point-in-Time Recovery (PITR). The agreed upon RPO would be a deciding factor in choosing which solution best fits a project.
 
@@ -36,27 +32,27 @@ If you enable PITR, Daily Backups will no longer be taken. PITR provides a finer
 
 Database backups do not include objects stored via the Storage API, as the database only includes metadata about these objects. Restoring an old backup does not restore objects that have been deleted since then.
 
-## Daily backups [\#](https://supabase.com/docs/guides/platform/backups\#daily-backups)
+## Daily backups
 
 All Pro, Team and Enterprise Plan Supabase projects are backed up automatically on a daily basis. In terms of Recovery Point Objective (RPO), Daily Backups would be suitable for projects willing to lose up to 24 hours worth of data if disaster hits at the most inopportune time. If a lower RPO is required, enabling Point-in-Time Recovery should be considered.
 
 For security purposes, passwords for custom roles are not stored in daily backups, and will not be found in downloadable files. As such, if you are restoring from a daily backup and are using custom roles, you will need to set their passwords once more following a completed restoration.
 
-### Backup process [\#](https://supabase.com/docs/guides/platform/backups\#daily-backups-process)
+### Backup process
 
-The Postgres utility [pg\_dumpall](https://www.postgresql.org/docs/current/app-pg-dumpall.html) is used to perform daily backups. An SQL file is generated, zipped up, and sent to our storage servers for safe keeping.
+The Postgres utility [pg_dumpall](https://www.postgresql.org/docs/current/app-pg-dumpall.html) is used to perform daily backups. An SQL file is generated, zipped up, and sent to our storage servers for safe keeping.
 
 You can access daily backups in the [Scheduled backups](https://supabase.com/dashboard/project/_/database/backups/scheduled) settings in the Dashboard. Pro Plan projects can access the last 7 days' worth of daily backups. Team Plan projects can access the last 14 days' worth of daily backups, while Enterprise Plan projects can access up to 30 days' worth of daily backups. Users can restore their project to any one of the backups. If you wish to generate a logical backup on your own, you can do so through the [Supabase CLI](https://supabase.com/docs/reference/cli/supabase-db-dump).
 
-#### Backup process for large databases [\#](https://supabase.com/docs/guides/platform/backups\#backup-process-for-large-databases)
+#### Backup process for large databases
 
-Databases larger than 15GB[1](https://supabase.com/docs/guides/platform/backups#user-content-fn-1), if they're on a recent build[2](https://supabase.com/docs/guides/platform/backups#user-content-fn-2) of the Supabase platform, get automatically transitioned[3](https://supabase.com/docs/guides/platform/backups#user-content-fn-3) to use daily physical backups. Physical backups are a more performant backup mechanism that lowers the overhead and impact on the database being backed up, and also avoids holding locks on objects in your database for a long period of time. While restores are unaffected, the backups created using this method cannot be downloaded from the Backups section of the dashboard.
+Databases larger than 15GB, if they're on a recent build of the Supabase platform, get automatically transitioned to use daily physical backups. Physical backups are a more performant backup mechanism that lowers the overhead and impact on the database being backed up, and also avoids holding locks on objects in your database for a long period of time. While restores are unaffected, the backups created using this method cannot be downloaded from the Backups section of the dashboard.
 
-This class of physical backups only allows for recovery to a fixed time each day, similar to daily backups. You can upgrade to [PITR](https://supabase.com/docs/guides/platform/backups#point-in-time-recovery) for access to more granular recovery options.
+This class of physical backups only allows for recovery to a fixed time each day, similar to daily backups. You can upgrade to [PITR](#point-in-time-recovery) for access to more granular recovery options.
 
 Once a database is transitioned to using physical backups, it continues to use physical backups, even if the database size falls back below the threshold for the transition.
 
-### Restoration process [\#](https://supabase.com/docs/guides/platform/backups\#daily-backups-restoration-process)
+### Restoration process
 
 When selecting a backup to restore to, select the closest available one made before the desired point in time to restore to. Earlier backups can always be chosen too but do consider the number of days' worth of data that could be lost.
 
@@ -64,7 +60,7 @@ The Dashboard will then prompt for a confirmation before proceeding with the res
 
 If your project is using subscriptions or replication slots, you will need to drop them prior to the restoration, and re-create them afterwards. The slot used by Realtime is exempted from this, and will be handled automatically.
 
-## Point-in-Time recovery [\#](https://supabase.com/docs/guides/platform/backups\#point-in-time-recovery)
+## Point-in-Time recovery
 
 Point-in-Time Recovery (PITR) allows a project to be backed up at much shorter intervals. This provides users an option to restore to any chosen point of up to seconds in granularity. Even with daily backups, a day's worth of data could still be lost. With PITR, backups could be performed up to the point of disaster.
 
@@ -74,7 +70,7 @@ Projects interested in PITR will also need to use at least a Small compute add-o
 
 If you enable PITR, Daily Backups will no longer be taken. PITR provides a finer granularity than Daily Backups, so it's unnecessary to run both.
 
-### Backup process [\#](https://supabase.com/docs/guides/platform/backups\#pitr-backup-process)
+### Backup process
 
 As discussed [here](https://supabase.com/blog/postgresql-physical-logical-backups), PITR is made possible by a combination of taking physical backups of a project, as well as archiving [Write Ahead Log (WAL)](https://www.postgresql.org/docs/current/wal-intro.html) files. Physical backups provide a snapshot of the underlying directory of the database, while WAL files contain records of every change made in the database.
 
@@ -82,23 +78,17 @@ Supabase uses [WAL-G](https://github.com/wal-g/wal-g), an open source archival a
 
 By default, WAL files are backed up at two minute intervals. If these files cross a certain file size threshold, they are backed up immediately. As such, during periods of high amount of transactions, WAL file backups become more frequent. Conversely, when there is no activity in the database, WAL file backups are not made. Overall, this would mean that at the worst case scenario or disaster, the PITR achieves a Recovery Point Objective (RPO) of two minutes.
 
-![PITR dashboard](https://supabase.com/docs/img/backups-pitr-dashboard.png)
-
 You can access PITR in the [Point in Time](https://supabase.com/dashboard/project/_/database/backups/pitr) settings in the Dashboard. The recovery period of a project is indicated by the earliest and latest points of recoveries displayed in your preferred timezone. If need be, the maximum amount of this recovery period can be modified accordingly.
 
 Note that the latest restore point of the project could be significantly far from the current time. This occurs when there has not been any recent activity in the database, and therefore no WAL file backups have been made recently. This is perfectly fine as the state of the database at the latest point of recovery would still be indicative of the state of the database at the current time given that no transactions have been made in between.
 
-### Restoration process [\#](https://supabase.com/docs/guides/platform/backups\#pitr-restoration-process)
-
-![PITR: Calendar view](https://supabase.com/docs/img/backups-pitr-calendar-view.png)
+### Restoration process
 
 A date and time picker will be provided upon pressing the `Start a restore` button. The process will only proceed if the selected date and time fall within the earliest and latest points of recoveries.
 
-![PITR: Confirmation modal](https://supabase.com/docs/img/backups-pitr-confirmation-modal.png)
-
 After locking in the desired point in time to recover to, The Dashboard will then prompt for a review and confirmation before proceeding with the restoration. The project will be inaccessible following this. As such, do ensure to allot for downtime beforehand. This is dependent on the size of the database. The larger it is, the longer the downtime will be. Once the confirmation has been given, the latest physical backup available is downloaded to the project and the database is partially restored. WAL files generated after this physical backup up to the specified point-in-time are then downloaded. The underlying records of transactions in these files are replayed against the database to complete the restoration. The Dashboard will display a notification once the restoration completes.
 
-### Pricing [\#](https://supabase.com/docs/guides/platform/backups\#pricing)
+### Pricing
 
 Pricing depends on the recovery retention period, which determines how many days back you can restore data to any chosen point of up to seconds in granularity.
 
@@ -110,7 +100,7 @@ Pricing depends on the recovery retention period, which determines how many days
 
 For a detailed breakdown of how charges are calculated, refer to [Manage Point-in-Time Recovery usage](https://supabase.com/docs/guides/platform/manage-your-usage/point-in-time-recovery).
 
-## Restore to a new project [\#](https://supabase.com/docs/guides/platform/backups\#restore-to-a-new-project)
+## Restore to a new project
 
 Supabase provides a convenient way to restore data from an existing project into a completely new one. Whether you're using physical backups or Point-in-Time recovery (PITR), this feature allows you to duplicate project data with ease, perform testing safely, or recover data for analysis. Access to this feature is exclusive to users on paid plans and requires that physical backups are enabled for the source project.
 
@@ -120,7 +110,7 @@ To begin, switch to the source project—the project containing the data you wis
 
 A list of available backups is displayed. Select the backup you want to use and click the "Restore" button. For projects with PITR enabled, use the date and time selector to specify the exact point in time from which you wish to restore data.
 
-Once you’ve made your choice, Supabase takes care of the rest. A new project is automatically created, replicating key configurations from the original, including the compute instance size, disk attributes, SSL enforcement settings, and network restrictions. The data will remain in the same region as the source project to ensure compliance with data residency requirements. The entire process is fully automated.
+Once you've made your choice, Supabase takes care of the rest. A new project is automatically created, replicating key configurations from the original, including the compute instance size, disk attributes, SSL enforcement settings, and network restrictions. The data will remain in the same region as the source project to ensure compliance with data residency requirements. The entire process is fully automated.
 
 The time required to complete the restoration can vary depending largely on the volume of data involved. If you have a large amount of data you can opt for higher performing disk attributes on the source project _before_ starting a clone operation. These disk attributes will be replicated to the new project. This incurs additional costs which will be displayed before starting.
 
@@ -129,27 +119,27 @@ There are a few important restrictions to be aware of with the "Restore to a New
 - Projects that are created through the restoration process cannot themselves be used as a source for further clones at this time.
 - The feature is only accessible to paid plan users with physical backups enabled, ensuring that the necessary resources and infrastructure are available for the restore process.
 
-Before starting the restoration, you’ll be presented with an overview of the costs associated with creating the new project. The new project will incur additional monthly expenses based on the mirrored resources from the source project. It’s important to review these costs carefully before proceeding.
+Before starting the restoration, you'll be presented with an overview of the costs associated with creating the new project. The new project will incur additional monthly expenses based on the mirrored resources from the source project. It's important to review these costs carefully before proceeding.
 
 Once the restoration is complete, the new project will be available in your dashboard and will include all data, tables, schemas, and selected settings from the chosen backup source. It is recommended to thoroughly review the new project and perform any necessary tests to ensure everything has been restored as expected.
 
 New projects are completely independent of their source, and as such can be modified and used as desired.
 
-As the entire database is copied to the new project, this will include all extensions that were enabled at the source. If the source project included extensions that are configured to carry out external operations—for example pg\_net, pg\_cron, wrappers—these should be disabled once the copy process has completed to avoid any unwanted actions from taking place.
+As the entire database is copied to the new project, this will include all extensions that were enabled at the source. If the source project included extensions that are configured to carry out external operations—for example pg_net, pg_cron, wrappers—these should be disabled once the copy process has completed to avoid any unwanted actions from taking place.
 
 Restoring to a new project is an excellent way to manage environments more effectively. You can use this feature to create staging environments for testing, experiment with changes without risk to production data, or swiftly recover from unexpected data loss scenarios.
 
-## Troubleshooting [\#](https://supabase.com/docs/guides/platform/backups\#troubleshooting)
+## Troubleshooting
 
-### Logical backups [\#](https://supabase.com/docs/guides/platform/backups\#logical-backups)
+### Logical backups
 
-#### `search_path` issues [\#](https://supabase.com/docs/guides/platform/backups\#searchpath-issues)
+#### `search_path` issues
 
 During the `pg_restore` process, the `search_path` is set to an empty string for predictability, and security. Using unqualified references to functions or relations can cause restorations using logical backups to fail, as the database will not be able to locate the function or relation being referenced. This can happen even if the database functions without issues during normal operations, as the `search_path` is usually set to include several schemas during normal operations. Therefore, you should always use schema-qualified names within your SQL code.
 
 You can refer to [an example PR](https://github.com/supabase/supabase/pull/28393/files) on how to update SQL code to use schema-qualified names.
 
-#### Invalid check constraints [\#](https://supabase.com/docs/guides/platform/backups\#invalid-check-constraints)
+#### Invalid check constraints
 
 Postgres requires that [check constraints](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS) be:
 
@@ -162,32 +152,3 @@ Common examples of check constraints that can result in such failures are:
 
 - validating against the current time, e.g. that the row being inserted references a future event
 - validating the contents of a row against the contents of another table
-
-## Footnotes [\#](https://supabase.com/docs/guides/platform/backups\#footnote-label)
-
-1. The threshold for transitioning will be slowly lowered over time. Eventually, all projects will be transitioned to using physical backups. [↩](https://supabase.com/docs/guides/platform/backups#user-content-fnref-1)
-
-2. Projects created or upgraded after the 14th of July 2022 are eligible. [↩](https://supabase.com/docs/guides/platform/backups#user-content-fnref-2)
-
-3. The transition to physical backups is handled transparently and does not require any user intervention. It involves a single restart of the database to pick up new configuration that can only be loaded at start; the expected downtime for the restart is a few seconds. [↩](https://supabase.com/docs/guides/platform/backups#user-content-fnref-3)
-
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Types of backups](https://supabase.com/docs/guides/platform/backups#types-of-backups) [Frequency of backups](https://supabase.com/docs/guides/platform/backups#frequency-of-backups) [Daily backups](https://supabase.com/docs/guides/platform/backups#daily-backups) [Backup process](https://supabase.com/docs/guides/platform/backups#daily-backups-process) [Restoration process](https://supabase.com/docs/guides/platform/backups#daily-backups-restoration-process) [Point-in-Time recovery](https://supabase.com/docs/guides/platform/backups#point-in-time-recovery) [Backup process](https://supabase.com/docs/guides/platform/backups#pitr-backup-process) [Restoration process](https://supabase.com/docs/guides/platform/backups#pitr-restoration-process) [Pricing](https://supabase.com/docs/guides/platform/backups#pricing) [Restore to a new project](https://supabase.com/docs/guides/platform/backups#restore-to-a-new-project) [Troubleshooting](https://supabase.com/docs/guides/platform/backups#troubleshooting) [Logical backups](https://supabase.com/docs/guides/platform/backups#logical-backups) [Footnotes](https://supabase.com/docs/guides/platform/backups#footnote-label)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

@@ -1,8 +1,4 @@
-Auth
-
 # Send emails with custom SMTP
-
-* * *
 
 If you're using Supabase Auth with the following configuration:
 
@@ -35,7 +31,7 @@ The default SMTP service is provided as best-effort only and intended for the fo
 
 We urge all customers to set up custom SMTP server for all other use cases.
 
-## How to set up a custom SMTP server? [\#](https://supabase.com/docs/guides/auth/auth-smtp\#how-to-set-up-a-custom-smtp-server)
+## How to set up a custom SMTP server?
 
 Supabase Auth works with any email sending service that supports the SMTP protocol. First you will need to choose a service, create an account (if you already do not have one) and obtain the SMTP server settings and credentials for your account. These include: the SMTP server host, port, user and password. You will also need to choose a default From address, usually something like `no-reply@example.com`.
 
@@ -52,7 +48,7 @@ Once you've set up your account with an email sending service, head to the [Auth
 
 Once you save these settings, your project's Auth server will send messages to all addresses. To protect the reputation of your newly set up service a low rate-limit of 30 messages per hour is imposed. To adjust this to an acceptable value for your use case head to the [Rate Limits configuration page](https://supabase.com/dashboard/project/_/auth/rate-limits).
 
-## Dealing with abuse: How to maintain the sending reputation of your SMTP server? [\#](https://supabase.com/docs/guides/auth/auth-smtp\#dealing-with-abuse-how-to-maintain-the-sending-reputation-of-your-smtp-server)
+## Dealing with abuse: How to maintain the sending reputation of your SMTP server?
 
 As you make your application known to the public and it grows in popularity, you can expect to see a few types of abuse that can negatively impact the reputation of your sending domain.
 
@@ -73,7 +69,7 @@ Mitigation strategies:
 - Prefer passwordless authentication (one-time password) as this limits the attacker's value to gain from this behavior.
 - Do not disable email confirmations under pressure.
 
-### Additional best practices [\#](https://supabase.com/docs/guides/auth/auth-smtp\#additional-best-practices)
+### Additional best practices
 
 **Set up and maintain DKIM, DMARC and SPF configurations.**
 
@@ -140,7 +136,3 @@ If you need more control over the sending process, instead of using a SMTP serve
 Having short lived [user sessions](https://supabase.com/docs/guides/auth/sessions) can be problematic for email sending, as it forces active users to sign-in frequently, increasing the number of messages needed to be sent. Consider increasing the maximum duration of user sessions. If you do see an unnecessary increase in logins without a clear cause, check your frontend application for bugs.
 
 If you are using a [SSR](https://supabase.com/docs/guides/auth/server-side) framework on the frontend and are seeing an increased number of user logins without a clear cause, check your set up. Make sure to keep the `@supabase/ssr` package up to date and closely follow the guides we publish. Make sure that the middleware components of your SSR frontend works as intended and matches the guides we've published. Sometimes a misplaced `return` or conditional can cause early session termination.
-
-### Is this helpful?
-
-NoYes
