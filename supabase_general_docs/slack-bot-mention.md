@@ -23,7 +23,7 @@ Deploy the following code as an Edge function using the CLI:
 
 1
 2
-supabase --project-ref nacho_slacker secrets \set SLACK_TOKEN=<xoxb-0000000000-0000000000-01010101010nacho101010>
+supabase --project-ref nacho_slacker secrets \set SLACK_TOKEN=<sometoken>
 ```
 
 Here's the code of the Edge Function, you can change the response to handle the text received:
