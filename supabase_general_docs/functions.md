@@ -1,200 +1,138 @@
-Edge Functions
-
 # Edge Functions
 
-## Globally distributed TypeScript functions.
+Supabase Edge Functions are server-side TypeScript functions that are distributed globally at the edge—close to your users. They enable you to run server-side code without having to deploy or manage your own servers.
 
-* * *
+## Overview
 
-Edge Functions are server-side TypeScript functions, distributed globally at the edge—close to your users. They can be used for listening to webhooks or integrating your Supabase project with third-parties [like Stripe](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/stripe-webhooks). Edge Functions are developed using [Deno](https://deno.com/), which offers a few benefits to you as a developer:
+Edge Functions provide a versatile way to extend your Supabase projects with custom server-side logic. They're particularly useful for:
 
-- It is open source.
-- It is portable. Supabase Edge Functions run locally, and on any other Deno-compatible platform (including self-hosted infrastructure).
-- It is TypeScript first and supports WASM.
-- Edge Functions are globally distributed for low-latency.
+- Handling webhooks from third-party services
+- Integrating with external APIs
+- Processing data before it reaches your database
+- Implementing custom authentication flows
+- Running operations that shouldn't happen on the client
 
-[Get started](https://supabase.com/docs/guides/functions/quickstart)
+Edge Functions are built on [Deno](https://deno.com/), which offers several benefits:
 
-## Examples [\#](https://supabase.com/docs/guides/functions\#examples)
+- **Open Source**: Deno is fully open source and community-driven
+- **Portable**: Functions run locally during development and on any Deno-compatible platform in production
+- **TypeScript Native**: First-class TypeScript support without configuration
+- **Secure by Default**: No file, network, or environment access unless explicitly enabled
+- **WebAssembly Support**: Run code compiled to WASM for high-performance computing
+- **Globally Distributed**: Deploy once, run in multiple regions for low-latency responses
 
-Check out the [Edge Function Examples](https://github.com/supabase/supabase/tree/master/examples/edge-functions) in our GitHub repository.
+## Getting Started
 
-[![With supabase-js](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-With supabase-js\\
-\\
-Use the Supabase client inside your Edge Function.](https://supabase.com/docs/guides/functions/auth)
+To begin working with Edge Functions, follow the [quickstart guide](https://supabase.com/docs/guides/functions/quickstart) which walks you through creating, testing, and deploying your first function.
 
-[![Type-Safe SQL with Kysely](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Type-Safe SQL with Kysely\\
-\\
-Combining Kysely with Deno Postgres gives you a convenient developer experience for interacting directly with your Postgres database.](https://supabase.com/docs/guides/functions/kysely-postgres)
+## Example Use Cases
 
-[![Monitoring with Sentry](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Monitoring with Sentry\\
-\\
-Monitor Edge Functions with the Sentry Deno SDK.](https://supabase.com/docs/guides/functions/examples/sentry-monitoring)
+### API Integrations
 
-[![With CORS headers](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-With CORS headers\\
-\\
-Send CORS headers for invoking from the browser.](https://supabase.com/docs/guides/functions/cors)
+Edge Functions are perfect for interacting with third-party APIs like payment processors, messaging services, or AI platforms:
 
-[![React Native with Stripe](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-React Native with Stripe\\
-\\
-Full example for using Supabase and Stripe, with Expo.](https://github.com/supabase-community/expo-stripe-payments-with-supabase-functions)
+- Process Stripe payments and handle webhooks
+- Integrate with messaging platforms like Discord or Telegram
+- Connect to AI services like OpenAI or Hugging Face
+- Send emails through providers like Resend or SendGrid
 
-[![Flutter with Stripe](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Flutter with Stripe\\
-\\
-Full example for using Supabase and Stripe, with Flutter.](https://github.com/supabase-community/flutter-stripe-payments-with-supabase-functions)
+### Data Processing
 
-[![Building a RESTful Service API](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Building a RESTful Service API\\
-\\
-Learn how to use HTTP methods and paths to build a RESTful service for managing tasks.](https://github.com/supabase/supabase/blob/master/examples/edge-functions/supabase/functions/restful-tasks/index.ts)
+Transform, validate, or process data before it reaches your database:
 
-[![Working with Supabase Storage](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Working with Supabase Storage\\
-\\
-An example on reading a file from Supabase Storage.](https://github.com/supabase/supabase/blob/master/examples/edge-functions/supabase/functions/read-storage/index.ts)
+- Clean and validate form submissions
+- Process uploaded files before storing them
+- Generate thumbnails or transform images
+- Convert data formats (CSV to JSON, etc.)
 
-[![Open Graph Image Generation](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Open Graph Image Generation\\
-\\
-Generate Open Graph images with Deno and Supabase Edge Functions.](https://supabase.com/docs/guides/functions/examples/og-image)
+### Custom Authentication
 
-[![OG Image Generation & Storage CDN Caching](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-OG Image Generation & Storage CDN Caching\\
-\\
-Cache generated images with Supabase Storage CDN.](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/og-image-with-storage-cdn)
+Implement specialized authentication flows:
 
-[![Get User Location](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Get User Location\\
-\\
-Get user location data from user's IP address.](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/location)
+- Create custom sign-up processes
+- Handle social login providers
+- Implement multi-factor authentication logic
+- Generate custom JWT tokens
 
-[![Cloudflare Turnstile](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Cloudflare Turnstile\\
-\\
-Protecting Forms with Cloudflare Turnstile.](https://supabase.com/docs/guides/functions/examples/cloudflare-turnstile)
+### Backend-for-Frontend
 
-[![Connect to Postgres](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Connect to Postgres\\
-\\
-Connecting to Postgres from Edge Functions.](https://supabase.com/docs/guides/functions/connect-to-postgres)
+Create tailored APIs for your frontend applications:
 
-[![Github Actions](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Github Actions\\
-\\
-Deploying Edge Functions with GitHub Actions.](https://supabase.com/docs/guides/functions/examples/github-actions)
+- Aggregate data from multiple sources
+- Implement rate limiting and request validation
+- Create RESTful or GraphQL interfaces
 
-[![Oak Server Middleware](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Oak Server Middleware\\
-\\
-Request Routing with Oak server middleware.](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/oak-server)
+## Example Function Gallery
 
-[![Hugging Face](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Hugging Face\\
-\\
-Access 100,000+ Machine Learning models.](https://supabase.com/docs/guides/ai/examples/huggingface-image-captioning)
+Here are some examples to help you get started:
 
-[![Amazon Bedrock](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Amazon Bedrock\\
-\\
-Amazon Bedrock Image Generator](https://supabase.com/docs/guides/functions/examples/amazon-bedrock-image-generator)
+### Authentication and Security
 
-[![OpenAI](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-OpenAI\\
-\\
-Using OpenAI in Edge Functions.](https://supabase.com/docs/guides/ai/examples/openai)
+- [Using supabase-js with Auth](https://supabase.com/docs/guides/functions/auth) - Access auth context and use Supabase client
+- [Protecting forms with Cloudflare Turnstile](https://supabase.com/docs/guides/functions/examples/cloudflare-turnstile) - Implement CAPTCHA protection
+- [Rate limiting](https://supabase.com/docs/guides/functions/examples/rate-limiting) - Control request frequency using Upstash Redis
 
-[![Stripe Webhooks](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Stripe Webhooks\\
-\\
-Handling signed Stripe Webhooks with Edge Functions.](https://supabase.com/docs/guides/functions/examples/stripe-webhooks)
+### Database Integration
 
-[![Send emails](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Send emails\\
-\\
-Send emails in Edge Functions with Resend.](https://supabase.com/docs/guides/functions/examples/send-emails)
+- [Connect to Postgres](https://supabase.com/docs/guides/functions/connect-to-postgres) - Direct database access from Edge Functions
+- [Type-safe SQL with Kysely](https://supabase.com/docs/guides/functions/kysely-postgres) - Strongly typed database interactions
+- [Working with Supabase Storage](https://github.com/supabase/supabase/blob/master/examples/edge-functions/supabase/functions/read-storage/index.ts) - Read and write files
 
-[![Web Stream](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Web Stream\\
-\\
-Server-Sent Events in Edge Functions.](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/streams)
+### External Services
 
-[![Puppeteer](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Puppeteer\\
-\\
-Generate screenshots with Puppeteer.](https://supabase.com/docs/guides/functions/examples/screenshots)
+- [OpenAI Integration](https://supabase.com/docs/guides/ai/examples/openai) - Connect to OpenAI APIs
+- [Hugging Face Models](https://supabase.com/docs/guides/ai/examples/huggingface-image-captioning) - Access 100,000+ ML models
+- [Amazon Bedrock Image Generator](https://supabase.com/docs/guides/functions/examples/amazon-bedrock-image-generator) - Generate images with Amazon's AI
+- [Stripe Webhooks](https://supabase.com/docs/guides/functions/examples/stripe-webhooks) - Process payments and handle Stripe events
+- [Send Emails with Resend](https://supabase.com/docs/guides/functions/examples/send-emails) - Email delivery
 
-[![Discord Bot](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Discord Bot\\
-\\
-Building a Slash Command Discord Bot with Edge Functions.](https://supabase.com/docs/guides/functions/examples/discord-bot)
+### Bots and Automation
 
-[![Telegram Bot](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Telegram Bot\\
-\\
-Building a Telegram Bot with Edge Functions.](https://supabase.com/docs/guides/functions/examples/telegram-bot)
+- [Discord Bot](https://supabase.com/docs/guides/functions/examples/discord-bot) - Create slash command bots
+- [Telegram Bot](https://supabase.com/docs/guides/functions/examples/telegram-bot) - Build messaging bots
+- [Slack Bot Mention](https://supabase.com/docs/guides/functions/examples/slack-bot-mention) - Respond to Slack mentions
 
-[![Upload File](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Upload File\\
-\\
-Process multipart/form-data.](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/file-upload-storage)
+### Content Generation
 
-[![Upstash Redis](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Upstash Redis\\
-\\
-Build an Edge Functions Counter with Upstash Redis.](https://supabase.com/docs/guides/functions/examples/upstash-redis)
+- [Open Graph Image Generation](https://supabase.com/docs/guides/functions/examples/og-image) - Create dynamic social images
+- [OG Images with Storage CDN Caching](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/og-image-with-storage-cdn) - Cache generated images
+- [Screenshots with Puppeteer](https://supabase.com/docs/guides/functions/examples/screenshots) - Capture website screenshots
 
-[![Rate Limiting](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Rate Limiting\\
-\\
-Rate Limiting Edge Functions with Upstash Redis.](https://supabase.com/docs/guides/functions/examples/rate-limiting)
+### Architecture Patterns
 
-[![Slack Bot Mention Edge Function](https://supabase.com/docs/img/icons/github-icon-light.svg)\\
-\\
-Slack Bot Mention Edge Function\\
-\\
-Slack Bot handling Slack mentions in Edge Function](https://supabase.com/docs/guides/functions/examples/slack-bot-mention)
+- [RESTful Service API](https://github.com/supabase/supabase/blob/master/examples/edge-functions/supabase/functions/restful-tasks/index.ts) - Build REST endpoints
+- [Oak Server Middleware](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/oak-server) - Request routing
+- [Server-Sent Events](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/streams) - Real-time data streaming
+- [File Uploads](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/file-upload-storage) - Process multipart/form-data
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+### Operations
 
+- [GitHub Actions Deployment](https://supabase.com/docs/guides/functions/examples/github-actions) - CI/CD pipelines
+- [Monitoring with Sentry](https://supabase.com/docs/guides/functions/examples/sentry-monitoring) - Error tracking
+- [User Geolocation](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/location) - Get location from IP
 
+### Storage and Caching
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+- [Upstash Redis Counter](https://supabase.com/docs/guides/functions/examples/upstash-redis) - Distributed counters and caching
 
+## Development Features
 
+Edge Functions support:
 
+- **TypeScript and JavaScript**: Write in either language
+- **NPM Compatibility**: Use thousands of npm packages
+- **ES Modules**: Modern JavaScript module system
+- **CORS Support**: Configure cross-origin resource sharing
+- **Environment Variables**: Securely store configuration
+- **Local Development**: Test functions before deployment
+- **File System Access**: Read and write files with permission
+- **Background Tasks**: Run operations after response is sent
 
+## Learn More
 
-   AcceptOpt outPrivacy settings
+- [Edge Functions Quickstart](https://supabase.com/docs/guides/functions/quickstart)
+- [Local Development](https://supabase.com/docs/guides/functions/local-development)
+- [Deploy Edge Functions](https://supabase.com/docs/guides/functions/deploy)
+- [Debugging Tools](https://supabase.com/docs/guides/functions/debugging)
+- [CORS Configuration](https://supabase.com/docs/guides/functions/cors)
+- [Environment Variables](https://supabase.com/docs/guides/functions/secrets)

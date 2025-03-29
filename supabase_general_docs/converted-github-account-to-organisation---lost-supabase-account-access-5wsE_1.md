@@ -1,21 +1,17 @@
-# Converted Github account to organization - Lost Supabase account access
+# Converted GitHub Account to Organization - Lost Supabase Account Access
 
-Last edited: 1/17/2025
+This guide explains what to do if you've lost access to your Supabase account after converting your GitHub account to an organization.
 
-* * *
+## Problem
 
-[Converting](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-your-personal-account/converting-a-user-into-an-organization) your GitHub account to a [GitHub organization](https://docs.github.com/en/get-started/learning-about-github/types-of-github-accounts#organization-accounts) will cause you to lose access to all other accounts using GitHub sign-ins.
+[Converting](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-your-personal-account/converting-a-user-into-an-organization) your GitHub account to a [GitHub organization](https://docs.github.com/en/get-started/learning-about-github/types-of-github-accounts#organization-accounts) will cause you to lose access to all other accounts using GitHub sign-ins, including your Supabase account.
 
-However, Supabase can help you transfer ownership of an existing organization on your account by inviting a new owner to your organization. This new user will need to have a different email from the previous one, and you will need to email [support@supabase.com](mailto:support@supabase.com) with that new email as well to confirm that you own the email address.
+## Solution
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+Supabase can help you transfer ownership of an existing organization on your account by inviting a new owner to your organization. Here's what you need to do:
 
+1. Create a new user account with a different email address from the previous one
+2. Email [support@supabase.com](mailto:support@supabase.com) with the new email address
+3. Supabase will verify your ownership of the email address and help transfer ownership to the new account
 
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+This allows you to regain access to your Supabase projects without losing any data or configuration.

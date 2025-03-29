@@ -1,155 +1,234 @@
-Auth
-
 # Flutter Auth UI
 
-* * *
+Flutter Auth UI is a pre-built, customizable authentication UI package for Flutter applications that integrate with Supabase Auth. It provides ready-to-use widgets for multiple authentication methods while being flexible enough to match your brand's design.
 
-Flutter Auth UI is a Flutter package containing pre-built widgets for authenticating users.
-It is unstyled and can match your brand and aesthetic.
+![Flutter Auth UI Screenshot](https://raw.githubusercontent.com/supabase-community/flutter-auth-ui/main/screenshots/supabase_auth_ui.png)
 
-![Flutter Auth UI](https://raw.githubusercontent.com/supabase-community/flutter-auth-ui/main/screenshots/supabase_auth_ui.png)
+## Installation
 
-## Add Flutter Auth UI [\#](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui\#add-flutter-auth-ui)
+Add the latest version of the package to your Flutter project:
 
-Add the latest version of the package [supabase-auth-ui](https://pub.dev/packages/supabase_auth_ui) to pubspec.yaml:
-
-```flex
-
-1
+```bash
 flutter pub add supabase_auth_ui
 ```
 
-### Initialize the Flutter Auth package [\#](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui\#initialize-the-flutter-auth-package)
+## Initialization
 
-```flex
+Before using the Auth UI components, initialize Supabase in your Flutter application:
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-import 'package:flutter/material.dart';import 'package:supabase_auth_ui/supabase_auth_ui.dart';void main() async {  await Supabase.initialize(    url: dotenv.get('SUPABASE_URL'),    anonKey: dotenv.get('SUPABASE_ANON_KEY'),  );  runApp(const MyApp());}
+```dart
+import 'package:flutter/material.dart';
+import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+
+void main() async {
+  await Supabase.initialize(
+    url: dotenv.get('SUPABASE_URL'),
+    anonKey: dotenv.get('SUPABASE_ANON_KEY'),
+  );
+  
+  runApp(const MyApp());
+}
 ```
 
-### Email Auth [\#](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui\#email-auth)
+## Authentication Components
 
-Use a `SupaEmailAuth` widget to create an email and password signin and signup form. It also contains a button to toggle to display a forgot password form.
+### Email Authentication
 
-You can pass `metadataFields` to add additional fields to the form to pass as metadata to Supabase.
+Use the `SupaEmailAuth` widget to create email and password sign-in and sign-up forms:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-SupaEmailAuth(  redirectTo: kIsWeb ? null : 'io.mydomain.myapp://callback',  onSignInComplete: (response) {},  onSignUpComplete: (response) {},  metadataFields: [    MetaDataField(    prefixIcon: const Icon(Icons.person),    label: 'Username',    key: 'username',    validator: (val) {            if (val == null || val.isEmpty) {            return 'Please enter something';            }            return null;          },        ),    ],)
+```dart
+SupaEmailAuth(
+  redirectTo: kIsWeb ? null : 'io.mydomain.myapp://callback',
+  onSignInComplete: (response) {
+    // Handle successful sign in
+  },
+  onSignUpComplete: (response) {
+    // Handle successful sign up
+  },
+  metadataFields: [
+    MetaDataField(
+      prefixIcon: const Icon(Icons.person),
+      label: 'Username',
+      key: 'username',
+      validator: (val) {
+        if (val == null || val.isEmpty) {
+          return 'Please enter something';
+        }
+        return null;
+      },
+    ),
+  ],
+)
 ```
 
-### Magic link Auth [\#](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui\#magic-link-auth)
+The `metadataFields` parameter allows you to collect additional user information during signup, which will be stored in the user's metadata.
 
-Use `SupaMagicAuth` widget to create a magic link signIn form.
+### Magic Link Authentication
 
-```flex
+Use the `SupaMagicAuth` widget to create a passwordless email magic link form:
 
-1
-2
-3
-4
-5
-SupaMagicAuth(  redirectUrl: kIsWeb ? null : 'io.mydomain.myapp://callback',  onSuccess: (Session response) {},  onError: (error) {},)
+```dart
+SupaMagicAuth(
+  redirectUrl: kIsWeb ? null : 'io.mydomain.myapp://callback',
+  onSuccess: (Session response) {
+    // Handle successful authentication
+  },
+  onError: (error) {
+    // Handle error
+  },
+)
 ```
 
-### Reset password [\#](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui\#reset-password)
+### Password Reset
 
-Use `SupaResetPassword` to create a password reset form.
+Use the `SupaResetPassword` widget to create a password reset form:
 
-```flex
-
-1
-2
-3
-4
-5
-SupaResetPassword(  accessToken: supabase.auth.currentSession?.accessToken,  onSuccess: (UserResponse response) {},  onError: (error) {},)
+```dart
+SupaResetPassword(
+  accessToken: supabase.auth.currentSession?.accessToken,
+  onSuccess: (UserResponse response) {
+    // Handle successful password reset
+  },
+  onError: (error) {
+    // Handle error
+  },
+)
 ```
 
-### Phone Auth [\#](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui\#phone-auth)
+### Phone Authentication
 
-Use `SupaPhoneAuth` to create a phone authentication form.
+Use the `SupaPhoneAuth` widget for phone-based authentication:
 
-```flex
-
-1
-2
-3
-4
-SupaPhoneAuth(  authAction: SupaAuthAction.signUp,  onSuccess: (AuthResponse response) {},),
+```dart
+SupaPhoneAuth(
+  authAction: SupaAuthAction.signUp,  // or SupaAuthAction.signIn
+  onSuccess: (AuthResponse response) {
+    // Handle successful authentication
+  },
+),
 ```
 
-### Social Auth [\#](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui\#social-auth)
+### Social Authentication
 
-The package supports login with [official social providers](https://supabase.com/docs/guides/auth#providers).
+Use the `SupaSocialsAuth` widget to display buttons for social login providers:
 
-Use `SupaSocialsAuth` to create list of social login buttons.
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-SupaSocialsAuth(  socialProviders: [    OAuthProvider.apple,    OAuthProvider.google,  ],  colored: true,  redirectUrl: kIsWeb    ? null    : 'io.mydomain.myapp://callback',  onSuccess: (Session response) {},  onError: (error) {},)
+```dart
+SupaSocialsAuth(
+  socialProviders: [
+    OAuthProvider.apple,
+    OAuthProvider.google,
+  ],
+  colored: true,  // Use provider brand colors
+  redirectUrl: kIsWeb
+    ? null
+    : 'io.mydomain.myapp://callback',
+  onSuccess: (Session response) {
+    // Handle successful authentication
+  },
+  onError: (error) {
+    // Handle error
+  },
+)
 ```
 
-### Theming [\#](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui\#theming)
+## Theming
 
-This package uses plain Flutter components allowing you to control the appearance of the components using your own theme.
+The Flutter Auth UI package uses standard Flutter components, allowing you to use your application's theme to style the authentication forms. This makes it easy to match your brand's aesthetic without customizing individual components.
 
-### Is this helpful?
+Key theming considerations:
+- Use your app's `ThemeData` to control colors, typography, and shapes
+- Flutter Auth UI respects your app's `InputDecoration` theme for form fields
+- Button styles follow your app's `ElevatedButton` and `TextButton` themes
+- Text styling is derived from your app's `TextTheme`
 
-NoYes
+## Deep Linking Setup
 
-### On this page
+For mobile applications using OAuth or magic links, configure deep linking to handle redirect URLs:
 
-[Add Flutter Auth UI](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui#add-flutter-auth-ui) [Initialize the Flutter Auth package](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui#initialize-the-flutter-auth-package) [Email Auth](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui#email-auth) [Magic link Auth](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui#magic-link-auth) [Reset password](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui#reset-password) [Phone Auth](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui#phone-auth) [Social Auth](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui#social-auth) [Theming](https://supabase.com/docs/guides/auth/auth-helpers/flutter-auth-ui#theming)
+### Android Setup
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+In your `android/app/src/main/AndroidManifest.xml` file:
 
+```xml
+<manifest ...>
+    <application ...>
+        ...
+        <activity ...>
+            ...
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="io.mydomain.myapp" android:host="callback" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+```
 
+### iOS Setup
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+In your `ios/Runner/Info.plist` file:
 
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>io.mydomain.myapp</string>
+        </array>
+    </dict>
+</array>
+```
 
+## Advanced Usage
 
+### Custom Validators
 
+You can provide custom validation logic for form fields:
 
-   AcceptOpt outPrivacy settings
+```dart
+SupaEmailAuth(
+  // ... other properties
+  emailValidator: (value) {
+    if (!value.contains('@mycompany.com')) {
+      return 'Only company emails allowed';
+    }
+    return null;
+  },
+  passwordValidator: (value) {
+    if (value.length < 12) {
+      return 'Password must be at least 12 characters';
+    }
+    return null;
+  },
+)
+```
+
+### Handling Auth State Changes
+
+To respond to authentication state changes, use Supabase's auth state listener:
+
+```dart
+@override
+void initState() {
+  super.initState();
+  supabase.auth.onAuthStateChange.listen((data) {
+    final AuthChangeEvent event = data.event;
+    if (event == AuthChangeEvent.signedIn) {
+      // User has signed in
+    } else if (event == AuthChangeEvent.signedOut) {
+      // User has signed out
+    }
+  });
+}
+```
+
+## Resources
+
+- [Supabase Flutter Auth Documentation](https://supabase.com/docs/guides/auth/flutter)
+- [Flutter Auth UI Package on pub.dev](https://pub.dev/packages/supabase_auth_ui)
+- [Supabase Auth Documentation](https://supabase.com/docs/guides/auth)

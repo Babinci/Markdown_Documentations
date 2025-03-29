@@ -1,68 +1,94 @@
-# HTTP status codes
+# HTTP Status Codes in Supabase
 
 Last edited: 2/3/2025
 
-* * *
+The Supabase platform provides multiple HTTP APIs for each project. These APIs use standard and custom HTTP status codes to indicate the state of the project and the processing status of requests. You can access the status codes returned for requests via the [logs explorer](https://supabase.com/docs/guides/platform/logs#logs-explorer).
 
-The Supabase platform offers several HTTP APIs for each project. These APIs can use the status codes to indicate the state of the project, and the request being processed. The status codes returned for requests can be access via the [logs explorer](https://supabase.com/docs/guides/platform/logs#logs-explorer).
+## 2XX Success Codes
 
-## 2XX success [\#](https://supabase.com/docs/guides/troubleshooting/http-status-codes\#2xx-success)
+Status codes in the 2XX range indicate that the request was processed successfully:
 
-2XX status codes indicate that the request was processed successfully.
+| Status Code | Description |
+|-------------|-------------|
+| 200 | OK - The request has succeeded |
+| 201 | Created - The request has succeeded and a new resource has been created |
+| 204 | No Content - The request has succeeded but returns no message body |
 
-## 3XX redirects [\#](https://supabase.com/docs/guides/troubleshooting/http-status-codes\#3xx-redirects)
+## 3XX Redirect Codes
 
-3XX status codes indicate that the client must initiate another course of action to have the request processed successfully. The most popular usage of 3XX codes is to redirect the client to a different location.
+Status codes in the 3XX range indicate that the client must take additional action to complete the request. The most common use is to redirect the client to a different location:
 
-## 4XX client errors [\#](https://supabase.com/docs/guides/troubleshooting/http-status-codes\#4xx-client-errors)
+| Status Code | Description |
+|-------------|-------------|
+| 301 | Moved Permanently - The resource has been moved permanently |
+| 302 | Found - The resource has been moved temporarily |
+| 304 | Not Modified - The client can use its cached version |
 
-4XX status codes indicate an issue on the client's end with the request being made. These could include missing or invalid auth information, a malformed request, making too many requests in too short a time period ("rate limiting"), or a network issue on the client's end.
+## 4XX Client Error Codes
 
-### 402 service restriction [\#](https://supabase.com/docs/guides/troubleshooting/http-status-codes\#402-service-restriction)
+Status codes in the 4XX range indicate an issue with the client's request. These could include:
 
-In case the Fair Use Policy is applied, the projects of your organization may be restricted from processing requests. If service restrictions are applied, projects will return a 402 status code together with a description of why the project is restricted. The description can contain one or more of the following codes:
+| Status Code | Description |
+|-------------|-------------|
+| 400 | Bad Request - The server cannot process the request due to a client error |
+| 401 | Unauthorized - Authentication is required and has failed or not been provided |
+| 402 | Service Restriction - See details below |
+| 403 | Forbidden - The client does not have access rights to the content |
+| 404 | Not Found - The server cannot find the requested resource |
+| 405 | Method Not Allowed - The request method is known but not supported |
+| 408 | Request Timeout - The server timed out waiting for the request |
+| 409 | Conflict - The request conflicts with the current state of the server |
+| 429 | Too Many Requests - The user has sent too many requests in a given time (rate limiting) |
 
-- `exceeded_*` indicates that the project has continued to exceeded the usage limits of its quota, e.g. `exceed_egress_quota`, `exceed_db_size_quota`.
-- `overdue_payment` indicates that the organization has overdue bills.
+### 402 Service Restriction
 
-You will still have access to your data through the Supabase dashboard when the Fair Use Policy is applied.
+When the Fair Use Policy is applied, your organization's projects may be restricted from processing requests. In this case, projects will return a 402 status code with a description of why the project is restricted:
 
-See the [Fair Use Policy](https://supabase.com/docs/guides/platform/billing-faq#fair-use-policy) section to learn more about the restrictions and how to remove them.
+- `exceeded_*` indicates that the project has continued to exceed its quota limits (e.g., `exceeded_egress_quota`, `exceeded_db_size_quota`)
+- `overdue_payment` indicates that the organization has overdue bills
 
-## 5XX server or project errors [\#](https://supabase.com/docs/guides/troubleshooting/http-status-codes\#5xx-server-or-project-errors)
+Even when the Fair Use Policy is applied, you will still have access to your data through the Supabase dashboard.
 
-5XX status codes indicate that the project was unable to process the request successfully, but not because of an issue with the client's request.
+For more information about the restrictions and how to remove them, see the [Fair Use Policy](https://supabase.com/docs/guides/platform/billing-faq#fair-use-policy) documentation.
 
-5XX status codes can be the result of the project not having enough [compute](https://supabase.com/docs/guides/platform/compute-add-ons) to process a complex request being made by a client or not being able to keep up with the volume of requests made against the project.
+## 5XX Server or Project Error Codes
 
-### 54X project errors [\#](https://supabase.com/docs/guides/troubleshooting/http-status-codes\#54x-project-errors)
+Status codes in the 5XX range indicate that the project was unable to process the request successfully, but not because of an issue with the client's request:
 
-54X status codes are custom codes used by the Supabase platform to indicate the state of the project.
+| Status Code | Description |
+|-------------|-------------|
+| 500 | Internal Server Error - An unexpected condition was encountered |
+| 502 | Bad Gateway - The server received an invalid response from an upstream server |
+| 503 | Service Unavailable - The server is not ready to handle the request |
+| 504 | Gateway Timeout - The server did not receive a timely response from an upstream server |
 
-#### 540 project paused [\#](https://supabase.com/docs/guides/troubleshooting/http-status-codes\#540-project-paused)
+These errors often occur when a project doesn't have enough [compute resources](https://supabase.com/docs/guides/platform/compute-add-ons) to process complex requests or handle high request volumes.
 
-The project the request was being made against has been paused. The project cannot process requests until it is un-paused by the owner.
+## 54X Custom Project Error Codes
 
-Free Plan projects may be paused due to inactivity, on request by the owner, or in rare instances, due to abuse.
+Supabase uses custom 54X status codes to indicate specific project states:
 
-#### 544 project API gateway timeout [\#](https://supabase.com/docs/guides/troubleshooting/http-status-codes\#544-project-api-gateway-timeout)
+### 540 Project Paused
 
-The request is not completed within the configured time limit.
+The project the request was made against has been paused and cannot process requests until it is unpaused by the owner.
 
-The timeout limit is set to prevent long-running queries which can cause performance issues, increase latency, and potentially even crash the project.
+Free Plan projects may be paused due to:
+- Inactivity
+- Owner request
+- Policy violations (in rare instances)
 
-#### 546 Edge Functions resource limit [\#](https://supabase.com/docs/guides/troubleshooting/http-status-codes\#546-edge-functions-resource-limit)
+### 544 Project API Gateway Timeout
 
-Applies only to Edge Functions. Function execution was stopped due to a resource limit ( `WORKER_LIMIT`). Edge Function logs should provide which [resource limit](https://supabase.com/docs/guides/functions/limits) was exceeded.
+The request was not completed within the configured time limit.
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+These timeout limits prevent long-running queries that can cause performance issues, increase latency, and potentially crash the project.
 
+### 546 Edge Functions Resource Limit
 
+This code applies only to Edge Functions and indicates that function execution was stopped due to exceeding a resource limit (`WORKER_LIMIT`).
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+The Edge Function logs should provide details about which specific [resource limit](https://supabase.com/docs/guides/functions/limits) was exceeded, such as:
+- Memory limit
+- CPU time limit
+- Execution duration
+- Network operation limits

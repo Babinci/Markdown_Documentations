@@ -1,46 +1,52 @@
-# How can I revoke execution of a PostgreSQL function?
+# How to Revoke Execution of a PostgreSQL Function
 
-Last edited: 1/17/2025
+All function access is PUBLIC by default in PostgreSQL, which means that any role can execute functions. To restrict execution permissions, you need to follow these steps:
 
-* * *
+## Revoking Function Execution
 
-All functions access is PUBLIC by default, this means that any role can execute it. To revoke execution, there are 2 steps required:
+### Step 1: Revoke Execution from PUBLIC
 
-- Revoke function execution ( `foo` in this case) from PUBLIC:
+First, revoke execution permissions from the PUBLIC role to remove the default access:
 
-```flex
-
-1
-revoke execute on function foo from public;
+```sql
+REVOKE EXECUTE ON FUNCTION function_name FROM PUBLIC;
 ```
 
-- Revoke execution from a particular role ( `anon` in this case):
+### Step 2: Revoke Execution from Specific Roles
 
-```flex
+Next, revoke execution permissions from specific roles that should not have access:
 
-1
-revoke execute on function foo from anon;
+```sql
+REVOKE EXECUTE ON FUNCTION function_name FROM role_name;
 ```
 
-Now `anon` should get an error when trying to execute the function:
+## Example
 
-```flex
+For a function named `foo`, you would run:
 
-1
-2
-3
-4
-begin;set local role anon;select foo();ERROR:  permission denied for function foo
+```sql
+REVOKE EXECUTE ON FUNCTION foo FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION foo FROM anon;
 ```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+After executing these commands, the `anon` role should receive a permission error when trying to execute the function:
 
+```sql
+BEGIN;
+SET LOCAL ROLE anon;
+SELECT foo();
+-- ERROR: permission denied for function foo
+```
 
+## Verification
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+You can verify the permissions by trying to execute the function as the restricted role:
 
+```sql
+BEGIN;
+SET LOCAL ROLE role_name;
+SELECT function_name();
+ROLLBACK;
+```
 
-
-
-
-   AcceptOpt outPrivacy settings
+If the permission changes were successful, you should see an error message stating "permission denied for function."

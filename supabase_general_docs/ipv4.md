@@ -1,20 +1,16 @@
-Platform
+# Manage IPv4 Usage
 
-# Manage IPv4 usage
+## What you are charged for
 
-* * *
-
-## What you are charged for [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#what-you-are-charged-for)
-
-You can assign a dedicated [IPv4 address](https://supabase.com/docs/guides/platform/ipv4-address) to a database by enabling the [IPv4 add-on](https://supabase.com/dashboard/project/_/settings/addons?panel=ipv4). You are charged for all IPv4 addresses configured across your databases.
+You can assign a dedicated [IPv4 address](ipv4-address.md) to a database by enabling the [IPv4 add-on](https://supabase.com/dashboard/project/_/settings/addons?panel=ipv4). You are charged for all IPv4 addresses configured across your databases.
 
 If the primary database has a dedicated IPv4 address configured, its Read Replicas are also assigned one, with charges for each.
 
-## How charges are calculated [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#how-charges-are-calculated)
+## How charges are calculated
 
 IPv4 addresses are charged by the hour, meaning you are charged for the exact number of hours that an IPv4 address is assigned to a database. If an address is assigned for part of an hour, you are still charged for the full hour.
 
-### Example [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#example)
+### Example
 
 Your billing cycle runs from January 1 to January 31. On January 10 at 4:30 PM, you enable the IPv4 add-on for your project. At the end of the billing cycle you are billed for 512 hours.
 
@@ -25,17 +21,17 @@ Your billing cycle runs from January 1 to January 31. On January 10 at 4:30 PM, 
 | January 10, 04:30 PM - January 10, 5:00 PM | Enabled | 1 | full hour is billed |
 | January 10, 05:00 PM - January 31, 23:59 PM | Enabled | 511 |  |
 
-### Usage on your invoice [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#usage-on-your-invoice)
+### Usage on your invoice
 
 Usage is shown as "IPv4 Hours" on your invoice.
 
-## Pricing [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#pricing)
+## Pricing
 
 $0.0055 per hour ($4 per month).
 
-## Billing examples [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#billing-examples)
+## Billing examples
 
-### One project [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#one-project)
+### One project
 
 The project has the IPv4 add-on enabled throughout the entire billing cycle.
 
@@ -48,7 +44,7 @@ The project has the IPv4 add-on enabled throughout the entire billing cycle.
 | Compute Credits |  | -$10 |
 | **Total** |  | **$29** |
 
-### Multiple projects [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#multiple-projects)
+### Multiple projects
 
 All projects have the IPv4 add-on enabled throughout the entire billing cycle.
 
@@ -69,7 +65,7 @@ All projects have the IPv4 add-on enabled throughout the entire billing cycle.
 | Compute Credits |  | -$10 |
 | **Total** |  | **$57** |
 
-### One project with Read Replicas [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#one-project-with-read-replicas)
+### One project with Read Replicas
 
 The project has two Read Replicas and the IPv4 add-on enabled throughout the entire billing cycle.
 
@@ -90,26 +86,6 @@ The project has two Read Replicas and the IPv4 add-on enabled throughout the ent
 | Compute Credits |  | -$10 |
 | **Total** |  | **$72** |
 
-## Optimize usage [\#](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4\#optimize-usage)
+## Optimize usage
 
-To see whether your database actually needs a dedicated IPv4 address, refer to [When you need the IPv4 add-on](https://supabase.com/docs/guides/platform/ipv4-address#when-you-need-the-ipv4-add-on).
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[What you are charged for](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#what-you-are-charged-for) [How charges are calculated](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#how-charges-are-calculated) [Example](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#example) [Usage on your invoice](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#usage-on-your-invoice) [Pricing](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#pricing) [Billing examples](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#billing-examples) [One project](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#one-project) [Multiple projects](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#multiple-projects) [One project with Read Replicas](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#one-project-with-read-replicas) [Optimize usage](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4#optimize-usage)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+To see whether your database actually needs a dedicated IPv4 address, refer to [When you need the IPv4 add-on](ipv4-address.md#when-you-need-the-ipv4-add-on).

@@ -1,19 +1,32 @@
-# I am not receiving password reset emails for Supabase dashboard
+# Not Receiving Password Reset Emails for Supabase Dashboard
 
 Last edited: 2/21/2025
 
-* * *
+If you're not receiving password reset emails for your Supabase Dashboard account, this is most likely due to one of the following reasons:
 
-Most likely, you signed up on Supabase using a GitHub account. Try the GitHub login method to see if you can log in. If you still cannot log in, write to [support@supabase.com](mailto:support@supabase.com) using your email with a screenshot of the error from the dashboard.
+## GitHub Authentication
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+The most common reason for not receiving password reset emails is that you originally signed up for Supabase using GitHub authentication rather than email/password. If this is the case:
 
+1. Try logging in using the "Continue with GitHub" option instead of email/password
+2. Make sure you're using the same GitHub account that you originally used to sign up
 
+## Troubleshooting Steps
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+If you're still unable to access your account:
 
+1. Check your spam/junk folder for the reset email
+2. Verify you're using the correct email address that's associated with your Supabase account
+3. Add noreply@supabase.co to your email contacts/safe senders list
+4. Try requesting another password reset
 
+## Contact Support
 
+If you've tried the steps above and still cannot access your account, contact Supabase support:
 
+1. Email [support@supabase.com](mailto:support@supabase.com) from the email address associated with your account
+2. Include a screenshot of any error messages you're receiving
+3. Provide details about the login methods you've attempted
+4. Include your account information so the support team can locate your account
 
-   AcceptOpt outPrivacy settings
+The Supabase support team will help you regain access to your account.

@@ -1,72 +1,120 @@
 # Fixing 520 Errors in the Database REST API
 
-Last edited: 1/17/2025
+## Problem
 
-* * *
+When working with the Supabase Database API, you may occasionally encounter Cloudflare 520 errors. These typically occur when your request contains more than 16KB of data in the headers or URL.
 
-In the context of the database API, [Cloudflare 520 errors](https://developers.cloudflare.com/support/troubleshooting/cloudflare-errors/troubleshooting-cloudflare-5xx-errors/#error-520-web-server-returns-an-unknown-error) most often occur when 16+KB worth of data is present in the headers/URL of your requests.
+The error message may look like this:
+```
+Error 520: Web server is returning an unknown error
+```
 
-The API will include filters within the URL, so a request like so:
+This error is most commonly triggered when using lengthy filter conditions, especially with large `in` clauses or complex queries that result in very long URLs.
 
-```flex
+## Cause
 
-1
+Supabase's REST API translates your client-side query operations into URL parameters. For example, a simple query like:
+
+```javascript
 let { data: countries, error } = await supabase.from('countries').select('name')
 ```
 
-translates to a URL like:
+becomes a URL request like:
 
-```flex
-
-1
+```
 https://<project ref>.supabase.co/rest/v1/countries?select=name
 ```
 
-However, appending too much data to the URL can exceed the 16KB limitation, triggering a 520 failure. This typically occurs with lengthy `in` clauses, as demonstrated here:
+However, when your query contains a substantial amount of data (such as a long list of IDs in an `in` clause), the URL can exceed Cloudflare's 16KB limit, resulting in a 520 error.
 
-```flex
+For example, this query might cause the error:
 
-1
-2
-3
-4
-const { data, error } = await supabase  .from('countries')  .select()  .not('id', 'in', '(5,6,7,8,9,...10,000)')
+```javascript
+const { data, error } = await supabase
+  .from('countries')
+  .select()
+  .not('id', 'in', '(5,6,7,8,9,...10,000)')
 ```
 
-To circumvent this issue, you must use [RPCs](https://supabase.com/docs/reference/javascript/explain?queryGroups=example&example=call-a-postgres-function-with-arguments). They are database functions that you can call from the API. Instead of including a query's structure within the URL or header, they move it into the request's payload.
+## Solution: Using Remote Procedure Calls (RPCs)
 
-Here is a basic example of a [database function](https://supabase.com/docs/guides/database/functions)
+To solve this issue, you need to move the data from the URL to the request body. This can be accomplished using Supabase's Remote Procedure Calls (RPCs), which are database functions you can call from the API.
 
-```flex
+### Step 1: Create a Database Function
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-create or replace function example(id uuid[])returns uuid[]language plpgsqlas $$begin raise log 'the function example was called with an array size of: %', (select array_length(id, 1)); return id;end;$$;
+First, create a PostgreSQL function in your Supabase project:
+
+```sql
+CREATE OR REPLACE FUNCTION filter_by_ids(ids UUID[])
+RETURNS SETOF your_table
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT * FROM your_table
+  WHERE id = ANY(ids);
+END;
+$$;
 ```
 
-The [RPC](https://supabase.com/docs/reference/javascript/explain?queryGroups=example&example=call-a-postgres-function-with-arguments) can then call the function with an array that contains more than 16KB of data
+Replace `your_table` with your actual table name and adjust the query as needed for your specific filtering requirements.
 
-```flex
+### Step 2: Call the Function via RPC
 
-1
-const { data, error } = await supabase.rpc('example', { id: ['e2f34fb9-bbf9-4649-9b2f-09ec56e67a42', ...900 more UUIDs] })
+Now, instead of using a direct query with a large `in` clause, call the function using the `rpc` method:
+
+```javascript
+const { data, error } = await supabase.rpc('filter_by_ids', { 
+  ids: ['e2f34fb9-bbf9-4649-9b2f-09ec56e67a42', '...', '...'] // Add your list of IDs here
+})
 ```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+This approach sends the array of IDs in the request body rather than the URL, avoiding the 16KB limit.
 
+## Example with Logging
 
+Here's a more detailed example that includes logging to verify the function is working correctly:
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+```sql
+CREATE OR REPLACE FUNCTION example(id UUID[])
+RETURNS UUID[]
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  -- Log the size of the array being passed to the function
+  RAISE LOG 'The function example was called with an array size of: %', 
+            (SELECT array_length(id, 1));
+  
+  -- Return the array (you would normally process it and return results)
+  RETURN id;
+END;
+$$;
+```
 
+Calling this function from your client:
 
+```javascript
+const { data, error } = await supabase.rpc('example', { 
+  id: ['e2f34fb9-bbf9-4649-9b2f-09ec56e67a42', /* ...many more UUIDs... */] 
+})
+```
 
+## Other Considerations
 
+1. **Security**: When creating custom functions, always consider security implications. Use `SECURITY DEFINER` carefully and ensure proper Row Level Security (RLS) policies are in place.
 
-   AcceptOpt outPrivacy settings
+2. **Performance**: For extremely large datasets, consider pagination or more efficient filtering techniques.
+
+3. **Monitoring**: If you frequently encounter 520 errors, consider setting up monitoring and logging to identify patterns in your API usage.
+
+4. **Request Size Limits**: While this approach helps with URL size limitations, there are still limits on the total size of your request. Very large payloads may require splitting into multiple requests.
+
+5. **Caching**: For read-heavy operations with large datasets, consider implementing caching strategies to reduce the frequency of large requests.
+
+## Related Documentation
+
+- [Supabase Database Functions Guide](https://supabase.com/docs/guides/database/functions)
+- [Supabase JavaScript RPC Reference](https://supabase.com/docs/reference/javascript/rpc)
+- [Cloudflare 5XX Error Troubleshooting](https://developers.cloudflare.com/support/troubleshooting/cloudflare-errors/troubleshooting-cloudflare-5xx-errors/)

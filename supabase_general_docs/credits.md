@@ -1,18 +1,14 @@
-Platform
-
 # Credits
 
-* * *
+This guide explains how credits work in Supabase, including credit balance, top-ups, and frequently asked questions.
 
-## Credit balance [\#](https://supabase.com/docs/guides/platform/credits\#credit-balance)
+## Credit Balance
 
 Each organization has a credit balance. Credits are applied to future invoices to reduce the amount due. As long as the credit balance is greater than $0, credits will be used before charging your payment method on file.
 
-![Subscription upgrade modal](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fcredit-balance--light.png&w=3840&q=75&dpl=dpl_BvdF4a4Pt4yy6fUvmFQnELXJuaof)
-
 You can find the credit balance on the [organization's billing page](https://supabase.com/dashboard/org/_/billing).
 
-### What causes the credit balance to change? [\#](https://supabase.com/docs/guides/platform/credits\#what-causes-the-credit-balance-to-change)
+### What Causes the Credit Balance to Change?
 
 **Subscription plan downgrades:** Upon subscription downgrade, any prepaid subscription fee will be credited back to your organization for unused time in the billing cycle.
 
@@ -20,7 +16,7 @@ As an example, if you start a Pro Plan subscription on January 1 and downgrade t
 
 **Credit top-ups:** You self-served a credit top-up or have signed an upfront credits deal with our growth team.
 
-## Credit top-ups [\#](https://supabase.com/docs/guides/platform/credits\#credit-top-ups)
+## Credit Top-ups
 
 You can top up credits at any time, with a maximum of $999 per top-up. These credits do not expire and are non-refundable.
 
@@ -28,7 +24,7 @@ You may want to consider this option to avoid issues with recurring payments, ga
 
 If you are interested in larger (> $1,000) credit packages, [reach out](https://supabase.com/dashboard/support/new?subject=I%20would%20like%20to%20inquire%20about%20larger%20credit%20packages&category=Billing).
 
-### How to top up credits [\#](https://supabase.com/docs/guides/platform/credits\#how-to-top-up-credits)
+### How to Top Up Credits
 
 1. On the [organization's billing page](https://supabase.com/dashboard/org/_/billing), go to section **Credit Balance**
 2. Click **Top Up**
@@ -36,43 +32,16 @@ If you are interested in larger (> $1,000) credit packages, [reach out](https://
 4. Choose a payment method or add a new payment method
 5. Click **Top Up**
 
-![Subscription upgrade modal](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fcredit-top-up--light.png&w=3840&q=75&dpl=dpl_BvdF4a4Pt4yy6fUvmFQnELXJuaof)
+## Credit FAQ
 
-## Credit FAQ [\#](https://supabase.com/docs/guides/platform/credits\#credit-faq)
-
-### Will I get an invoice for the credits purchase? [\#](https://supabase.com/docs/guides/platform/credits\#will-i-get-an-invoice-for-the-credits-purchase)
+### Will I get an invoice for the credits purchase?
 
 Yes, once the payment is confirmed, you will get a matching invoice that can be accessed through your [organization's invoices page](https://supabase.com/dashboard/org/_/invoices).
 
-### Can I transfer credits to another organization? [\#](https://supabase.com/docs/guides/platform/credits\#can-i-transfer-credits-to-another-organization)
+### Can I transfer credits to another organization?
 
 Yes, you can transfer credits to another organization. Submit a [support ticket](https://supabase.help/).
 
-### Can I get a refund of my unused credits? [\#](https://supabase.com/docs/guides/platform/credits\#can-i-get-a-refund-of-my-unused-credits)
+### Can I get a refund of my unused credits?
 
 No, we do not provide refunds. Please refer to our [Terms of Service](https://supabase.com/terms#1-fees).
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Credit balance](https://supabase.com/docs/guides/platform/credits#credit-balance) [What causes the credit balance to change?](https://supabase.com/docs/guides/platform/credits#what-causes-the-credit-balance-to-change) [Credit top-ups](https://supabase.com/docs/guides/platform/credits#credit-top-ups) [How to top up credits](https://supabase.com/docs/guides/platform/credits#how-to-top-up-credits) [Credit FAQ](https://supabase.com/docs/guides/platform/credits#credit-faq) [Will I get an invoice for the credits purchase?](https://supabase.com/docs/guides/platform/credits#will-i-get-an-invoice-for-the-credits-purchase) [Can I transfer credits to another organization?](https://supabase.com/docs/guides/platform/credits#can-i-transfer-credits-to-another-organization) [Can I get a refund of my unused credits?](https://supabase.com/docs/guides/platform/credits#can-i-get-a-refund-of-my-unused-credits)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
-
-
-![Subscription upgrade modal](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fcredit-balance--light.png&w=3840&q=75&dpl=dpl_BvdF4a4Pt4yy6fUvmFQnELXJuaof)
-
-![Subscription upgrade modal](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fcredit-top-up--light.png&w=3840&q=75&dpl=dpl_BvdF4a4Pt4yy6fUvmFQnELXJuaof)

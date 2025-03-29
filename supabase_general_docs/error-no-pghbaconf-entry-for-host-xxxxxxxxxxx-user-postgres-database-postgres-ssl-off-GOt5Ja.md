@@ -1,23 +1,41 @@
-# error: no pg\_hba.conf entry for host "xx.xxx.xxx.xxx", user "postgres", database "postgres", SSL off
+# Error: No pg_hba.conf Entry for Host, SSL Off
 
-Last edited: 1/18/2025
+## Problem
 
-* * *
+When attempting to connect to your Supabase database, you may encounter an error message that looks like this:
 
-This error indicates a failed authentication attempt to the database and the connection couldn't be established.
+```
+error: no pg_hba.conf entry for host "xx.xxx.xxx.xxx", user "postgres", database "postgres", SSL off
+```
 
-In Supabase, this is generally seen when [SSL enforcement](https://supabase.com/docs/guides/platform/ssl-enforcement) is enabled on your Supabase Project. The authentication failed because the incoming connection didn't use SSL encryption when connecting to the database.
+This error indicates that an authentication attempt to your database has failed because the connection wasn't using SSL encryption.
 
-You can ignore this message if the attempt is from an unknown user. If you want this connection attempt to be successful, you will either need to connect with SSL or disable SSL enforcement on your Supabase project.
+## Cause
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+In Supabase, this error typically occurs when [SSL enforcement](https://supabase.com/docs/guides/platform/ssl-enforcement) is enabled on your project (which is the default security setting). The PostgreSQL server is configured to reject non-SSL connections as a security measure.
 
+## Solution
 
+You have two options to resolve this issue:
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+1. **Connect with SSL** (Recommended):
+   - Modify your database connection code or configuration to use SSL
+   - Most PostgreSQL clients and libraries support SSL connections
+   - Example for connection strings: add `sslmode=require` parameter
+   - Example for connection objects: set the SSL property to true
 
+2. **Disable SSL enforcement** (Not recommended for production):
+   - Go to your Supabase Dashboard
+   - Navigate to Project Settings > Database
+   - Find the SSL Enforcement setting and disable it
+   - Note that this reduces the security of your database connections
 
+## Security Considerations
 
+- If this error appears from unknown IP addresses, it may indicate attempted unauthorized access and can generally be ignored
+- Always use SSL connections for production databases to protect data in transit
+- Consider implementing IP restrictions as an additional layer of security
 
+## Related Documentation
 
-   AcceptOpt outPrivacy settings
+For more information, consult the [Supabase SSL Enforcement documentation](https://supabase.com/docs/guides/platform/ssl-enforcement).

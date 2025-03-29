@@ -1,146 +1,102 @@
-31 APR - 04 MAR / 7AM PT
+# Debugging Performance Issues
 
-Launch Week 14
-
-03d
-
-:
-
-18h
-
-:
-
-20m
-
-:
-
-52s
-
-[Claim ticket](https://supabase.com/launch-week)Dismiss
-
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-Database
-
-# Debugging performance issues
-
-## Debug slow-running queries using the Postgres execution planner.
-
-* * *
+## Debug slow-running queries using the Postgres execution planner
 
 `explain()` is a method that provides the Postgres `EXPLAIN` execution plan of a query. It is a powerful tool for debugging slow queries and understanding how Postgres will execute a given query. This feature is applicable to any query, including those made through `rpc()` or write operations.
 
-## Enabling `explain()` [\#](https://supabase.com/docs/guides/database/debugging-performance\#enabling-explain)
+## Enabling `explain()`
 
 `explain()` is disabled by default to protect sensitive information about your database structure and operations. We recommend using `explain()` in a non-production environment. Run the following SQL to enable `explain()`:
 
-```flex
+```sql
+-- enable explain
+alter role authenticator
+set pgrst.db_plan_enabled to 'true';
 
-1
-2
-3
-4
-5
-6
--- enable explainalter role authenticatorset pgrst.db_plan_enabled to 'true';-- reload the confignotify pgrst, 'reload config';
+-- reload the config
+notify pgrst, 'reload config';
 ```
 
-## Using `explain()` [\#](https://supabase.com/docs/guides/database/debugging-performance\#using-explain)
+## Using `explain()`
 
 To get the execution plan of a query, you can chain the `explain()` method to a Supabase query:
 
-```flex
-
-1
-2
-3
-4
-const { data, error } = await supabase  .from('instruments')  .select()  .explain()
+```javascript
+const { data, error } = await supabase
+  .from('instruments')
+  .select()
+  .explain()
 ```
 
-### Example data [\#](https://supabase.com/docs/guides/database/debugging-performance\#example-data)
+### Example data
 
 To illustrate, consider the following setup of a `instruments` table:
 
-```flex
+```sql
+create table instruments (
+  id int8 primary key,
+  name text
+);
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-create table instruments (  id int8 primary key,  name text);insert into books  (id, name)values  (1, 'violin'),  (2, 'viola'),  (3, 'cello');
+insert into instruments
+  (id, name)
+values
+  (1, 'violin'),
+  (2, 'viola'),
+  (3, 'cello');
 ```
 
-### Expected response [\#](https://supabase.com/docs/guides/database/debugging-performance\#expected-response)
+### Expected response
 
 The response would typically look like this:
 
-```flex
-
-1
-2
-3
-Aggregate  (cost=33.34..33.36 rows=1 width=112)  ->  Limit  (cost=0.00..18.33 rows=1000 width=40)        ->  Seq Scan on instruments  (cost=0.00..22.00 rows=1200 width=40)
+```
+Aggregate  (cost=33.34..33.36 rows=1 width=112)
+  ->  Limit  (cost=0.00..18.33 rows=1000 width=40)
+        ->  Seq Scan on instruments  (cost=0.00..22.00 rows=1200 width=40)
 ```
 
 By default, the execution plan is returned in TEXT format. However, you can also retrieve it as JSON by specifying the `format` parameter.
 
-## Production use with pre-request protection [\#](https://supabase.com/docs/guides/database/debugging-performance\#production-use-with-pre-request-protection)
+## Production use with pre-request protection
 
 If you need to enable `explain()` in a production environment, ensure you protect your database by restricting access to the `explain()` feature. You can do so by using a pre-request function that filters requests based on the IP address:
 
-```flex
+```sql
+create or replace function filter_plan_requests()
+returns void as $$
+declare
+  headers   json := current_setting('request.headers', true)::json;
+  client_ip text := coalesce(headers->>'cf-connecting-ip', '');
+  accept    text := coalesce(headers->>'accept', '');
+  your_ip   text := '123.123.123.123'; -- replace this with your IP
+begin
+  if accept like 'application/vnd.pgrst.plan%' and client_ip != your_ip then
+    raise insufficient_privilege using
+      message = 'Not allowed to use application/vnd.pgrst.plan';
+  end if;
+end;
+$$ language plpgsql;
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-create or replace function filter_plan_requests()returns void as $$declare  headers   json := current_setting('request.headers', true)::json;  client_ip text := coalesce(headers->>'cf-connecting-ip', '');  accept    text := coalesce(headers->>'accept', '');  your_ip   text := '123.123.123.123'; -- replace this with your IPbegin  if accept like 'application/vnd.pgrst.plan%' and client_ip != your_ip then    raise insufficient_privilege using      message = 'Not allowed to use application/vnd.pgrst.plan';  end if;end; $$ language plpgsql;alter role authenticator set pgrst.db_pre_request to 'filter_plan_requests';notify pgrst, 'reload config';
+alter role authenticator set pgrst.db_pre_request to 'filter_plan_requests';
+notify pgrst, 'reload config';
 ```
 
 Replace `'123.123.123.123'` with your actual IP address.
 
-## Disabling explain [\#](https://supabase.com/docs/guides/database/debugging-performance\#disabling-explain)
+## Disabling explain
 
 To disable the `explain()` method after use, execute the following SQL commands:
 
-```flex
+```sql
+-- disable explain
+alter role authenticator
+set pgrst.db_plan_enabled to 'false';
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
--- disable explainalter role authenticatorset pgrst.db_plan_enabled to 'false';-- if you used the above pre-requestalter role authenticatorset pgrst.db_pre_request to '';-- reload the confignotify pgrst, 'reload config';
+-- if you used the above pre-request
+alter role authenticator
+set pgrst.db_pre_request to '';
+
+-- reload the config
+notify pgrst, 'reload config';
 ```
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Enabling explain()](https://supabase.com/docs/guides/database/debugging-performance#enabling-explain) [Using explain()](https://supabase.com/docs/guides/database/debugging-performance#using-explain) [Example data](https://supabase.com/docs/guides/database/debugging-performance#example-data) [Expected response](https://supabase.com/docs/guides/database/debugging-performance#expected-response) [Production use with pre-request protection](https://supabase.com/docs/guides/database/debugging-performance#production-use-with-pre-request-protection) [Disabling explain](https://supabase.com/docs/guides/database/debugging-performance#disabling-explain)

@@ -1,48 +1,91 @@
-AI & Vectors
+# Keyword Search
 
-# Keyword search
+Learn how to implement and use keyword-based search functionality with PostgreSQL in Supabase.
 
-## Learn how to search by words or phrases.
+## Overview
 
-* * *
+Keyword search involves locating documents or records that contain specific words or phrases, primarily based on the exact match between the search terms and the text within the data. It differs from [semantic search](semantic-search.md), which interprets the meaning behind the query to provide results that are contextually related, even if the exact words aren't present in the text.
 
-Keyword search involves locating documents or records that contain specific words or phrases, primarily based on the exact match between the search terms and the text within the data. It differs from [semantic search](https://supabase.com/docs/guides/ai/semantic-search), which interprets the meaning behind the query to provide results that are contextually related, even if the exact words aren't present in the text. Semantic search considers synonyms, intent, and natural language nuances to provide a more nuanced approach to information retrieval.
+In PostgreSQL, keyword search is implemented using [full-text search](full-text-search.md). It supports indexing and text analysis for data retrieval, focusing on records that match the search criteria. PostgreSQL's full-text search extends beyond simple keyword matching to address linguistic nuances, making it effective for applications that require precise text queries.
 
-In Postgres, keyword search is implemented using [full-text search](https://supabase.com/docs/guides/database/full-text-search). It supports indexing and text analysis for data retrieval, focusing on records that match the search criteria. Postgres' full-text search extends beyond simple keyword matching to address linguistic nuances, making it effective for applications that require precise text queries.
+## When and Why to Use Keyword Search
 
-## When and why to use keyword search [\#](https://supabase.com/docs/guides/ai/keyword-search\#when-and-why-to-use-keyword-search)
+Keyword search is particularly useful in scenarios where precision and specificity matter. It's more effective than semantic search when users are looking for information using exact terminology or specific identifiers. It ensures that results directly contain those terms, reducing the chance of retrieving irrelevant information.
 
-Keyword search is particularly useful in scenarios where precision and specificity matter. It's more effective than semantic search when users are looking for information using exact terminology or specific identifiers. It ensures that results directly contain those terms, reducing the chance of retrieving irrelevant information that might be semantically related but not what the user seeks.
+Use keyword search for:
 
-For example in technical or academic research databases, researchers often search for specific studies, compounds, or concepts identified by certain terms or codes. Searching for a specific chemical compound using its exact molecular formula or a unique identifier will yield more focused and relevant results compared to a semantic search, which could return a wide range of documents discussing the compound in different contexts. Keyword search ensures documents that explicitly mention the exact term are found, allowing users to access the precise data they need efficiently.
+- **Exact Matches**: When users need documents that contain specific terms
+- **Structured Data Search**: When searching within well-defined fields like product names, categories, or tags
+- **Technical Documentation**: Where specific terminology, error codes, or command names are used
+- **Compliance and Legal Search**: Where exact phrases or terms have legal significance
+- **Resource-Constrained Systems**: When you need efficient search without the computational overhead of vector embeddings
 
-It's also possible to combine keyword search with semantic search to get the best of both worlds. See [Hybrid search](https://supabase.com/docs/guides/ai/hybrid-search) for more details.
+For example, in technical or academic research databases, researchers often search for specific studies, compounds, or concepts identified by certain terms or codes. Searching for a specific chemical compound using its exact molecular formula or a unique identifier will yield more focused and relevant results compared to a semantic search.
 
-## Using full-text search [\#](https://supabase.com/docs/guides/ai/keyword-search\#using-full-text-search)
+## Using PostgreSQL Full-Text Search
 
-For an in-depth guide to Postgres' full-text search, including how to store, index, and query records, see [Full text search](https://supabase.com/docs/guides/database/full-text-search).
+PostgreSQL's full-text search capabilities include:
 
-## See also [\#](https://supabase.com/docs/guides/ai/keyword-search\#see-also)
+1. **Text Search Configurations**: Language-specific analysis of words
+2. **Text Search Types**: `tsvector` (document) and `tsquery` (query)
+3. **Text Search Operators**: Boolean operations like `&` (AND), `|` (OR), and `!` (NOT)
+4. **Text Search Functions**: Functions for creating and manipulating search objects
+5. **Text Search Indexing**: GIN and GiST indexes for efficient queries
 
-- [Semantic search](https://supabase.com/docs/guides/ai/semantic-search)
-- [Hybrid search](https://supabase.com/docs/guides/ai/hybrid-search)
+### Basic Example
 
-### Is this helpful?
+```sql
+-- Create a table with a text column
+CREATE TABLE articles (
+  id SERIAL PRIMARY KEY,
+  title TEXT,
+  body TEXT
+);
 
-NoYes
+-- Insert some sample data
+INSERT INTO articles (title, body) VALUES 
+  ('PostgreSQL Tutorial', 'PostgreSQL is a powerful, open source object-relational database system'),
+  ('Full Text Search', 'Full text search provides a means of identifying natural-language documents'),
+  ('Supabase Features', 'Supabase provides authentication, real-time subscriptions, and storage');
 
-### On this page
+-- Create a function to search articles
+CREATE FUNCTION search_articles(search_term TEXT) 
+RETURNS TABLE (id INT, title TEXT, body TEXT, rank REAL) AS $$
+  SELECT
+    id,
+    title,
+    body,
+    ts_rank(
+      setweight(to_tsvector('english', title), 'A') || 
+      setweight(to_tsvector('english', body), 'B'),
+      to_tsquery('english', search_term)
+    ) AS rank
+  FROM articles
+  WHERE 
+    to_tsvector('english', title) || to_tsvector('english', body) @@ to_tsquery('english', search_term)
+  ORDER BY rank DESC;
+$$ LANGUAGE SQL;
 
-[When and why to use keyword search](https://supabase.com/docs/guides/ai/keyword-search#when-and-why-to-use-keyword-search) [Using full-text search](https://supabase.com/docs/guides/ai/keyword-search#using-full-text-search) [See also](https://supabase.com/docs/guides/ai/keyword-search#see-also)
+-- Search for articles containing 'postgresql'
+SELECT * FROM search_articles('postgresql');
+```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+### Adding Indexes for Performance
 
+For better performance with large datasets, add GIN indexes:
 
+```sql
+-- Add GIN indexes for faster full-text search
+CREATE INDEX articles_title_idx ON articles USING GIN (to_tsvector('english', title));
+CREATE INDEX articles_body_idx ON articles USING GIN (to_tsvector('english', body));
+```
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+## Combining with Other Search Methods
 
+It's possible to combine keyword search with semantic search to get the best of both worlds. See [Hybrid Search](hybrid-search.md) for more details on implementing a combined approach.
 
+## Resources
 
-
-
-   AcceptOpt outPrivacy settings
+- [Full Text Search in PostgreSQL](full-text-search.md) - Comprehensive guide to implementing full-text search
+- [Semantic Search](semantic-search.md) - Understanding meaning-based search with vector embeddings
+- [Hybrid Search](hybrid-search.md) - Combining keyword and semantic search techniques

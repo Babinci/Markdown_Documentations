@@ -1,225 +1,232 @@
-31 APR - 04 MAR / 7AM PT
+# Getting Started with Supabase and Flutter
 
-Launch Week 14
+This guide demonstrates how to use Supabase in a Flutter application, covering project setup, data querying, and authentication.
 
-03d
+## Step 1: Create a Supabase Project
 
-:
+1. Go to [database.new](https://database.new/) and create a new Supabase project.
+2. Once your project is running, create a table with sample data.
 
-18h
+You can use this SQL in the [SQL Editor](https://supabase.com/dashboard/project/_/sql/new) to create an `instruments` table with sample data:
 
-:
+```sql
+-- Create the table
+CREATE TABLE instruments (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name TEXT NOT NULL
+);
 
-17m
+-- Insert some sample data into the table
+INSERT INTO instruments (name)
+VALUES
+  ('violin'),
+  ('viola'),
+  ('cello');
 
-:
+-- Enable Row Level Security
+ALTER TABLE instruments ENABLE ROW LEVEL SECURITY;
 
-02s
-
-[Claim ticket](https://supabase.com/launch-week)Dismiss
-
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-Getting Started
-
-# Use Supabase with Flutter
-
-## Learn how to create a Supabase project, add some sample data to your database, and query the data from a Flutter app.
-
-* * *
-
-1
-
-### Create a Supabase project
-
-Go to [database.new](https://database.new/) and create a new Supabase project.
-
-When your project is up and running, go to the [Table Editor](https://supabase.com/dashboard/project/_/editor), create a new table and insert some data.
-
-Alternatively, you can run the following snippet in your project's [SQL Editor](https://supabase.com/dashboard/project/_/sql/new). This will create a `instruments` table with some sample data.
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
--- Create the tablecreate table instruments (  id bigint primary key generated always as identity,  name text not null);-- Insert some sample data into the tableinsert into instruments (name)values  ('violin'),  ('viola'),  ('cello');alter table instruments enable row level security;
+-- Create a policy to make the data publicly readable
+CREATE POLICY "public can read instruments"
+ON public.instruments
+FOR SELECT TO anon
+USING (true);
 ```
 
-Make the data in your table publicly readable by adding an RLS policy:
+## Step 2: Create a Flutter App
 
-```flex
+Create a new Flutter app if you don't already have one:
 
-1
-2
-3
-4
-create policy "public can read instruments"on public.instrumentsfor select to anonusing (true);
-```
-
-2
-
-### Create a Flutter app
-
-Create a Flutter app using the `flutter create` command. You can skip this step if you already have a working app.
-
-```flex
-
-1
+```bash
 flutter create my_app
 ```
 
-3
+## Step 3: Install the Supabase Client Library
 
-### Install the Supabase client library
+Add the Supabase Flutter package to your project by editing your `pubspec.yaml` file:
 
-The fastest way to get started is to use the [`supabase_flutter`](https://pub.dev/packages/supabase_flutter) client library which provides a convenient interface for working with Supabase from a Flutter app.
-
-Open the `pubspec.yaml` file inside your Flutter app and add `supabase_flutter` as a dependency.
-
-```flex
-
-1
-supabase_flutter: ^2.0.0
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  supabase_flutter: ^2.0.0
 ```
 
-4
+Then run:
 
-### Initialize the Supabase client
-
-Open `lib/main.dart` and edit the main function to initialize Supabase using your project URL and public API (anon) key:
-
-###### Project URL
-
-No project found
-
-To get your Project URL, [log in](https://supabase.com/dashboard).
-
-###### Anon key
-
-No project found
-
-To get your Anon key, [log in](https://supabase.com/dashboard).
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-import 'package:supabase_flutter/supabase_flutter.dart';Future<void> main() async {  WidgetsFlutterBinding.ensureInitialized();  await Supabase.initialize(    url: 'YOUR_SUPABASE_URL',    anonKey: 'YOUR_SUPABASE_ANON_KEY',  );  runApp(MyApp());}
+```bash
+flutter pub get
 ```
 
-5
+## Step 4: Initialize the Supabase Client
 
-### Query data from the app
+Open `lib/main.dart` and initialize the Supabase client with your project URL and anonymous key:
 
-Use a `FutureBuilder` to fetch the data when the home page loads and display the query result in a `ListView`.
+```dart
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-Replace the default `MyApp` and `MyHomePage` classes with the following code.
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-class MyApp extends StatelessWidget {  const MyApp({super.key});  @override  Widget build(BuildContext context) {    return const MaterialApp(      title: 'Instruments',      home: HomePage(),    );  }}class HomePage extends StatefulWidget {  const HomePage({super.key});  @override  State<HomePage> createState() => _HomePageState();}class _HomePageState extends State<HomePage> {  final _future = Supabase.instance.client      .from('instruments')      .select();  @override  Widget build(BuildContext context) {    return Scaffold(      body: FutureBuilder(        future: _future,        builder: (context, snapshot) {          if (!snapshot.hasData) {            return const Center(child: CircularProgressIndicator());          }          final instruments = snapshot.data!;          return ListView.builder(            itemCount: instruments.length,            itemBuilder: ((context, index) {              final instrument = instruments[index];              return ListTile(                title: Text(instrument['name']),              );            }),          );        },      ),    );  }}
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Supabase.initialize(
+    url: 'YOUR_SUPABASE_URL',
+    anonKey: 'YOUR_SUPABASE_ANON_KEY',
+  );
+  
+  runApp(MyApp());
+}
 ```
 
-6
+Replace `YOUR_SUPABASE_URL` and `YOUR_SUPABASE_ANON_KEY` with your project's URL and anonymous key from your Supabase dashboard.
 
-### Start the app
+## Step 5: Query Data from the App
 
-Run your app on a platform of your choosing! By default an app should launch in your web browser.
+Create a simple app to fetch and display data from your Supabase database:
 
-Note that `supabase_flutter` is compatible with web, iOS, Android, macOS, and Windows apps.
-Running the app on macOS requires additional configuration to [set the entitlements](https://docs.flutter.dev/development/platform-integration/macos/building#setting-up-entitlements).
+```dart
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'Instruments',
+      home: HomePage(),
+    );
+  }
+}
 
-```flex
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+  
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
 
-1
+class _HomePageState extends State<HomePage> {
+  final _future = Supabase.instance.client
+      .from('instruments')
+      .select();
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Musical Instruments'),
+      ),
+      body: FutureBuilder(
+        future: _future,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final instruments = snapshot.data!;
+          return ListView.builder(
+            itemCount: instruments.length,
+            itemBuilder: ((context, index) {
+              final instrument = instruments[index];
+              return ListTile(
+                title: Text(instrument['name']),
+              );
+            }),
+          );
+        },
+      ),
+    );
+  }
+}
+```
+
+## Step 6: Run Your App
+
+Launch your app with:
+
+```bash
 flutter run
 ```
 
-## Setup deep links [\#](https://supabase.com/docs/guides/getting-started/quickstarts/flutter\#setup-deep-links)
+The app should display a list of instruments fetched from your Supabase database.
 
-Many sign in methods require deep links to redirect the user back to your app after authentication. Read more about setting deep links up for all platforms (including web) in the [Flutter Mobile Guide](https://supabase.com/docs/guides/getting-started/tutorials/with-flutter#setup-deep-links).
+## Setting Up Deep Links
 
-## Going to production [\#](https://supabase.com/docs/guides/getting-started/quickstarts/flutter\#going-to-production)
+Many authentication methods require deep links to redirect users back to your app after authentication. Follow these steps to configure deep links for your application:
 
-### Android [\#](https://supabase.com/docs/guides/getting-started/quickstarts/flutter\#android)
+### Android Setup
 
-In production, your Android app needs explicit permission to use the internet connection on the user's device which is required to communicate with Supabase APIs.
-To do this, add the following line to the `android/app/src/main/AndroidManifest.xml` file.
+Edit your `android/app/src/main/AndroidManifest.xml`:
 
-```flex
-
-1
-2
-3
-4
-5
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">  <!-- Required to fetch data from the internet. -->  <uses-permission android:name="android.permission.INTERNET" />  <!-- ... --></manifest>
+```xml
+<manifest ...>
+    <application ...>
+        <activity ...>
+            <!-- ... -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="io.supabase.flutterquickstart" android:host="login-callback" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
 ```
+
+### iOS Setup
+
+Edit your `ios/Runner/Info.plist`:
+
+```xml
+<!-- ... -->
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>io.supabase.flutterquickstart</string>
+        </array>
+    </dict>
+</array>
+<!-- ... -->
+```
+
+## Production Considerations
+
+### Android 
+
+Add internet permission to your AndroidManifest.xml:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Required to fetch data from the internet. -->
+  <uses-permission android:name="android.permission.INTERNET" />
+  <!-- ... -->
+</manifest>
+```
+
+### macOS
+
+For macOS apps, additional configuration is required to set up entitlements:
+
+1. Edit the `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements` files:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- ... -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+</dict>
+</plist>
+```
+
+## Next Steps
+
+- [Add Authentication](https://supabase.com/docs/guides/auth/flutter)
+- [Implement Row Level Security](https://supabase.com/docs/guides/auth/row-level-security)
+- [Build a complete Flutter app with Supabase](https://supabase.com/docs/guides/getting-started/tutorials/with-flutter)
+- [Explore Flutter Auth UI components](flutter-auth-ui.md)

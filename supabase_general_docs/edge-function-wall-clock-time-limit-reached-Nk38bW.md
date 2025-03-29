@@ -1,49 +1,50 @@
-# Edge Function 'wall clock time limit reached'
+# Resolving "Wall Clock Time Limit Reached" in Edge Functions
 
-Last edited: 1/17/2025
+## What Does This Error Mean?
 
-* * *
+The message "wall clock time limit reached" indicates that your Edge Function has reached the maximum allowed execution time. This time is measured like a real clock on the wall - it includes the entire duration a process takes to complete, including any waiting time or periods of inactivity.
 
-**What Does "Wall Clock Time Limit Reached" Mean?**
+When this message appears in your Edge Function logs, it means that the function has been terminated after either:
+- Reaching the specified wall clock duration limit
+- Hitting a resource limit such as CPU time used or memory utilized
 
-The message "wall clock time limit reached" typically indicates that a process has reached the maximum time allowed for execution. This time is measured by a clock, similar to a system clock or a clock on the wall. It encompasses the entire duration a process takes to complete, including any periods of inactivity or waiting.
+## Current Limits
 
-When this message appears in the context of your edge function, it means that the function has emitted a Shutdown event either after reaching the specified wall clock duration or when it hits a resource limit such as CPU time used or memory utilized.
+Edge Functions on Supabase have the following execution limits:
 
-**Current Limits Explained**
+- **Wall Clock Time Limit**: 400 seconds for the total duration your Edge Function can run
+- **CPU Execution Time**: 200 milliseconds of active computing time
 
-- Wall Clock Time Limit: Currently set at 400 seconds for the total duration your edge function can run.
-- CPU Execution Time: Limited to 200 milliseconds of active computing.
+## Understanding the Warning Message
 
-This means that if your edge function completes its task within these time constraints, there's no need to be concerned about the "wall clock time limit reached" error message.
+Important: The "wall clock time limit reached" message is sometimes expected and not always an error. This message is automatically printed when a worker has been terminated, even if it hasn't actually reached the time limit.
 
-Because the "wall clock time limit reached" warning can be expected in some cases. This message is hard-coded to be printed out when the worker has been terminated, even if it hasn't reached the time limit. However, if your function terminates with this warning and returns a 546 error response, then this indicates that your function is exceeding the allowed execution time, signaling a long-running task.
+However, if your function terminates with this warning **and returns a 546 error response**, this indicates that your function is genuinely exceeding the allowed execution time.
 
-**Steps to Troubleshoot**
-If you're facing the "wall clock time limit reached" error with a 546 error code, here are actions to take:
+## Troubleshooting Steps
 
-- Review Your Function's Logic: Examine the operations within your edge function for any inefficiencies or prolonged processes. Consider optimizing code, minimizing unnecessary calculations, and implementing asynchronous operations where possible.
+If you're facing the "wall clock time limit reached" error with a 546 error code, follow these steps:
 
-- Divide Complex Tasks: For functions handling complex or extensive tasks, try breaking them down into smaller, discrete functions. This approach can help manage workloads more effectively and stay within time limits.
+1. **Review Your Function's Logic**
+   - Look for inefficient operations or prolonged processes
+   - Optimize code and minimize unnecessary calculations
+   - Implement asynchronous operations where possible
 
-- Monitor Execution Time: Use our logging or monitoring tools available to keep an eye on your function's performance. This can pinpoint where optimizations are necessary. To access logs visit: [Supabase Project Functions](https://app.supabase.com/project/_/functions) Select your function and click on Logs.
+2. **Divide Complex Tasks**
+   - Break down complex functions into smaller, more focused functions
+   - This approach helps manage workloads more effectively
+   - Consider using background tasks for longer operations
 
-- Check Our Guides: For more tips, refer to our debugging guide here: [Debugging Edge Functions](https://supabase.com/docs/guides/functions/debugging#logs--debugging)
+3. **Monitor Execution Time**
+   - Use Supabase's logging tools to track your function's performance
+   - Access logs at: [Supabase Project Functions](https://app.supabase.com/project/_/functions)
+   - Select your function and click on "Logs"
 
+4. **Check Documentation**
+   - For more debugging tips, refer to: [Debugging Edge Functions](https://supabase.com/docs/guides/functions/debugging#logs--debugging)
 
-**Future Considerations**
-There are plans to make the wall clock time limit configurable per project in the future. However, currently, the only way to adjust this limit is by self-hosting [Edge Functions](https://github.com/supabase/edge-runtime/).
+## Future Considerations
 
-Stay updated on changes by regularly checking our changelog [here](https://github.com/orgs/supabase/discussions/categories/changelog).
+There are plans to make the wall clock time limit configurable per project in the future. Currently, the only way to adjust this limit is by self-hosting [Edge Functions](https://github.com/supabase/edge-runtime/).
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+Stay updated on changes by regularly checking the [Supabase Changelog](https://github.com/orgs/supabase/discussions/categories/changelog).

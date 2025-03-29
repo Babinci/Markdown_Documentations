@@ -1,37 +1,38 @@
 # Error: "Connection refused" when trying to connect to Supabase database
 
-Last edited: 1/18/2025
+## Problem
 
-* * *
+When attempting to connect to your Supabase database, you might encounter one of the following error messages:
 
-If you're not able to connect to the Supabase database and see the error `connect ECONNREFUSED 1.2.3.4:5432` or `psql: error: connection to server at "db.xxxxxxxxxxxxxxxxxxxx.supabase.co" (1.2.3.4), port 5432 failed: Connection refused Is the server running on that host and accepting TCP/IP connections?`, this could be because there are banned IPs on your project caused by Fail2ban as it kicks in when attempting 2 wrong passwords in a row.
+- `connect ECONNREFUSED 1.2.3.4:5432`
+- `psql: error: connection to server at "db.xxxxxxxxxxxxxxxxxxxx.supabase.co" (1.2.3.4), port 5432 failed: Connection refused Is the server running on that host and accepting TCP/IP connections?`
 
-These bans will clear after 30mins but you can unban the IPs using the Supabase CLI [https://supabase.com/docs/guides/cli](https://supabase.com/docs/guides/cli) following the commands below.
+## Cause
 
-How to list the banned IPs:
+This issue is typically caused by banned IPs on your project through Fail2ban, which activates when someone attempts to log in with incorrect passwords twice in a row.
 
-```flex
+## Solution
 
-1
-% supabase network-bans get --project-ref <project_reference_id> --experimental
+These bans will automatically clear after 30 minutes, but you can manually unban IPs using the Supabase CLI:
+
+1. Install the [Supabase CLI](https://supabase.com/docs/guides/cli) if you haven't already
+2. List the banned IPs with the following command:
+
+```bash
+supabase network-bans get --project-ref <project_reference_id> --experimental
 ```
 
-How to unban the IPs:
+3. Unban specific IP addresses with:
 
-```flex
-
-1
-% supabase network-bans remove --db-unban-ip <ip_address> --project-ref <project_reference_id> --experimental
+```bash
+supabase network-bans remove --db-unban-ip <ip_address> --project-ref <project_reference_id> --experimental
 ```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+Replace `<project_reference_id>` with your actual project reference ID and `<ip_address>` with the IP address that needs to be unbanned.
 
+## Prevention
 
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+To prevent this issue from occurring:
+- Store and use correct database credentials
+- Use password managers to avoid typing mistakes
+- Consider using connection pooling for applications that frequently connect to the database

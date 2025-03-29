@@ -1,217 +1,193 @@
-31 APR - 04 MAR / 7AM PT
+# Supabase Features
 
-Launch Week 14
+This is a comprehensive overview of the features that Supabase provides for all projects, both hosted and self-hosted.
 
-03d
+## Database
 
-:
+### Postgres Database
+Every Supabase project is powered by a full PostgreSQL database, giving you access to one of the world's most advanced open-source relational databases.
+[Documentation on Postgres Database](https://supabase.com/docs/guides/database)
 
-18h
+### Vector Database
+Store and query vector embeddings directly within your PostgreSQL database using pgvector, enabling AI and machine learning applications.
+[Documentation on Vector Database](https://supabase.com/docs/guides/ai)
 
-:
+### Auto-generated REST API
+A RESTful API is automatically generated from your database schema, allowing you to interact with your data without writing any server-side code.
+[Documentation on REST API](https://supabase.com/docs/guides/api#rest-api-overview)
 
-16m
+### Auto-generated GraphQL API
+Create powerful GraphQL APIs using the pg_graphql extension, providing a flexible query language for your applications.
+[Documentation on GraphQL API](https://supabase.com/docs/guides/graphql/api)
 
-:
+### Database Webhooks
+Send database changes to external services using webhooks, allowing for event-driven architectures.
+[Documentation on Webhooks](https://supabase.com/docs/guides/database/webhooks)
 
-12s
+### Secrets and Encryption
+Encrypt sensitive data and store secrets securely using Vault, Supabase's PostgreSQL extension for managing encrypted data.
+[Documentation on Vault](https://supabase.com/docs/guides/database/vault)
 
-[Claim ticket](https://supabase.com/launch-week)Dismiss
+## Platform
 
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+### Database Backups
+All projects include daily backups with options to upgrade to Point-in-Time Recovery for continuous protection.
+[Documentation on Backups](https://supabase.com/docs/guides/platform/backups)
 
-Getting Started
+### Custom Domains
+White-label the Supabase APIs with your own domain to create a branded experience for your users.
+[Documentation on Custom Domains](https://supabase.com/docs/guides/platform/custom-domains)
 
-# Features
+### Network Restrictions
+Restrict access to your database by specifying allowed IP ranges, enhancing security.
+[Documentation on Network Restrictions](https://supabase.com/docs/guides/platform/network-restrictions)
 
-* * *
+### SSL Enforcement
+Force all Postgres clients to connect via SSL to enhance database connection security.
+[Documentation on SSL Enforcement](https://supabase.com/docs/guides/platform/ssl-enforcement)
 
-This is a non-exhaustive list of features that Supabase provides for every project.
+### Branching
+Test and preview changes using Supabase Branches before deploying to production.
+[Documentation on Branching](https://supabase.com/docs/guides/platform/branching)
 
-## Database [\#](https://supabase.com/docs/guides/getting-started/features\#database)
+### Terraform Provider
+Manage your Supabase infrastructure using Terraform, following Infrastructure as Code principles.
+[Documentation on Terraform](https://supabase.com/docs/guides/platform/terraform)
 
-### Postgres database [\#](https://supabase.com/docs/guides/getting-started/features\#postgres-database)
+### Read Replicas
+Deploy read-only database replicas across multiple regions to reduce latency and improve resource management.
+[Documentation on Read Replicas](https://supabase.com/docs/guides/platform/read-replicas)
 
-Every project is a full Postgres database. [Docs](https://supabase.com/docs/guides/database).
+### Log Drains
+Export Supabase logs to third-party providers and external monitoring tools.
+[Documentation on Log Drains](https://supabase.com/docs/guides/platform/log-drains)
 
-### Vector database [\#](https://supabase.com/docs/guides/getting-started/features\#vector-database)
+## Studio
 
-Store vector embeddings right next to the rest of your data. [Docs](https://supabase.com/docs/guides/ai).
+### Studio Single Sign-On
+Access the Supabase dashboard through Single Sign-On (SSO) using your organization's identity provider.
+[Documentation on Studio SSO](https://supabase.com/docs/guides/platform/sso)
 
-### Auto-generated REST API via PostgREST [\#](https://supabase.com/docs/guides/getting-started/features\#auto-generated-rest-api-via-postgrest)
+## Realtime
 
-RESTful APIs are auto-generated from your database, without a single line of code. [Docs](https://supabase.com/docs/guides/api#rest-api-overview).
+### Postgres Changes
+Receive database changes in real-time through WebSockets, enabling reactive applications.
+[Documentation on Postgres Changes](https://supabase.com/docs/guides/realtime/postgres-changes)
 
-### Auto-generated GraphQL API via pg\_graphql [\#](https://supabase.com/docs/guides/getting-started/features\#auto-generated-graphql-api-via-pggraphql)
+### Broadcast
+Send messages between connected users in real-time using WebSockets.
+[Documentation on Broadcast](https://supabase.com/docs/guides/realtime/broadcast)
 
-Fast GraphQL APIs using our custom Postgres GraphQL extension. [Docs](https://supabase.com/docs/guides/graphql/api).
+### Presence
+Synchronize shared state across users, enabling features like online status indicators and typing notifications.
+[Documentation on Presence](https://supabase.com/docs/guides/realtime/presence)
 
-### Database webhooks [\#](https://supabase.com/docs/guides/getting-started/features\#database-webhooks)
+## Auth
 
-Send database changes to any external service using Webhooks. [Docs](https://supabase.com/docs/guides/database/webhooks).
+### Email Login
+Build secure email authentication flows for your applications.
+[Documentation on Email Auth](https://supabase.com/docs/guides/auth/auth-email)
 
-### Secrets and encryption [\#](https://supabase.com/docs/guides/getting-started/features\#secrets-and-encryption)
+### Social Login
+Integrate social authentication providers such as Google, Facebook, GitHub, and more.
+[Documentation on Social Login](https://supabase.com/docs/guides/auth/social-login)
 
-Encrypt sensitive data and store secrets using our Postgres extension, Supabase Vault. [Docs](https://supabase.com/docs/guides/database/vault).
+### Phone Logins
+Enable phone-based authentication using SMS verification.
+[Documentation on Phone Auth](https://supabase.com/docs/guides/auth/phone-login)
 
-## Platform [\#](https://supabase.com/docs/guides/getting-started/features\#platform)
+### Passwordless Login
+Implement secure, passwordless authentication using magic links sent via email.
+[Documentation on Passwordless Login](https://supabase.com/docs/guides/auth/auth-magic-link)
 
-### Database backups [\#](https://supabase.com/docs/guides/getting-started/features\#database-backups)
+### Authorization via Row Level Security
+Control data access at the row level using PostgreSQL's built-in security policies.
+[Documentation on Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security)
 
-Projects are backed up daily with the option to upgrade to Point in Time recovery. [Docs](https://supabase.com/docs/guides/platform/backups).
+### CAPTCHA Protection
+Add CAPTCHA verification to your authentication forms to prevent automated attacks.
+[Documentation on CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha)
 
-### Custom domains [\#](https://supabase.com/docs/guides/getting-started/features\#custom-domains)
+### Server-Side Auth
+Leverage server-side authentication helpers for popular frameworks like Next.js, SvelteKit, and Remix.
+[Documentation on Server-Side Auth](https://supabase.com/docs/guides/auth/server-side)
 
-White-label the Supabase APIs to create a branded experience for your users. [Docs](https://supabase.com/docs/guides/platform/custom-domains).
+## Storage
 
-### Network restrictions [\#](https://supabase.com/docs/guides/getting-started/features\#network-restrictions)
+### File Storage
+Store and serve files with granular access controls.
+[Documentation on Storage](https://supabase.com/docs/guides/storage)
 
-Restrict IP ranges that can connect to your database. [Docs](https://supabase.com/docs/guides/platform/network-restrictions).
+### Content Delivery Network
+Leverage Supabase's CDN to cache large files and reduce load times.
+[Documentation on CDN](https://supabase.com/docs/guides/storage/cdn/fundamentals)
 
-### SSL enforcement [\#](https://supabase.com/docs/guides/getting-started/features\#ssl-enforcement)
+### Smart Content Delivery Network
+Automatically revalidate assets at the edge for optimal performance.
+[Documentation on Smart CDN](https://supabase.com/docs/guides/storage/cdn/smart-cdn)
 
-Enforce Postgres clients to connect via SSL. [Docs](https://supabase.com/docs/guides/platform/ssl-enforcement).
+### Image Transformations
+Transform images on-the-fly to fit your application needs.
+[Documentation on Image Transformations](https://supabase.com/docs/guides/storage/serving/image-transformations)
 
-### Branching [\#](https://supabase.com/docs/guides/getting-started/features\#branching)
+### Resumable Uploads
+Enable large file uploads with the ability to resume interrupted transfers.
+[Documentation on Resumable Uploads](https://supabase.com/docs/guides/storage/uploads/resumable-uploads)
 
-Use Supabase Branches to test and preview changes. [Docs](https://supabase.com/docs/guides/platform/branching).
+### S3 Compatibility
+Interact with Supabase Storage using any tool that supports the S3 protocol.
+[Documentation on S3 Compatibility](https://supabase.com/docs/guides/storage/s3/compatibility)
 
-### Terraform provider [\#](https://supabase.com/docs/guides/getting-started/features\#terraform-provider)
+## Edge Functions
 
-Manage Supabase infrastructure via Terraform, an Infrastructure as Code tool. [Docs](https://supabase.com/docs/guides/platform/terraform).
+### Deno Edge Functions
+Deploy globally distributed TypeScript functions for custom business logic.
+[Documentation on Edge Functions](https://supabase.com/docs/guides/functions)
 
-### Read replicas [\#](https://supabase.com/docs/guides/getting-started/features\#read-replicas)
+### Regional Invocations
+Execute Edge Functions in regions close to your database for reduced latency.
+[Documentation on Regional Invocation](https://supabase.com/docs/guides/functions/regional-invocation)
 
-Deploy read-only databases across multiple regions, for lower latency and better resource management. [Docs](https://supabase.com/docs/guides/platform/read-replicas).
+### NPM Compatibility
+Use NPM modules and Node.js built-in APIs in your Edge Functions.
+[Read more about NPM support](https://supabase.com/blog/edge-functions-node-npm)
 
-### Log drains [\#](https://supabase.com/docs/guides/getting-started/features\#log-drains)
+## Project Management
 
-Export Supabase logs at to 3rd party providers and external tooling. [Docs](https://supabase.com/docs/guides/platform/log-drains).
+### CLI
+Develop locally and deploy to Supabase using the command line interface.
+[Documentation on CLI](https://supabase.com/docs/reference/cli)
 
-## Studio [\#](https://supabase.com/docs/guides/getting-started/features\#studio)
+### Management API
+Programmatically manage your Supabase projects and resources.
+[Documentation on Management API](https://supabase.com/docs/reference/api)
 
-### Studio Single Sign-On [\#](https://supabase.com/docs/guides/getting-started/features\#studio-single-sign-on)
+## Client Libraries
 
-Login to the Supabase dashboard via SSO. [Docs](https://supabase.com/docs/guides/platform/sso).
+Supabase provides official client libraries for:
+- [JavaScript](https://supabase.com/docs/reference/javascript/start)
+- [Flutter](https://supabase.com/docs/reference/dart/initializing)
+- [Swift](https://supabase.com/docs/reference/swift/introduction)
 
-## Realtime [\#](https://supabase.com/docs/guides/getting-started/features\#realtime)
+Additional community-supported libraries are available for other languages.
 
-### Postgres changes [\#](https://supabase.com/docs/guides/getting-started/features\#postgres-changes)
+## Feature Status
 
-Receive your database changes through WebSockets. [Docs](https://supabase.com/docs/guides/realtime/postgres-changes).
+Supabase features are in one of four states - each with different stability and support guarantees:
 
-### Broadcast [\#](https://supabase.com/docs/guides/getting-started/features\#broadcast)
+### Private Alpha
+Initial limited access for community feedback. To join the early access program, email [product-ops@supabase.io](mailto:product-ops@supabase.io).
 
-Send messages between connected users through WebSockets. [Docs](https://supabase.com/docs/guides/realtime/broadcast).
+### Public Alpha
+Accessible to all but with potential API changes. The service is stable but not covered by the uptime SLA.
 
-### Presence [\#](https://supabase.com/docs/guides/getting-started/features\#presence)
+### Beta
+Security-tested features with stable APIs and clear communication for any breaking changes.
 
-Synchronize shared state across your users, including online status and typing indicators. [Docs](https://supabase.com/docs/guides/realtime/presence).
+### Generally Available (GA)
+Features in GA are fully supported and covered by the [uptime SLA](https://supabase.com/sla).
 
-## Auth [\#](https://supabase.com/docs/guides/getting-started/features\#auth)
-
-### Email login [\#](https://supabase.com/docs/guides/getting-started/features\#email-login)
-
-Build email logins for your application or website. [Docs](https://supabase.com/docs/guides/auth/auth-email).
-
-### Social login [\#](https://supabase.com/docs/guides/getting-started/features\#social-login)
-
-Provide social logins - everything from Apple, to GitHub, to Slack. [Docs](https://supabase.com/docs/guides/auth/social-login).
-
-### Phone logins [\#](https://supabase.com/docs/guides/getting-started/features\#phone-logins)
-
-Provide phone logins using a third-party SMS provider. [Docs](https://supabase.com/docs/guides/auth/phone-login).
-
-### Passwordless login [\#](https://supabase.com/docs/guides/getting-started/features\#passwordless-login)
-
-Build passwordless logins via magic links for your application or website. [Docs](https://supabase.com/docs/guides/auth/auth-magic-link).
-
-### Authorization via Row Level Security [\#](https://supabase.com/docs/guides/getting-started/features\#authorization-via-row-level-security)
-
-Control the data each user can access with Postgres Policies. [Docs](https://supabase.com/docs/guides/database/postgres/row-level-security).
-
-### CAPTCHA protection [\#](https://supabase.com/docs/guides/getting-started/features\#captcha-protection)
-
-Add CAPTCHA to your sign-in, sign-up, and password reset forms. [Docs](https://supabase.com/docs/guides/auth/auth-captcha).
-
-### Server-Side Auth [\#](https://supabase.com/docs/guides/getting-started/features\#server-side-auth)
-
-Helpers for implementing user authentication in popular server-side languages and frameworks like Next.js, SvelteKit and Remix. [Docs](https://supabase.com/docs/guides/auth/server-side).
-
-## Storage [\#](https://supabase.com/docs/guides/getting-started/features\#storage)
-
-### File storage [\#](https://supabase.com/docs/guides/getting-started/features\#file-storage)
-
-Supabase Storage makes it simple to store and serve files. [Docs](https://supabase.com/docs/guides/storage).
-
-### Content Delivery Network [\#](https://supabase.com/docs/guides/getting-started/features\#content-delivery-network)
-
-Cache large files using the Supabase CDN. [Docs](https://supabase.com/docs/guides/storage/cdn/fundamentals).
-
-### Smart Content Delivery Network [\#](https://supabase.com/docs/guides/getting-started/features\#smart-content-delivery-network)
-
-Automatically revalidate assets at the edge via the Smart CDN. [Docs](https://supabase.com/docs/guides/storage/cdn/smart-cdn).
-
-### Image transformations [\#](https://supabase.com/docs/guides/getting-started/features\#image-transformations)
-
-Transform images on the fly. [Docs](https://supabase.com/docs/guides/storage/serving/image-transformations).
-
-### Resumable uploads [\#](https://supabase.com/docs/guides/getting-started/features\#resumable-uploads)
-
-Upload large files using resumable uploads. [Docs](https://supabase.com/docs/guides/storage/uploads/resumable-uploads).
-
-### S3 compatibility [\#](https://supabase.com/docs/guides/getting-started/features\#s3-compatibility)
-
-Interact with Storage from tool which supports the S3 protocol. [Docs](https://supabase.com/docs/guides/storage/s3/compatibility).
-
-## Edge Functions [\#](https://supabase.com/docs/guides/getting-started/features\#edge-functions)
-
-### Deno Edge Functions [\#](https://supabase.com/docs/guides/getting-started/features\#deno-edge-functions)
-
-Globally distributed TypeScript functions to execute custom business logic. [Docs](https://supabase.com/docs/guides/functions).
-
-### Regional invocations [\#](https://supabase.com/docs/guides/getting-started/features\#regional-invocations)
-
-Execute an Edge Function in a region close to your database. [Docs](https://supabase.com/docs/guides/functions/regional-invocation).
-
-### NPM compatibility [\#](https://supabase.com/docs/guides/getting-started/features\#npm-compatibility)
-
-Edge functions natively support NPM modules and Node built-in APIs. [Link](https://supabase.com/blog/edge-functions-node-npm).
-
-## Project management [\#](https://supabase.com/docs/guides/getting-started/features\#project-management)
-
-### CLI [\#](https://supabase.com/docs/guides/getting-started/features\#cli)
-
-Use our CLI to develop your project locally and deploy to the Supabase Platform. [Docs](https://supabase.com/docs/reference/cli).
-
-### Management API [\#](https://supabase.com/docs/guides/getting-started/features\#management-api)
-
-Manage your projects programmatically. [Docs](https://supabase.com/docs/reference/api).
-
-## Client libraries [\#](https://supabase.com/docs/guides/getting-started/features\#client-libraries)
-
-Official client libraries for [JavaScript](https://supabase.com/docs/reference/javascript/start), [Flutter](https://supabase.com/docs/reference/dart/initializing) and [Swift](https://supabase.com/docs/reference/swift/introduction).
-Unofficial libraries are supported by the community.
-
-## Feature status [\#](https://supabase.com/docs/guides/getting-started/features\#feature-status)
-
-Supabase Features are in 4 different states - Private Alpha, Public Alpha, Beta and Generally Available.
-
-### Private alpha [\#](https://supabase.com/docs/guides/getting-started/features\#private-alpha)
-
-Features are initially launched as a private alpha to gather feedback from the community. To join our early access program, send an email to [product-ops@supabase.io](mailto:product-ops@supabase.io).
-
-### Public alpha [\#](https://supabase.com/docs/guides/getting-started/features\#public-alpha)
-
-The alpha stage indicates that the API might change in the future, not that the service isn’t stable. Even though the [uptime Service Level Agreement](https://supabase.com/sla) does not cover products in Alpha, we do our best to have the service as stable as possible.
-
-### Beta [\#](https://supabase.com/docs/guides/getting-started/features\#beta)
-
-Features in Beta are tested by an external penetration tester for security issues. The API is guaranteed to be stable and there is a strict communication process for breaking changes.
-
-### Generally available [\#](https://supabase.com/docs/guides/getting-started/features\#generally-available)
-
-In addition to the Beta requirements, features in GA are covered by the [uptime SLA](https://supabase.com/sla).
+## Feature Availability Matrix
 
 | Product | Feature | Stage | Available on self-hosted |
 | --- | --- | --- | --- |
@@ -222,7 +198,7 @@ In addition to the Beta requirements, features in GA are covered by the [uptime 
 | Database | Webhooks | `beta` | ✅ |
 | Database | Vault | `public alpha` | ✅ |
 | Platform |  | `GA` | ✅ |
-| Platform | Point-in-Time Recovery | `GA` | 🚧 [wal-g](https://github.com/wal-g/wal-g) |
+| Platform | Point-in-Time Recovery | `GA` | 🚧 [wal-g](https://github.com/wal-g/wal-g) |
 | Platform | Custom Domains | `GA` | N/A |
 | Platform | Network Restrictions | `beta` | N/A |
 | Platform | SSL enforcement | `GA` | N/A |
@@ -263,11 +239,3 @@ In addition to the Beta requirements, features in GA are covered by the [uptime 
 
 - ✅ = Fully Available
 - 🚧 = Available, but requires external tools or configuration
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Database](https://supabase.com/docs/guides/getting-started/features#database) [Postgres database](https://supabase.com/docs/guides/getting-started/features#postgres-database) [Vector database](https://supabase.com/docs/guides/getting-started/features#vector-database) [Auto-generated REST API via PostgREST](https://supabase.com/docs/guides/getting-started/features#auto-generated-rest-api-via-postgrest) [Auto-generated GraphQL API via pg\_graphql](https://supabase.com/docs/guides/getting-started/features#auto-generated-graphql-api-via-pggraphql) [Database webhooks](https://supabase.com/docs/guides/getting-started/features#database-webhooks) [Secrets and encryption](https://supabase.com/docs/guides/getting-started/features#secrets-and-encryption) [Platform](https://supabase.com/docs/guides/getting-started/features#platform) [Database backups](https://supabase.com/docs/guides/getting-started/features#database-backups) [Custom domains](https://supabase.com/docs/guides/getting-started/features#custom-domains) [Network restrictions](https://supabase.com/docs/guides/getting-started/features#network-restrictions) [SSL enforcement](https://supabase.com/docs/guides/getting-started/features#ssl-enforcement) [Branching](https://supabase.com/docs/guides/getting-started/features#branching) [Terraform provider](https://supabase.com/docs/guides/getting-started/features#terraform-provider) [Read replicas](https://supabase.com/docs/guides/getting-started/features#read-replicas) [Log drains](https://supabase.com/docs/guides/getting-started/features#log-drains) [Studio](https://supabase.com/docs/guides/getting-started/features#studio) [Studio Single Sign-On](https://supabase.com/docs/guides/getting-started/features#studio-single-sign-on) [Realtime](https://supabase.com/docs/guides/getting-started/features#realtime) [Postgres changes](https://supabase.com/docs/guides/getting-started/features#postgres-changes) [Broadcast](https://supabase.com/docs/guides/getting-started/features#broadcast) [Presence](https://supabase.com/docs/guides/getting-started/features#presence) [Auth](https://supabase.com/docs/guides/getting-started/features#auth) [Email login](https://supabase.com/docs/guides/getting-started/features#email-login) [Social login](https://supabase.com/docs/guides/getting-started/features#social-login) [Phone logins](https://supabase.com/docs/guides/getting-started/features#phone-logins) [Passwordless login](https://supabase.com/docs/guides/getting-started/features#passwordless-login) [Authorization via Row Level Security](https://supabase.com/docs/guides/getting-started/features#authorization-via-row-level-security) [CAPTCHA protection](https://supabase.com/docs/guides/getting-started/features#captcha-protection) [Server-Side Auth](https://supabase.com/docs/guides/getting-started/features#server-side-auth) [Storage](https://supabase.com/docs/guides/getting-started/features#storage) [File storage](https://supabase.com/docs/guides/getting-started/features#file-storage) [Content Delivery Network](https://supabase.com/docs/guides/getting-started/features#content-delivery-network) [Smart Content Delivery Network](https://supabase.com/docs/guides/getting-started/features#smart-content-delivery-network) [Image transformations](https://supabase.com/docs/guides/getting-started/features#image-transformations) [Resumable uploads](https://supabase.com/docs/guides/getting-started/features#resumable-uploads) [S3 compatibility](https://supabase.com/docs/guides/getting-started/features#s3-compatibility) [Edge Functions](https://supabase.com/docs/guides/getting-started/features#edge-functions) [Deno Edge Functions](https://supabase.com/docs/guides/getting-started/features#deno-edge-functions) [Regional invocations](https://supabase.com/docs/guides/getting-started/features#regional-invocations) [NPM compatibility](https://supabase.com/docs/guides/getting-started/features#npm-compatibility) [Project management](https://supabase.com/docs/guides/getting-started/features#project-management) [CLI](https://supabase.com/docs/guides/getting-started/features#cli) [Management API](https://supabase.com/docs/guides/getting-started/features#management-api) [Client libraries](https://supabase.com/docs/guides/getting-started/features#client-libraries) [Feature status](https://supabase.com/docs/guides/getting-started/features#feature-status) [Private alpha](https://supabase.com/docs/guides/getting-started/features#private-alpha) [Public alpha](https://supabase.com/docs/guides/getting-started/features#public-alpha) [Beta](https://supabase.com/docs/guides/getting-started/features#beta) [Generally available](https://supabase.com/docs/guides/getting-started/features#generally-available)

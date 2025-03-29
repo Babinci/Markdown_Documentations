@@ -1,31 +1,36 @@
-# How long does it take to restore a database from a Point-in-Time backup (PITR)?
+# How Long Does It Take to Restore a Database from a Point-in-Time Backup (PITR)?
 
 Last edited: 1/18/2025
 
-* * *
+The time required for a Point-in-Time Recovery (PITR) restoration varies based on several factors. Unlike a simple fixed timeframe, the restoration process is influenced by multiple variables that affect the overall duration.
 
-The time required for a PIT restoration isn't fixed. It depends on several factors:
+## Key Factors Affecting Restoration Time
 
-**Time Since Last Full Backup:**
+### 1. Time Since Last Full Backup
 
-Full backups occur weekly. The time elapsed since the last full backup can affect restoration time.
+Supabase performs full database backups on a weekly basis. The amount of time that has passed since the last full backup is a significant factor in determining restoration time. The further away your restoration point is from the most recent full backup, the more Write-Ahead Log (WAL) files need to be processed.
 
-**Write-Ahead Logging (WAL) Activity:**
+### 2. Write-Ahead Logging (WAL) Activity
 
-The volume of WAL activity since the last full backup is a critical factor. More activity can lead to longer restoration times.
+The volume of database activity since the last full backup directly impacts restoration time:
 
-**Database Size:**
+- **High Transaction Volume**: Databases with frequent writes, updates, and deletes generate more WAL data
+- **Complex Queries**: Operations that modify large amounts of data create larger WAL entries
+- **Batch Operations**: Bulk operations can significantly increase WAL size
 
-While important, the size of the database isn't the sole determinant of restoration time.
+During restoration, all WAL files must be replayed sequentially, which means higher WAL volume leads to longer restoration times.
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+### 3. Database Size
 
+While database size is a factor, it's not always the primary determinant of restoration time:
 
+- **Small Databases with High Activity**: Can sometimes take longer to restore than larger databases with minimal changes
+- **Large Databases with Low Activity**: May restore relatively quickly if WAL volume is low
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+## What to Expect
 
+- **Typical Range**: From 30 minutes to several hours
+- **Large, Active Databases**: May take 4-8+ hours in some cases
+- **Small, Less Active Databases**: Generally restore more quickly
 
-
-
-
-   AcceptOpt outPrivacy settings
+For time-sensitive operations, it's advisable to contact Supabase support in advance to discuss your specific situation and get a more accurate time estimate based on your database characteristics.

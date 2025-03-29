@@ -1,84 +1,82 @@
-Auth
+# Creating a Supabase Client for SSR
 
-# Creating a Supabase client for SSR
+This guide explains how to configure your Supabase client to use cookies for Server-Side Rendering (SSR) applications.
 
-## Configure your Supabase client to use cookies
+## Overview
 
-* * *
+To use Server-Side Rendering with Supabase, you need to configure your Supabase client to use cookies. The `@supabase/ssr` package helps you do this for JavaScript/TypeScript applications.
 
-To use Server-Side Rendering (SSR) with Supabase, you need to configure your Supabase client to use cookies. The `@supabase/ssr` package helps you do this for JavaScript/TypeScript applications.
-
-## Install [\#](https://supabase.com/docs/guides/auth/server-side/creating-a-client\#install)
+## Installation
 
 Install the `@supabase/ssr` and `@supabase/supabase-js` packages:
 
-npmyarnpnpm
-
-```flex
-
-1
+```bash
+# npm
 npm install @supabase/ssr @supabase/supabase-js
+
+# yarn
+yarn add @supabase/ssr @supabase/supabase-js
+
+# pnpm
+pnpm add @supabase/ssr @supabase/supabase-js
 ```
 
-## Set environment variables [\#](https://supabase.com/docs/guides/auth/server-side/creating-a-client\#set-environment-variables)
+## Set Environment Variables
 
 In your environment variables file, set your Supabase URL and Supabase Anon Key:
 
-###### Project URL
+### Next.js
 
-No project found
-
-To get your Project URL, [log in](https://supabase.com/dashboard).
-
-###### Anon key
-
-No project found
-
-To get your Anon key, [log in](https://supabase.com/dashboard).
-
-Next.jsSvelteKitAstroRemixExpressHono
-
-```flex
-
-1
-2
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_urlNEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-## Create a client [\#](https://supabase.com/docs/guides/auth/server-side/creating-a-client\#create-a-client)
+### SvelteKit
+
+```bash
+PUBLIC_SUPABASE_URL=your_supabase_project_url
+PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Astro
+
+```bash
+PUBLIC_SUPABASE_URL=your_supabase_project_url
+PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Remix
+
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Express
+
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Hono
+
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+## Create a Client
 
 You'll need some one-time setup code to configure your Supabase client to use cookies. Once your utility code is set up, you can use your new `createClient` utility functions to get a properly configured Supabase client.
 
 Use the browser client in code that runs on the browser, and the server client in code that runs on the server.
 
-Next.jsSvelteKitAstroRemixExpressHono
+For framework-specific setup instructions, please refer to the official [Supabase Server-Side Auth documentation](https://supabase.com/docs/guides/auth/server-side/creating-a-client).
 
-The following code samples are for App Router. For help with Pages Router, see the [Next.js Server-Side Auth guide](https://supabase.com/docs/guides/auth/server-side/nextjs?queryGroups=router&router=pages).
-
-Client-sideServer-sideMiddleware
-
-## Next steps [\#](https://supabase.com/docs/guides/auth/server-side/creating-a-client\#next-steps)
+## Next Steps
 
 - Implement [Authentication using Email and Password](https://supabase.com/docs/guides/auth/server-side/email-based-auth-with-pkce-flow-for-ssr)
 - Implement [Authentication using OAuth](https://supabase.com/docs/guides/auth/server-side/oauth-with-pkce-flow-for-ssr)
 - [Learn more about SSR](https://supabase.com/docs/guides/auth/server-side-rendering)
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Install](https://supabase.com/docs/guides/auth/server-side/creating-a-client#install) [Set environment variables](https://supabase.com/docs/guides/auth/server-side/creating-a-client#set-environment-variables) [Create a client](https://supabase.com/docs/guides/auth/server-side/creating-a-client#create-a-client) [Next steps](https://supabase.com/docs/guides/auth/server-side/creating-a-client#next-steps)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

@@ -1,10 +1,6 @@
-Platform
+# Manage Disk IOPS Usage
 
-# Manage Disk IOPS usage
-
-* * *
-
-## What you are charged for [\#](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops\#what-you-are-charged-for)
+## What you are charged for
 
 Each database has a dedicated disk, and you are charged for its provisioned disk IOPS. However, unless you explicitly opt in for additional IOPS, no charges apply.
 
@@ -12,19 +8,19 @@ Refer to our [disk guide](https://supabase.com/docs/guides/platform/compute-and-
 
 Launching a Read Replica creates an additional database with its own dedicated disk. Read Replicas inherit the primary database's disk IOPS settings. You are charged for the provisioned IOPS of the Read Replica. Refer to [Manage Read Replica usage](https://supabase.com/docs/guides/platform/manage-your-usage/read-replicas) for details on billing.
 
-## How charges are calculated [\#](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops\#how-charges-are-calculated)
+## How charges are calculated
 
 Disk IOPS is charged by IOPS-Hrs. 1 IOPS-Hr represents 1 IOPS being provisioned for 1 hour. For example, having 10 IOPS provisioned for 5 hours results in 50 IOPS-Hrs (10 IOPS × 5 hours).
 
-### Usage on your invoice [\#](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops\#usage-on-your-invoice)
+### Usage on your invoice
 
 Usage is shown as "Disk IOPS-Hrs" on your invoice.
 
-## Pricing [\#](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops\#pricing)
+## Pricing
 
 Pricing depends on the [disk type](https://supabase.com/docs/guides/platform/compute-and-disk#disk-types), with type gp3 being the default.
 
-### General purpose disks (gp3) [\#](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops\#general-purpose-disks-gp3)
+### General purpose disks (gp3)
 
 $0.00003288 per IOPS-Hr ($0.024 per IOPS per month). gp3 disks come with a default IOPS of 3,000. You are only charged for provisioned IOPS exceeding these 3,000 IOPS.
 
@@ -34,7 +30,7 @@ $0.00003288 per IOPS-Hr ($0.024 per IOPS per month). gp3 disks come with a defau
 | Team | 3,000 | $0.024 | $0.00003288 |
 | Enterprise | Custom | Custom | Custom |
 
-### High performance disks (io2) [\#](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops\#high-performance-disks-io2)
+### High performance disks (io2)
 
 $0.000163 per IOPS-Hr ($0.119 per IOPS per month).
 Unlike general purpose disks, high performance disks are billed from the first provisioned IOPS.
@@ -45,9 +41,9 @@ Unlike general purpose disks, high performance disks are billed from the first p
 | Team | 0 | $0.119 | $0.000163 |
 | Enterprise | Custom | Custom | Custom |
 
-## Billing examples [\#](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops\#billing-examples)
+## Billing examples
 
-### Gp3 [\#](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops\#gp3)
+### Gp3
 
 Project 1 doesn't exceed the included IOPS, so no charges for IOPS apply. Project 2 exceeds the included IOPS by 600, incurring charges for this additional usage.
 
@@ -65,7 +61,7 @@ Project 1 doesn't exceed the included IOPS, so no charges for IOPS apply. Projec
 | Compute Credits |  | -$10 |
 | **Total** |  | **$149.40** |
 
-### Io2 [\#](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops\#io2)
+### Io2
 
 This disk type is billed from the first IOPS provisioned, meaning for 8000 IOPS.
 
@@ -77,23 +73,3 @@ This disk type is billed from the first IOPS provisioned, meaning for 8000 IOPS.
 | **Subtotal** |  | **$1,087** |
 | Compute Credits |  | -$10 |
 | **Total** |  | **$1,077** |
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[What you are charged for](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops#what-you-are-charged-for) [How charges are calculated](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops#how-charges-are-calculated) [Usage on your invoice](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops#usage-on-your-invoice) [Pricing](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops#pricing) [General purpose disks (gp3)](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops#general-purpose-disks-gp3) [High performance disks (io2)](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops#high-performance-disks-io2) [Billing examples](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops#billing-examples) [Gp3](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops#gp3) [Io2](https://supabase.com/docs/guides/platform/manage-your-usage/disk-iops#io2)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

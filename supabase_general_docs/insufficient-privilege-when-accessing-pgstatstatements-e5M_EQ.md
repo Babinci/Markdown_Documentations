@@ -1,27 +1,15 @@
-# "insufficient privilege" when accessing pg\_stat\_statements
+# Resolving "Insufficient Privilege" Error When Accessing pg_stat_statements
 
-Last edited: 1/16/2025
+If you see the error "insufficient privilege" when accessing [pg_stat_statements](pg_stat_statements.md) or when accessing the [Query Performance Report](https://supabase.com/dashboard/project/_/reports/query-performance), it means that the Postgres role you're using doesn't have the required permissions.
 
-* * *
+## Solution
 
-If you see the error "insufficient privilege" when accessing [pg\_stat\_statements](https://supabase.com/docs/guides/platform/performance#postgres-cumulative-statistics-system) or when accessing [Query Performance Report](https://supabase.com/dashboard/project/_/reports/query-performance), it means that the Postgres role does not have required permissions.
+You can run the following SQL command to allow the Postgres role to read all statistics from the system:
 
-In this case, you can run the below command to allow the Postgres role to read all statistics from the system:
-
-```flex
-
-1
-grant pg_read_all_stats to postgres;
+```sql
+GRANT pg_read_all_stats TO postgres;
 ```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+This grants the necessary permissions to the `postgres` role, allowing it to read statistics from the pg_stat_statements view and other internal Postgres statistics views.
 
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+After running this command, you should be able to access the Query Performance Report in the dashboard and query the pg_stat_statements view directly without permission errors.

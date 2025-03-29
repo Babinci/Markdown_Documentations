@@ -1,31 +1,49 @@
-# How do I check GoTrue/API version of a Supabase project?
+# How to Check GoTrue/API Version of a Supabase Project
 
-Last edited: 1/17/2025
+When troubleshooting authentication issues or ensuring compatibility with specific features, it's helpful to know which version of GoTrue (Supabase's auth service) is running in your project.
 
-* * *
+## Using the Health Check Endpoint
 
-Make a `GET` request to the health check endpoint to retrieve this information. Below is an example using `curl`:
+You can make a `GET` request to the health check endpoint to retrieve this information. Here's an example using `curl`:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-curl -X GET 'https://project-ref.supabase.co/auth/v1/health' -H 'apikey: ANON_KEY'{    "version": "v2.60.7",    "name": "GoTrue",    "description": "GoTrue is a user registration and authentication API"}
+```bash
+curl -X GET 'https://project-ref.supabase.co/auth/v1/health' -H 'apikey: ANON_KEY'
 ```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+Replace `project-ref` with your actual Supabase project reference and `ANON_KEY` with your project's anon key.
 
+## Sample Response
 
+The response will look like this:
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+```json
+{
+    "version": "v2.60.7",
+    "name": "GoTrue",
+    "description": "GoTrue is a user registration and authentication API"
+}
+```
 
+This information is particularly useful when:
 
+- Debugging authentication issues that might be version-specific
+- Verifying that your project has a version that supports specific features
+- Reporting issues to Supabase support
+- Ensuring compatibility between client libraries and the server version
 
+## Using in JavaScript/TypeScript
 
+If you prefer to use JavaScript/TypeScript instead of curl:
 
-   AcceptOpt outPrivacy settings
+```javascript
+async function checkGoTrueVersion() {
+  const response = await fetch('https://project-ref.supabase.co/auth/v1/health', {
+    headers: {
+      'apikey': 'ANON_KEY'
+    }
+  });
+  const data = await response.json();
+  console.log('GoTrue version:', data.version);
+  return data;
+}
+```

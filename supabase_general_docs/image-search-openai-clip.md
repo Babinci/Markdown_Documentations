@@ -1,210 +1,221 @@
-AI & Vectors
+# Image Search with OpenAI CLIP and Supabase Vector
 
-# Image Search with OpenAI CLIP
+This guide demonstrates how to implement powerful image search capabilities using the OpenAI CLIP (Contrastive Language-Image Pre-Training) model and Supabase Vector.
 
-## Implement image search with the OpenAI CLIP Model and Supabase Vector.
+## What is CLIP?
 
-* * *
+The [OpenAI CLIP Model](https://github.com/openai/CLIP) was trained on a diverse dataset of (image, text) pairs. This versatile model can be used for multiple types of cross-modal search operations:
 
-The [OpenAI CLIP Model](https://github.com/openai/CLIP) was trained on a variety of (image, text)-pairs. You can use the CLIP model for:
+- Text-to-Image search
+- Image-to-Text search
+- Image-to-Image search
+- Text-to-Text search
 
-- Text-to-Image / Image-To-Text / Image-to-Image / Text-to-Text Search
-- You can fine-tune it on your own image and text data with the regular `SentenceTransformers` training code.
+The model can also be fine-tuned on your own image and text data using the standard `SentenceTransformers` training code.
 
-[`SentenceTransformers`](https://www.sbert.net/examples/applications/image-search/README.html) provides models that allow you to embed images and text into the same vector space. You can use this to find similar images as well as to implement image search.
+## Project Setup
 
-You can find the full application code as a Python Poetry project on [GitHub](https://github.com/supabase/supabase/tree/master/examples/ai/image_search#image-search-with-supabase-vector).
+This tutorial walks through creating a Python application that enables semantic image search using text queries. The complete application code is available on [GitHub](https://github.com/supabase/supabase/tree/master/examples/ai/image_search#image-search-with-supabase-vector).
 
-## Create a new Python project with Poetry [\#](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip\#create-a-new-python-project-with-poetry)
+### Prerequisites
 
-[Poetry](https://python-poetry.org/) provides packaging and dependency management for Python. If you haven't already, install poetry via pip:
+- Python 3.7 or newer
+- [Poetry](https://python-poetry.org/) for dependency management
+- [Supabase CLI](https://supabase.com/docs/guides/cli) for local development
+- Some images to index and search
 
-```flex
+### Step 1: Create a New Python Project
 
-1
+Install Poetry if you haven't already:
+
+```bash
 pip install poetry
 ```
 
-Then initialize a new project:
+Initialize a new project:
 
-```flex
-
-1
+```bash
 poetry new image-search
 ```
 
-## Setup Supabase project [\#](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip\#setup-supabase-project)
+### Step 2: Set Up a Local Supabase Instance
 
-If you haven't already, [install the Supabase CLI](https://supabase.com/docs/guides/cli), then initialize Supabase in the root of your newly created poetry project:
+Initialize Supabase in your project:
 
-```flex
-
-1
+```bash
 supabase init
 ```
 
-Next, start your local Supabase stack:
+Start your local Supabase stack:
 
-```flex
-
-1
+```bash
 supabase start
 ```
 
-This will start up the Supabase stack locally and print out a bunch of environment details, including your local `DB URL`. Make a note of that for later user.
+Make note of the DB URL that is displayed after the stack starts. You'll need this for connecting to your database.
 
-## Install the dependencies [\#](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip\#install-the-dependencies)
+### Step 3: Install Dependencies
 
-We will need to add the following dependencies to our project:
+Add the necessary libraries to your project:
 
-- [`vecs`](https://github.com/supabase/vecs#vecs): Supabase Vector Python Client.
-- [`sentence-transformers`](https://huggingface.co/sentence-transformers/clip-ViT-B-32): a framework for sentence, text and image embeddings (used with OpenAI CLIP model)
-- [`matplotlib`](https://matplotlib.org/): for displaying our image result
-
-```flex
-
-1
+```bash
 poetry add vecs sentence-transformers matplotlib
 ```
 
-## Import the necessary dependencies [\#](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip\#import-the-necessary-dependencies)
+These packages provide:
+- `vecs`: Supabase Vector Python client for vector storage and retrieval
+- `sentence-transformers`: Framework for generating text and image embeddings
+- `matplotlib`: Library for displaying image results
 
-At the top of your main python script, import the dependencies and store your `DB URL` from above in a variable:
+### Step 4: Create the Application
 
-```flex
+Create a Python file called `main.py` in your project directory with the following imports:
 
-1
-2
-3
-4
-5
-6
-7
-from PIL import Imagefrom sentence_transformers import SentenceTransformerimport vecsfrom matplotlib import pyplot as pltfrom matplotlib import image as mpimgDB_CONNECTION = "postgresql://postgres:postgres@localhost:54322/postgres"
+```python
+from PIL import Image
+from sentence_transformers import SentenceTransformer
+import vecs
+from matplotlib import pyplot as plt
+from matplotlib import image as mpimg
+
+DB_CONNECTION = "postgresql://postgres:postgres@localhost:54322/postgres"
 ```
 
-## Create embeddings for your images [\#](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip\#create-embeddings-for-your-images)
+### Step 5: Create Image Embeddings
 
-In the root of your project, create a new folder called `images` and add some images. You can use the images from the example project on [GitHub](https://github.com/supabase/supabase/tree/master/examples/ai/image_search/images) or you can find license free images on [Unsplash](https://unsplash.com/).
+Create a `seed` function to generate embeddings for your images and store them in Supabase Vector:
 
-Next, create a `seed` method, which will create a new Supabase Vector Collection, generate embeddings for your images, and upsert the embeddings into your database:
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-def seed():    # create vector store client    vx = vecs.create_client(DB_CONNECTION)    # create a collection of vectors with 3 dimensions    images = vx.get_or_create_collection(name="image_vectors", dimension=512)    # Load CLIP model    model = SentenceTransformer('clip-ViT-B-32')    # Encode an image:    img_emb1 = model.encode(Image.open('./images/one.jpg'))    img_emb2 = model.encode(Image.open('./images/two.jpg'))    img_emb3 = model.encode(Image.open('./images/three.jpg'))    img_emb4 = model.encode(Image.open('./images/four.jpg'))    # add records to the *images* collection    images.upsert(        records=[            (                "one.jpg",        # the vector's identifier                img_emb1,          # the vector. list or np.array                {"type": "jpg"}   # associated  metadata            ), (                "two.jpg",                img_emb2,                {"type": "jpg"}            ), (                "three.jpg",                img_emb3,                {"type": "jpg"}            ), (                "four.jpg",                img_emb4,                {"type": "jpg"}            )        ]    )    print("Inserted images")    # index the collection for fast search performance    images.create_index()    print("Created index")
+```python
+def seed():
+    # create vector store client
+    vx = vecs.create_client(DB_CONNECTION)
+    
+    # create a collection of vectors with 512 dimensions
+    images = vx.get_or_create_collection(name="image_vectors", dimension=512)
+    
+    # Load CLIP model
+    model = SentenceTransformer('clip-ViT-B-32')
+    
+    # Encode images:
+    img_emb1 = model.encode(Image.open('./images/one.jpg'))
+    img_emb2 = model.encode(Image.open('./images/two.jpg'))
+    img_emb3 = model.encode(Image.open('./images/three.jpg'))
+    img_emb4 = model.encode(Image.open('./images/four.jpg'))
+    
+    # add records to the *images* collection
+    images.upsert(
+        records=[
+            (
+                "one.jpg",        # the vector's identifier
+                img_emb1,         # the vector (list or np.array)
+                {"type": "jpg"}   # associated metadata
+            ), (
+                "two.jpg",
+                img_emb2,
+                {"type": "jpg"}
+            ), (
+                "three.jpg",
+                img_emb3,
+                {"type": "jpg"}
+            ), (
+                "four.jpg",
+                img_emb4,
+                {"type": "jpg"}
+            )
+        ]
+    )
+    
+    print("Inserted images")
+    
+    # index the collection for fast search performance
+    images.create_index()
+    print("Created index")
 ```
 
-Add this method as a script in your `pyproject.toml` file:
+### Step 6: Implement Text-to-Image Search
 
-```flex
+Create a `search` function that finds the most relevant image for a text query:
 
-1
-2
-3
-[tool.poetry.scripts]seed = "image_search.main:seed"search = "image_search.main:search"
+```python
+def search():
+    # create vector store client
+    vx = vecs.create_client(DB_CONNECTION)
+    images = vx.get_or_create_collection(name="image_vectors", dimension=512)
+    
+    # Load CLIP model
+    model = SentenceTransformer('clip-ViT-B-32')
+    
+    # Encode text query
+    query_string = "a bike in front of a red brick wall"
+    text_emb = model.encode(query_string)
+    
+    # query the collection filtering metadata for "type" = "jpg"
+    results = images.query(
+        data=text_emb,                      # required
+        limit=1,                            # number of records to return
+        filters={"type": {"$eq": "jpg"}},   # metadata filters
+    )
+    
+    result = results[0]
+    print(result)
+    
+    plt.title(result)
+    image = mpimg.imread('./images/' + result)
+    plt.imshow(image)
+    plt.show()
 ```
 
-After activating the virtual environment with `poetry shell` you can now run your seed script via `poetry run seed`. You can inspect the generated embeddings in your local database by visiting the local Supabase dashboard at [localhost:54323](http://localhost:54323/project/default/editor), selecting the `vecs` schema, and the `image_vectors` database.
+### Step 7: Configure Poetry Scripts
 
-## Perform an image search from a text query [\#](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip\#perform-an-image-search-from-a-text-query)
+Add these functions as scripts in your `pyproject.toml` file:
 
-With Supabase Vector we can query our embeddings. We can use either an image as search input or alternative we can generate an embedding from a string input and use that as the query input:
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-def search():    # create vector store client    vx = vecs.create_client(DB_CONNECTION)    images = vx.get_or_create_collection(name="image_vectors", dimension=512)    # Load CLIP model    model = SentenceTransformer('clip-ViT-B-32')    # Encode text query    query_string = "a bike in front of a red brick wall"    text_emb = model.encode(query_string)    # query the collection filtering metadata for "type" = "jpg"    results = images.query(        data=text_emb,                      # required        limit=1,                            # number of records to return        filters={"type": {"$eq": "jpg"}},   # metadata filters    )    result = results[0]    print(result)    plt.title(result)    image = mpimg.imread('./images/' + result)    plt.imshow(image)    plt.show()
+```toml
+[tool.poetry.scripts]
+seed = "image_search.main:seed"
+search = "image_search.main:search"
 ```
 
-By limiting the query to one result, we can show the most relevant image to the user. Finally we use `matplotlib` to show the image result to the user.
+### Step 8: Run the Application
 
-Go ahead and test it out by running `poetry run search` and you will be presented with an image of a "bike in front of a red brick wall".
+1. Create an `images` directory in your project and add some JPG images
+2. Run the seeding script to create embeddings:
+   ```bash
+   poetry run seed
+   ```
+3. Execute a text-to-image search:
+   ```bash
+   poetry run search
+   ```
 
-## Conclusion [\#](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip\#conclusion)
+The application will display the image that best matches your text query.
 
-With just a couple of lines of Python you are able to implement image search as well as reverse image search using OpenAI's CLIP model and Supabase Vector.
+## Advanced Usage
 
-### Is this helpful?
+### Customizing the Search
 
-NoYes
+- Modify the `query_string` variable to search for different concepts
+- Increase the `limit` parameter in the query to return more matching images
+- Create a more interactive application with user input for the query string
 
-### On this page
+### Implementing Image-to-Image Search
 
-[Create a new Python project with Poetry](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip#create-a-new-python-project-with-poetry) [Setup Supabase project](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip#setup-supabase-project) [Install the dependencies](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip#install-the-dependencies) [Import the necessary dependencies](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip#import-the-necessary-dependencies) [Create embeddings for your images](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip#create-embeddings-for-your-images) [Perform an image search from a text query](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip#perform-an-image-search-from-a-text-query) [Conclusion](https://supabase.com/docs/guides/ai/examples/image-search-openai-clip#conclusion)
+You can also use CLIP for reverse image search by encoding an image as the query:
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+```python
+# Replace text_emb with an image embedding
+query_image = Image.open('./images/query.jpg')
+query_emb = model.encode(query_image)
 
+# The rest of the query remains the same
+results = images.query(
+    data=query_emb,
+    limit=5,
+    filters={"type": {"$eq": "jpg"}},
+)
+```
 
+## Conclusion
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+This implementation demonstrates how to combine OpenAI's CLIP model with Supabase Vector to create a powerful semantic image search system. With this foundation, you can expand to larger image collections and more sophisticated search interfaces.
 
-
-
-
-
-   AcceptOpt outPrivacy settings
+The same approach can be adapted for other multi-modal applications like product search, content recommendation, or visual question answering.

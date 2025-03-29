@@ -1,16 +1,12 @@
-Home
-
 # Production Checklist
-
-* * *
 
 After developing your project and deciding it's Production Ready, you should run through this checklist to ensure that your project:
 
-- is secure
-- won't falter under the expected load
-- remains available whilst in production
+- Is secure
+- Won't falter under the expected load
+- Remains available whilst in production
 
-## Security [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#security)
+## Security
 
 - Ensure RLS is enabled
   - Tables that do not have RLS enabled with reasonable policies allow any client to access and modify their data. This is unlikely to be what you want in the majority of cases.
@@ -33,7 +29,7 @@ After developing your project and deciding it's Production Ready, you should run
 - Review these [common cybersecurity threats](https://auth0.com/docs/security/prevent-threats).
 - Check and review issues in your database using [Security Advisor](https://supabase.com/dashboard/project/_/database/security-advisor).
 
-## Performance [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#performance)
+## Performance
 
 - Ensure that you have suitable indices to cater to your common query patterns
   - [Learn more about indexes in Postgres](https://www.enterprisedb.com/postgres-tutorials/overview-postgresql-indexes).
@@ -45,7 +41,7 @@ After developing your project and deciding it's Production Ready, you should run
 - If you expect your database size to be > 4 GB, [enable](https://supabase.com/dashboard/project/_/settings/addons?panel=pitr) the Point in Time Recovery (PITR) add-on. Daily backups can take up resources from your database when the backup is in progress. PITR is more resource efficient, since only the changes to the database are backed up.
 - Check and review issues in your database using [Performance Advisor](https://supabase.com/dashboard/project/_/database/performance-advisor).
 
-## Availability [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#availability)
+## Availability
 
 - Use your own SMTP credentials so that you have full control over the deliverability of your transactional auth emails (see Settings > Auth)
   - you can grab SMTP credentials from any major email provider such as SendGrid, AWS SES, etc. You can refer to our [SMTP guide](https://supabase.com/docs/guides/auth/auth-smtp) for more details.
@@ -54,7 +50,7 @@ After developing your project and deciding it's Production Ready, you should run
   - You can restore paused projects from the Supabase dashboard.
   - Upgrade to Pro to guarantee that your project will not be paused for inactivity.
 - Database backups are not available for download on the Free Plan.
-  - You can set up your own backup systems using tools like [pg\_dump](https://www.postgresqltutorial.com/postgresql-backup-database/) or [wal-g](https://github.com/wal-g/wal-g).
+  - You can set up your own backup systems using tools like [pg_dump](https://www.postgresqltutorial.com/postgresql-backup-database/) or [wal-g](https://github.com/wal-g/wal-g).
   - Nightly backups for Pro Plan projects are available on the Supabase dashboard for up to 7 days.
   - Point in Time Recovery (PITR) allows a project to be backed up at much shorter intervals. This provides users an option to restore to any chosen point of up to seconds in granularity. In terms of Recovery Point Objective (RPO), Daily Backups would be suitable for projects willing to lose up to 24 hours worth of data. If a lower RPO is required, enable PITR.
 - Supabase Projects use disks that offer 99.8-99.9% durability by default.
@@ -62,18 +58,18 @@ After developing your project and deciding it's Production Ready, you should run
   - Use PITR if you require durability resilience to a disk failure event
 - Upgrading to the Supabase Pro Plan will give you [access to our support team](https://supabase.com/dashboard/support/new).
 
-## Rate limiting, resource allocation, & abuse prevention [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#rate-limiting-resource-allocation--abuse-prevention)
+## Rate limiting, resource allocation, & abuse prevention
 
 - Supabase employs a number of safeguards against bursts of incoming traffic to prevent abuse and help maximize stability across the platform
   - If you're on a Team or Enterprise Plan and expect high load events, such as production launches, heavy load testing, or prolonged high resource usage, open a ticket via the [support form](https://supabase.help/) for help. Provide at least 2 weeks notice.
 
-### Auth rate limits [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#auth-rate-limits)
+### Auth rate limits
 
-- The table below shows the rate limit quotas on the following authentication endpoints. You can configure the auth rate limits for your project [here](https://supabase.com/dashboard/project/_/auth/rate-limits).
+The table below shows the rate limit quotas on the following authentication endpoints. You can configure the auth rate limits for your project [here](https://supabase.com/dashboard/project/_/auth/rate-limits).
 
 | Endpoint | Path | Limited By | Rate Limit |
 | --- | --- | --- | --- |
-| All endpoints that send emails | `/auth/v1/signup` `/auth/v1/recover` `/auth/v1/user`\[^1\] | Sum of combined requests | As of 3 Sep 2024, this has been updated to 2 emails per hour. You can only change this with your own [custom SMTP setup](https://supabase.com/docs/guides/auth/auth-smtp). |
+| All endpoints that send emails | `/auth/v1/signup` `/auth/v1/recover` `/auth/v1/user` | Sum of combined requests | As of 3 Sep 2024, this has been updated to 2 emails per hour. You can only change this with your own [custom SMTP setup](https://supabase.com/docs/guides/auth/auth-smtp). |
 | All endpoints that send One-Time-Passwords (OTP) | `/auth/v1/otp` | Sum of combined requests | Defaults to 360 OTPs per hour. Is customizable. |
 | Send OTPs or magic links | `/auth/v1/otp` | Last request | Defaults to 60 seconds window before a new request is allowed. Is customizable. |
 | Signup confirmation request | `/auth/v1/signup` | Last request | Defaults to 60 seconds window before a new request is allowed. Is customizable. |
@@ -81,30 +77,28 @@ After developing your project and deciding it's Production Ready, you should run
 | Verification requests | `/auth/v1/verify` | IP Address | 360 requests per hour (with bursts up to 30 requests) |
 | Token refresh requests | `/auth/v1/token` | IP Address | 1800 requests per hour (with bursts up to 30 requests) |
 | Create or Verify an MFA challenge | `/auth/v1/factors/:id/challenge` `/auth/v1/factors/:id/verify` | IP Address | 15 requests per minute (with bursts up to 30 requests) |
-| Anonymous sign-ins | `/auth/v1/signup`\[^2\] | IP Address | 30 requests per hour (with bursts up to 30 requests) |
+| Anonymous sign-ins | `/auth/v1/signup` | IP Address | 30 requests per hour (with bursts up to 30 requests) |
 
-### Realtime quotas [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#realtime-quotas)
+### Realtime quotas
 
 - Review the [Realtime quotas](https://supabase.com/docs/guides/realtime/quotas).
 - If you need quotas increased you can always [contact support](https://supabase.com/dashboard/support/new).
 
-### Abuse prevention [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#abuse-prevention)
+### Abuse prevention
 
 - Supabase provides CAPTCHA protection on the signup, sign-in and password reset endpoints. Refer to [our guide](https://supabase.com/docs/guides/auth/auth-captcha) on how to protect against abuse using this method.
 
-### Email link validity [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#email-link-validity)
+### Email link validity
 
-- When working with enterprise systems, email scanners may scan and make a `GET` request to the reset password link or sign up link in your email. Since links in Supabase Auth are single use, a user who opens an email post-scan to click on a link will receive an error. To get around this problem,
-consider altering the email template to replace the original magic link with a link to a domain you control. The domain can present the user with a "Sign-in" button which redirect the user to the original magic link URL when clicked.
+- When working with enterprise systems, email scanners may scan and make a `GET` request to the reset password link or sign up link in your email. Since links in Supabase Auth are single use, a user who opens an email post-scan to click on a link will receive an error. To get around this problem, consider altering the email template to replace the original magic link with a link to a domain you control. The domain can present the user with a "Sign-in" button which redirect the user to the original magic link URL when clicked.
 
 - When using a custom SMTP service, some services might have link tracking enabled which may overwrite or disform the email confirmation links sent by Supabase Auth. To prevent this from happening, we recommend that you disable link tracking when using a custom SMTP service.
 
-
-## Subscribe to Supabase status page [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#subscribe-to-supabase-status-page)
+## Subscribe to Supabase status page
 
 Stay informed about Supabase service status by subscribing to the [Status Page](https://status.supabase.com/). We recommend setting up Slack notifications through an RSS feed to ensure your team receives timely updates about service status changes.
 
-### Setting up Slack notifications [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#setting-up-slack-notifications)
+### Setting up Slack notifications
 
 1. Install the RSS app in Slack:
    - Visit the [RSS app page](https://slack.com/marketplace/A0F81R7U7-rss) in the Slack marketplace
@@ -119,26 +113,6 @@ Once configured, your team will receive automatic notifications in Slack wheneve
 
 For detailed setup instructions, see the [Add RSS feeds to Slack](https://slack.com/intl/en-nz/help/articles/218688467-Add-RSS-feeds-to-Slack).
 
-## Next steps [\#](https://supabase.com/docs/guides/deployment/going-into-prod\#next-steps)
+## Next steps
 
 This checklist is always growing so be sure to check back frequently, and also feel free to suggest additions and amendments by making a PR on [GitHub](https://github.com/supabase/supabase).
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Security](https://supabase.com/docs/guides/deployment/going-into-prod#security) [Performance](https://supabase.com/docs/guides/deployment/going-into-prod#performance) [Availability](https://supabase.com/docs/guides/deployment/going-into-prod#availability) [Rate limiting, resource allocation, & abuse prevention](https://supabase.com/docs/guides/deployment/going-into-prod#rate-limiting-resource-allocation--abuse-prevention) [Auth rate limits](https://supabase.com/docs/guides/deployment/going-into-prod#auth-rate-limits) [Realtime quotas](https://supabase.com/docs/guides/deployment/going-into-prod#realtime-quotas) [Abuse prevention](https://supabase.com/docs/guides/deployment/going-into-prod#abuse-prevention) [Email link validity](https://supabase.com/docs/guides/deployment/going-into-prod#email-link-validity) [Subscribe to Supabase status page](https://supabase.com/docs/guides/deployment/going-into-prod#subscribe-to-supabase-status-page) [Setting up Slack notifications](https://supabase.com/docs/guides/deployment/going-into-prod#setting-up-slack-notifications) [Next steps](https://supabase.com/docs/guides/deployment/going-into-prod#next-steps)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

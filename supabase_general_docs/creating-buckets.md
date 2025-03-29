@@ -1,75 +1,70 @@
-31 APR - 04 MAR / 7AM PT
-
-Launch Week 14
-
-03d
-
-:
-
-18h
-
-:
-
-09m
-
-:
-
-58s
-
-[Claim ticket](https://supabase.com/launch-week)Dismiss
-
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-Storage
-
 # Creating Buckets
 
-* * *
+This guide explains how to create storage buckets in Supabase and configure upload restrictions.
+
+## Overview
 
 You can create a bucket using the Supabase Dashboard. Since storage is interoperable with your Postgres database, you can also use SQL or our client libraries.
-Here we create a bucket called "avatars":
 
-JavaScriptDashboardSQLDartSwiftPython
+Here are different ways to create a bucket called "avatars":
 
-```flex
+### Using JavaScript
 
-1
-2
-3
-4
-5
-// Use the JS library to create a bucket.const { data, error } = await supabase.storage.createBucket('avatars', {  public: true, // default: false})
+```javascript
+// Use the JS library to create a bucket.
+const { data, error } = await supabase.storage.createBucket('avatars', {
+  public: true, // default: false
+})
 ```
 
-[Reference.](https://supabase.com/docs/reference/javascript/storage-createbucket)
+### Using Dart
 
-## Restricting uploads [\#](https://supabase.com/docs/guides/storage/buckets/creating-buckets\#restricting-uploads)
+```dart
+final StorageBucketResponse res = await supabase.storage.createBucket('avatars',
+  const BucketOptions(public: true));
+```
+
+### Using Swift
+
+```swift
+let response = try await supabase.storage.createBucket(
+  id: "avatars",
+  options: .init(public: true)
+)
+```
+
+### Using Python
+
+```python
+# Use the Python library to create a bucket.
+bucket = supabase.storage.create_bucket("avatars", {"public": True})
+```
+
+### Using SQL
+
+```sql
+-- Use SQL to create a bucket
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true);
+```
+
+## Restricting Uploads
 
 When creating a bucket you can add additional configurations to restrict the type or size of files you want this bucket to contain.
+
 For example, imagine you want to allow your users to upload only images to the `avatars` bucket and the size must not be greater than 1MB.
 
-You can achieve the following by providing: `allowedMimeTypes` and `maxFileSize`
+You can achieve this by providing: `allowedMimeTypes` and `maxFileSize`:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-// Use the JS library to create a bucket.const { data, error } = await supabase.storage.createBucket('avatars', {  public: true,  allowedMimeTypes: ['image/*'],  fileSizeLimit: '1MB',})
+```javascript
+// Use the JS library to create a bucket.
+const { data, error } = await supabase.storage.createBucket('avatars', {
+  public: true,
+  allowedMimeTypes: ['image/*'],
+  fileSizeLimit: '1MB',
+})
 ```
 
 If an upload request doesn't meet the above restrictions it will be rejected.
 
-For more information check [File Limits](https://supabase.com/docs/guides/storage/uploads/file-limits) Section.
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Restricting uploads](https://supabase.com/docs/guides/storage/buckets/creating-buckets#restricting-uploads)
+For more information, check the [File Limits](https://supabase.com/docs/guides/storage/uploads/file-limits) section.

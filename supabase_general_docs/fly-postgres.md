@@ -1,72 +1,79 @@
-Platform
-
 # Fly Postgres
 
-* * *
+Fly Postgres is a Supabase-supported PostgreSQL database service deployed on the Fly.io edge network. This integration allows you to run Supabase databases in all regions where Fly.io operates.
 
-Fly Postgres databases are deployed on the Fly.io edge network. Fly Postgres is supported in [every region](https://fly.io/docs/reference/regions/) where Fly.io operates.
+> **Important Note**: Fly Postgres is being deprecated on April 11, 2025. For more information, please refer to the [official announcement](https://github.com/orgs/supabase/discussions/33413).
 
-Fly Postgres is being deprecated on April 11, 2025. Head over to the [announcement](https://github.com/orgs/supabase/discussions/33413) for more information.
+## Quickstart
 
-## Quickstart [\#](https://supabase.com/docs/guides/platform/fly-postgres\#quickstart)
+To begin using Fly Postgres:
 
-1. Authenticate via the CLI: `flyctl auth login`
-2. Access the Supabase dashboard by running `flyctl extensions supabase dashboard <app-name>`
+1. Install the Fly CLI if you haven't already
+2. Authenticate with the CLI:
+   ```bash
+   flyctl auth login
+   ```
+3. Access the Supabase dashboard through the CLI:
+   ```bash
+   flyctl extensions supabase dashboard <app-name>
+   ```
 
-The full list of CLI commands for Fly Postgres are documented in the [Fly docs](https://fly.io/docs/flyctl/extensions-supabase/).
+For a complete list of available CLI commands, consult the [Fly documentation](https://fly.io/docs/flyctl/extensions-supabase/).
 
-## Connecting to your database [\#](https://supabase.com/docs/guides/platform/fly-postgres\#connecting-to-your-database)
+## Connecting to Your Database
 
-If your network supports IPv6, connect directly to your Fly Postgres database, as its domain name resolves to an IPv6 address which can be directly used from within your Fly applications.
+Connectivity options depend on your network's IP capabilities:
 
-If your network only supports IPv4, use Supavisor instead of connecting to the database directly. Supavisor's domain name resolves to an IPv4 address, allowing networks without IPv6 support to connect.
+### IPv6 Networks
+If your network supports IPv6, you can connect directly to your Fly Postgres database. The database's domain name resolves to an IPv6 address, which is accessible from within your Fly applications.
 
-To find your database's connection strings, visit the Supabase [database settings page](https://supabase.com/dashboard/project/_/settings/database).
+### IPv4-Only Networks
+For networks with only IPv4 support, use Supavisor instead of connecting directly to the database. Supavisor's domain name resolves to an IPv4 address, enabling connectivity for networks without IPv6 support.
 
-## Studio support [\#](https://supabase.com/docs/guides/platform/fly-postgres\#studio-support)
+To find your database connection strings, visit the [Database Settings page](https://supabase.com/dashboard/project/_/settings/database) in your Supabase dashboard.
 
-Access the Supabase studio by running the following command: `flyctl extensions supabase dashboard <app-name>`. This command authenticates with Fly via OAuth and then logs you into the Supabase dashboard.
+## Supabase Studio Integration
 
-In the dashboard, you gain access to several powerful tools, including:
+Access the full Supabase Studio interface by running:
 
-- SQL editor: Run SQL queries against your database.
-- Table editor: Create, edit and delete tables and columns.
-- Log explorer: Inspect real-time logs for your database.
-- Postgres upgrades: Upgrade your Fly Postgres instance to the latest version.
+```bash
+flyctl extensions supabase dashboard <app-name>
+```
 
-## Permissions [\#](https://supabase.com/docs/guides/platform/fly-postgres\#permissions)
+This command authenticates with Fly via OAuth and logs you into the Supabase dashboard, where you can access:
 
-Supabase and Fly organizations have a direct one-to-one relationship. When you launch your first Fly Postgres database, it triggers the automatic creation of a corresponding Supabase organization if one does not already exist.
+- **SQL Editor**: Execute SQL queries against your database
+- **Table Editor**: Create, modify, and delete tables and columns through a graphical interface
+- **Log Explorer**: View real-time logs for database operations and queries
+- **Postgres Upgrades**: Manage and initiate PostgreSQL version upgrades
 
-User accounts on Supabase are also created on demand. Every Fly user gets a unique Supabase account, and this account is separate from any Supabase accounts you might already have.
+## Permission Management
 
-Upon launching a Fly Postgres database, the initiating user is granted the owner role within the new Supabase organization. All subsequent users are added with the `developer` role. Roles can be adjusted in the Supabase dashboard as required.
+The relationship between Supabase and Fly organizations is one-to-one. When you launch your first Fly Postgres database, a corresponding Supabase organization is automatically created if it doesn't already exist.
 
-## Limitations [\#](https://supabase.com/docs/guides/platform/fly-postgres\#limitations)
+User accounts are created on demand:
+- Every Fly user receives a unique Supabase account
+- This account is separate from any existing Supabase accounts you may have
+- The user who initiates a Fly Postgres database deployment is granted the owner role
+- Subsequent users are added with the developer role
+- Role assignments can be modified in the Supabase dashboard as needed
 
-When using Fly Postgres, be aware of the current restrictions:
+## Limitations
 
-- Direct database connections are only supported via IPv6. Read more in the [connecting to your database](https://supabase.com/docs/guides/platform/fly-postgres#connecting-to-your-database) section.
-- [Network restrictions](https://supabase.com/docs/guides/platform/network-restrictions) are not supported
-- Currently, only the database, Supavisor, and PostgREST are supported. Support for additional Supabase products such as Realtime, Storage, and Auth is planned.
-- The [pg\_cron](https://supabase.com/docs/guides/database/extensions/pg_cron) extension is not fully supported for Fly projects. Fly projects shut down after 15 minutes of inactivity, but transparently start up when an external request is received. However, this does not apply to pg\_cron jobs, which aren’t triggered by external requests. ` pg_cron` jobs don’t run when the database is shut down due to inactivity.
+When using Fly Postgres, be aware of these current limitations:
 
-### Is this helpful?
+1. **IPv6 Dependency**: Direct database connections are only supported via IPv6. For IPv4-only networks, you must use Supavisor as described above.
 
-NoYes
+2. **Network Restrictions**: [Network restrictions](https://supabase.com/docs/guides/platform/network-restrictions) are not supported for Fly Postgres instances.
 
-### On this page
+3. **Limited Service Support**: Currently, only the core database, Supavisor, and PostgREST are supported. Support for additional Supabase services (Realtime, Storage, Auth) is planned for future releases.
 
-[Quickstart](https://supabase.com/docs/guides/platform/fly-postgres#quickstart) [Connecting to your database](https://supabase.com/docs/guides/platform/fly-postgres#connecting-to-your-database) [Studio support](https://supabase.com/docs/guides/platform/fly-postgres#studio-support) [Permissions](https://supabase.com/docs/guides/platform/fly-postgres#permissions) [Limitations](https://supabase.com/docs/guides/platform/fly-postgres#limitations)
+4. **pg_cron Limitations**: The [pg_cron](https://supabase.com/docs/guides/database/extensions/pg_cron) extension has limited functionality with Fly projects:
+   - Fly projects automatically shut down after 15 minutes of inactivity
+   - They restart when an external request is received
+   - pg_cron jobs are not considered external requests
+   - Therefore, scheduled jobs don't run when the database is in a shut-down state
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+## Migration Considerations
 
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+Given the upcoming deprecation in April 2025, users should begin planning migration strategies to alternative Supabase hosting options. Refer to the [official announcement](https://github.com/orgs/supabase/discussions/33413) for migration recommendations and support.

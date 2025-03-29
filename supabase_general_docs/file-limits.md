@@ -1,46 +1,72 @@
-Storage
+# Storage File Limits
 
-# Limits
+This guide explains how to set and manage file size limits in Supabase Storage, both globally and at the bucket level.
 
-## Learn how to increase Supabase file limits.
+## Global File Size Limits
 
-* * *
+Supabase allows you to set a maximum file size that applies across all storage buckets. This global limit can be configured in the [Storage Settings](https://supabase.com/dashboard/project/_/settings/storage) section of your Supabase dashboard.
 
-## Global file size [\#](https://supabase.com/docs/guides/storage/uploads/file-limits\#global-file-size)
+### Plan-Specific Limits
 
-You can set the max file size across all your buckets by setting this global value in the dashboard [here](https://supabase.com/dashboard/project/_/settings/storage). For Free projects, the limit can't exceed 50 MB. On the Pro Plan and up, you can set this value to up to 50 GB. If you need more than 50 GB, [contact us](https://supabase.com/dashboard/support/new).
+Your maximum global file size depends on your Supabase subscription plan:
 
-| Plan | Max File Size Limit |
-| --- | --- |
+| Plan | Maximum File Size |
+|------|-------------------|
 | Free | 50 MB |
 | Pro | 50 GB |
 | Team | 50 GB |
-| Enterprise | Custom |
+| Enterprise | Custom (contact support) |
 
-This option is a global limit, which applies to all your buckets.
+If you're on the Pro plan or higher and need to upload files larger than 50 GB, please [contact Supabase support](https://supabase.com/dashboard/support/new) to discuss your requirements.
 
-Additionally, you can specify the max file size on a per [bucket level](https://supabase.com/docs/guides/storage/buckets/creating-buckets#restricting-uploads) but it can't be higher than this global limit. As a good practice, the global limit should be set to the highest possible file size that your application accepts, and apply per bucket limits.
+### Setting the Global Limit
 
-## Per bucket restrictions [\#](https://supabase.com/docs/guides/storage/uploads/file-limits\#per-bucket-restrictions)
+1. Navigate to your project's [Storage Settings](https://supabase.com/dashboard/project/_/settings/storage)
+2. Find the "File Size Limit" section
+3. Set your desired maximum file size (up to the plan-specific limit)
+4. Save your changes
 
-You can have different restrictions on a per bucket level such as restricting the file types (e.g. `pdf`, `images`, `videos`) or the max file size, which should be lower than the global limit. To apply these limit on a bucket level see [Creating Buckets](https://supabase.com/docs/guides/storage/buckets/creating-buckets#restricting-uploads).
+As a best practice, set the global limit to the largest file size your application needs to accept, then use bucket-specific limits for more granular control.
 
-### Is this helpful?
+## Per-Bucket Restrictions
 
-NoYes
+In addition to the global limit, you can set more specific restrictions at the individual bucket level. These per-bucket restrictions allow you to:
 
-### On this page
+1. **Limit file sizes**: Set a maximum file size for a specific bucket (must be equal to or smaller than the global limit)
+2. **Restrict file types**: Allow only certain file formats in a bucket (e.g., only PDFs, only images, etc.)
 
-[Global file size](https://supabase.com/docs/guides/storage/uploads/file-limits#global-file-size) [Per bucket restrictions](https://supabase.com/docs/guides/storage/uploads/file-limits#per-bucket-restrictions)
+### Configuring Bucket-Specific Limits
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+You can set these restrictions when creating a new bucket or by editing an existing one:
 
+#### When Creating a New Bucket:
 
+1. Go to Storage in your Supabase dashboard
+2. Click "Create a new bucket"
+3. In the creation dialog, check "Restrict file upload types" and/or "Restrict file size"
+4. Configure your specific restrictions
+5. Complete the bucket creation process
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+#### For Existing Buckets:
 
+1. Navigate to the bucket in your Storage dashboard
+2. Click the settings icon next to the bucket name
+3. Edit the file type or size restrictions as needed
+4. Save your changes
 
+For detailed instructions on bucket-specific restrictions, see the [Creating Buckets](https://supabase.com/docs/guides/storage/buckets/creating-buckets#restricting-uploads) documentation.
 
+## Implementation Best Practices
 
+1. **Global limits**: Set to the absolute maximum file size your application will ever need
+2. **Bucket organization**: Create separate buckets for different file types or use cases
+3. **Bucket-specific limits**:
+   - For image uploads, restrict to image formats and appropriate sizes
+   - For document storage, limit to document formats like PDF, DOCX, etc.
+   - For video storage, set appropriate size limits based on your needs
+4. **Client-side validation**: In addition to server-side limits, implement client-side validation to provide immediate feedback to users
+5. **Progressive uploads**: For large files, consider implementing resumable uploads to improve user experience
 
-   AcceptOpt outPrivacy settings
+## Monitoring and Adjusting Limits
+
+Regularly review your storage usage patterns and adjust limits as needed. If you find that users frequently upload files close to your limits, consider increasing them to improve user experience.

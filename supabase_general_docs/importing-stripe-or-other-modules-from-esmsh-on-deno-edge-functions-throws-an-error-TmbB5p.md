@@ -1,35 +1,11 @@
-31 APR - 04 MAR / 7AM PT
+# Importing Stripe or Other Modules from esm.sh on Deno Edge Functions
 
-Launch Week 14
+If you encounter errors when importing Stripe or other modules from esm.sh in your Deno Edge Functions, you can resolve this by adding `?target=deno` to the import path of the module.
 
-03d
+For Stripe, use the following updated import:
 
-:
-
-18h
-
-:
-
-17m
-
-:
-
-48s
-
-[Claim ticket](https://supabase.com/launch-week)Dismiss
-
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-# Importing Stripe or other modules from esm.sh on Deno Edge Functions throws an error
-
-Last edited: 1/17/2025
-
-* * *
-
-Try adding `?target=deno` to the import path of the module. For Stripe, the updated import would be:
-
-```flex
-
-1
+```typescript
 import Stripe from "https://esm.sh/stripe@11.2.0?target=deno";
 ```
+
+This parameter instructs esm.sh to provide a version of the module that's compatible with the Deno runtime environment used by Supabase Edge Functions.

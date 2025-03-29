@@ -2,20 +2,38 @@
 
 Last edited: 1/17/2025
 
-* * *
+Monitoring your database performance is crucial for ensuring optimal operation and identifying potential issues before they impact your application. Supabase provides multiple options for accessing and analyzing your database metrics.
 
-To monitor real-time metrics of your database, like CPU, EBS, active database connections, and memory usage, you can deploy a Grafana Dashboard. Check our [GitHub repo](https://github.com/supabase/supabase-grafana) for setup instructions for local or free [Fly.io](http://fly.io/) deployments. Refer to our concise [documentation](https://supabase.com/docs/guides/platform/metrics) to learn more about the metrics endpoint.
+## Real-time Metrics with Grafana
 
-While the [Dashboard's Reports Page](https://supabase.com/dashboard/project/_/reports) displays some metric data, it provides hourly averages, not real-time by the second data. However, it offers query metrics, which the Grafana Dashboard does not include.
+For comprehensive real-time monitoring of your database, including:
+- CPU utilization
+- EBS (disk) performance 
+- Active database connections
+- Memory usage
+- And more detailed metrics
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+You can deploy a Grafana Dashboard using our open-source configuration. Setup options include:
 
+1. **Local deployment**: Run Grafana on your own infrastructure
+2. **Fly.io deployment**: Use the free tier of Fly.io for a hosted solution
 
+Detailed setup instructions are available in our [GitHub repository](https://github.com/supabase/supabase-grafana).
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+## Dashboard Reports
 
+The [Supabase Dashboard Reports page](https://supabase.com/dashboard/project/_/reports) provides an alternative view of metrics with some important differences:
 
+- Shows hourly averages rather than real-time second-by-second data
+- Includes query metrics that aren't available in the Grafana Dashboard
+- More convenient for historical trend analysis
+- Doesn't require additional setup
 
+## Metrics Documentation
 
+For more information about the metrics endpoint and available data, refer to our [metrics documentation](https://supabase.com/docs/guides/platform/metrics).
 
-   AcceptOpt outPrivacy settings
+## When to Use Each Option
+
+- **Use Grafana** when you need real-time monitoring, detailed system metrics, or custom alerting
+- **Use Dashboard Reports** for quick access to query performance trends and when real-time data isn't necessary

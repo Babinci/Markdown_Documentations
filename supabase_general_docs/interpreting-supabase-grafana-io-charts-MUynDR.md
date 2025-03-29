@@ -1,15 +1,13 @@
-# Interpreting Supabase Grafana IO charts
+# Interpreting Supabase Grafana IO Charts
 
-Last edited: 1/17/2025
+> See [Supabase Grafana Installation Guide](metrics.md#deploying-supabase-grafana) for setup instructions
 
-* * *
-
-> [Supabase Grafana Installation Guide](https://supabase.com/docs/guides/platform/metrics#deploying-supabase-grafana)
+## Understanding Disk IO Metrics
 
 There are two primary values that matter for IO:
 
 - **Disk Throughput**: how much data can be moved to and from disk per second
-- **IOPS(Input/Output per second)**: how many read/write requests can be performed against your disk per second
+- **IOPS (Input/Output per second)**: how many read/write requests can be performed against your disk per second
 
 Each compute instance has unique IO settings. The settings at the time this was written are listed below.
 
@@ -29,32 +27,38 @@ Each compute instance has unique IO settings. The settings at the time this was 
 
 Compute sizes below XL, to accommodate their limitations, have burst budgets. This is when instances are allowed to utilize 1048 Mbps of disk throughput and 3,000 IOPS for 30 minutes before returning back to their baseline behavior.
 
+## Identifying IO Strain
+
 There are other metrics that indicate IO strain.
 
 This example shows a 16XL database exhibiting severe IO strain:
 
-![image](https://supabase.com/docs/img/troubleshooting/9c6e0f9c-f842-463b-b214-1a9e31de3b2c.png)
+![IO strain example](https://supabase.com/docs/img/troubleshooting/9c6e0f9c-f842-463b-b214-1a9e31de3b2c.png)
 
 Its Disk IOPS is constantly near peak capacity:
 
-![image](https://supabase.com/docs/img/troubleshooting/ec5ed538-985b-411d-a0d7-be718b28d367.png)
+![IOPS at peak capacity](https://supabase.com/docs/img/troubleshooting/ec5ed538-985b-411d-a0d7-be718b28d367.png)
 
 Its throughput is also high:
 
-![image](https://supabase.com/docs/img/troubleshooting/90cb6a70-fc67-4666-9217-6fa37cfacf82.png)
+![High throughput](https://supabase.com/docs/img/troubleshooting/90cb6a70-fc67-4666-9217-6fa37cfacf82.png)
 
 As a side-effect, its CPU is encumbered by heavy Busy IOWait activity:
 
-![image](https://supabase.com/docs/img/troubleshooting/9b88a738-65d6-4be4-8fa0-bc3f13a9a408.png)
+![CPU IOWait example](https://supabase.com/docs/img/troubleshooting/9b88a738-65d6-4be4-8fa0-bc3f13a9a408.png)
 
-Excessive IO usage is highly problematic as it clarifies that your database is expending more IO than it normally is intended to manage. This can be caused by
+## Common Causes of Excessive IO Usage
 
-- **Excessive and needless sequential scans:** poorly indexed tables force requests to scan disk ( [guide to resolve](https://github.com/orgs/supabase/discussions/22449))
-- **Too little cache**: There is not enough memory, so instead of reading data from the memory cache, it is accessed from disk ( [guide to inspect](https://github.com/orgs/supabase/discussions/22449))
-- **Poorly optimized RLS policies**: RLS that rely heavily on joins are more likely to hit disk. If possible, they should optimized ( [RLS best practice guide](https://supabase.com/docs/guides/database/postgres/row-level-security#rls-performance-recommendations))
-- **Excessive bloat**: This is the least likely to cause major issues, but bloat can take up space, preventing data on disk from being placed in the same locality. This can force the database to scan more pages than necessary. ( [explainer guide](https://supabase.com/blog/postgres-bloat))
+Excessive IO usage is highly problematic as it clarifies that your database is expending more IO than it normally is intended to manage. This can be caused by:
+
+- **Excessive and needless sequential scans:** poorly indexed tables force requests to scan disk ([guide to resolve](https://github.com/orgs/supabase/discussions/22449))
+- **Too little cache**: There is not enough memory, so instead of reading data from the memory cache, it is accessed from disk ([guide to inspect](https://github.com/orgs/supabase/discussions/22449))
+- **Poorly optimized RLS policies**: RLS that rely heavily on joins are more likely to hit disk. If possible, they should be optimized ([RLS best practice guide](row-level-security.md#rls-performance-recommendations))
+- **Excessive bloat**: This is the least likely to cause major issues, but bloat can take up space, preventing data on disk from being placed in the same locality. This can force the database to scan more pages than necessary. ([explainer guide](https://supabase.com/blog/postgres-bloat))
 - **Uploading high amounts of data:** temporarily increase compute add-on size for the duration of the uploads
-- **Insufficient memory**: Sometimes an inadequate amount of memory forces queries to hit disk instead of the memory cache. Address memory issues ( [guide](https://github.com/orgs/supabase/discussions/27021)) can reduce disk strain.
+- **Insufficient memory**: Sometimes an inadequate amount of memory forces queries to hit disk instead of the memory cache. Addressing memory issues ([guide](https://github.com/orgs/supabase/discussions/27021)) can reduce disk strain.
+
+## Solutions for IO Issues
 
 If a database exhibited some of these metrics for prolonged periods, then there are a few primary approaches:
 
@@ -62,26 +66,25 @@ If a database exhibited some of these metrics for prolonged periods, then there 
 - Optimize queries/tables or refactor database/app to reduce IO
 - Spin-up a [read-replica](https://supabase.com/dashboard/project/_/settings/infrastructure)
 - Modify IO configs in the [Database Settings](https://supabase.com/dashboard/project/_/settings/database)
-- [Partitions](https://supabase.com/docs/guides/database/partitions): Generally should be used on very large tables to minimize data pulled from disk
+- [Partitions](partitions.md): Generally should be used on very large tables to minimize data pulled from disk
 
-Other useful Supabase Grafana guides:
+## Other Useful Supabase Grafana Guides
 
 - [Connections](https://github.com/orgs/supabase/discussions/27141)
 - [Memory](https://github.com/orgs/supabase/discussions/27021)
-- [CPU](https://github.com/orgs/supabase/discussions/27022)
+- [CPU](interpreting-supabase-grafana-cpu-charts-9JSlkC.md)
 
-### Esoteric factors [\#](https://supabase.com/docs/guides/troubleshooting/interpreting-supabase-grafana-io-charts-MUynDR\#esoteric-factors)
+## Esoteric Factors
 
-**Webhooks**:
-Supabase webhooks use the pg\_net extension to handle requests. The `net.http_request_queue` table isn't indexed to keep write costs low. However, if you upload millions of rows to a webhook-enabled table too quickly, it can significantly increase the read costs for the extension.
+### Webhooks
+
+Supabase webhooks use the pg_net extension to handle requests. The `net.http_request_queue` table isn't indexed to keep write costs low. However, if you upload millions of rows to a webhook-enabled table too quickly, it can significantly increase the read costs for the extension.
 
 To check if reads are becoming expensive, run:
 
-```flex
-
-1
-2
-select count(*) as exact_count from net.http_request_queue;-- the number should be relatively low <20,000
+```sql
+SELECT COUNT(*) AS exact_count FROM net.http_request_queue;
+-- the number should be relatively low <20,000
 ```
 
 If you encounter this issue, you can either:
@@ -90,21 +93,6 @@ If you encounter this issue, you can either:
 
 2. Truncate the table to clear the queue:
 
-
-```flex
-
-1
+```sql
 TRUNCATE net.http_request_queue;
 ```
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

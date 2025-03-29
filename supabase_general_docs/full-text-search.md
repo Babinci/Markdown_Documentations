@@ -1,20 +1,10 @@
-Database
+# Full Text Search in PostgreSQL
 
-# Full Text Search
+Full Text Search (FTS) allows you to efficiently search text data in your PostgreSQL database. Unlike simple text matching with `LIKE` or regular expressions, FTS understands language concepts such as stemming, ranking, and stop words to provide more relevant search results.
 
-## How to use full text search in PostgreSQL.
+## Preparation
 
-* * *
-
-Postgres has built-in functions to handle `Full Text Search` queries. This is like a "search engine" within Postgres.
-
-[iframe](https://www.youtube-nocookie.com/embed/b-mgca_2Oe4)
-
-## Preparation [\#](https://supabase.com/docs/guides/database/full-text-search\#preparation)
-
-For this guide we'll use the following example data:
-
-DataSQL
+For this guide, we'll use the following example data:
 
 | id | title | author | description |
 | --- | --- | --- | --- |
@@ -24,309 +14,196 @@ DataSQL
 | 4 | Green Eggs and Ham | Dr. Seuss | Sam has changing food preferences and eats unusually colored food. |
 | 5 | Harry Potter and the Goblet of Fire | J.K. Rowling | Fourth year of school starts, big drama ensues. |
 
-## Usage [\#](https://supabase.com/docs/guides/database/full-text-search\#usage)
+## Core FTS Functions
 
-The functions we'll cover in this guide are:
+### `to_tsvector()`
 
-### `to_tsvector()` [\#](https://supabase.com/docs/guides/database/full-text-search\#to-tsvector)
+This function converts your text data into searchable tokens. `to_tsvector()` stands for "to text search vector." 
 
-Converts your data into searchable tokens. `to_tsvector()` stands for "to text search vector." For example:
-
-```flex
-
-1
-2
-select to_tsvector('green eggs and ham');-- Returns 'egg':2 'green':1 'ham':4
+```sql
+SELECT to_tsvector('green eggs and ham');
+-- Returns 'egg':2 'green':1 'ham':4
 ```
 
-Collectively these tokens are called a "document" which Postgres can use for comparisons.
+Notice that "and" is removed (it's a stop word) and "eggs" becomes "egg" through stemming.
 
-### `to_tsquery()` [\#](https://supabase.com/docs/guides/database/full-text-search\#to-tsquery)
+### `to_tsquery()`
 
-Converts a query string into tokens to match. `to_tsquery()` stands for "to text search query."
+This function converts a search query into tokens to match against. `to_tsquery()` stands for "to text search query."
 
-This conversion step is important because we will want to "fuzzy match" on keywords.
-For example if a user searches for `eggs`, and a column has the value `egg`, we probably still want to return a match.
-
-### Match: `@@` [\#](https://supabase.com/docs/guides/database/full-text-search\#match)
-
-The `@@` symbol is the "match" symbol for Full Text Search. It returns any matches between a `to_tsvector` result and a `to_tsquery` result.
-
-Take the following example:
-
-SQLJavaScriptDartSwiftKotlinPython
-
-```flex
-
-1
-2
-3
-select *from bookswhere title = 'Harry';
+```sql
+SELECT to_tsquery('eggs & ham');
+-- Returns 'egg' & 'ham'
 ```
 
-The equality symbol above ( `=`) is very "strict" on what it matches. In a full text search context, we might want to find all "Harry Potter" books and so we can rewrite the
-example above:
+### Match Operator: `@@`
 
-SQLJavaScriptDartSwiftKotlin
+The `@@` operator checks if a `to_tsvector` result matches a `to_tsquery` result:
 
-```flex
-
-1
-2
-3
-select *from bookswhere to_tsvector(title) @@ to_tsquery('Harry');
+```sql
+SELECT to_tsvector('green eggs and ham') @@ to_tsquery('eggs & ham');
+-- Returns true
 ```
 
-## Basic full text queries [\#](https://supabase.com/docs/guides/database/full-text-search\#basic-full-text-queries)
+## Basic Full Text Queries
 
-### Search a single column [\#](https://supabase.com/docs/guides/database/full-text-search\#search-a-single-column)
+### Search a Single Column
 
-To find all `books` where the `description` contain the word `big`:
+To find all books where the description contains the word "big":
 
-SQLJavaScriptDartSwiftKotlinPythonData
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-select  *from  bookswhere  to_tsvector(description)  @@ to_tsquery('big');
+```sql
+SELECT *
+FROM books
+WHERE to_tsvector(description) @@ to_tsquery('big');
 ```
 
-### Search multiple columns [\#](https://supabase.com/docs/guides/database/full-text-search\#search-multiple-columns)
+### Search Multiple Columns
 
-Right now there is no direct way to use JavaScript or Dart to search through multiple columns but you can do it by creating [computed columns](https://postgrest.org/en/stable/api.html#computed-virtual-columns) on the database.
+To search across multiple columns, concatenate them within the `to_tsvector` function:
 
-To find all `books` where `description` or `title` contain the word `little`:
-
-SQLJavaScriptDartSwiftKotlinPythonData
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-select  *from  bookswhere  to_tsvector(description || ' ' || title) -- concat columns, but be sure to include a space to separate them!  @@ to_tsquery('little');
+```sql
+SELECT *
+FROM books
+WHERE to_tsvector(description || ' ' || title) @@ to_tsquery('little');
 ```
 
-### Match all search words [\#](https://supabase.com/docs/guides/database/full-text-search\#match-all-search-words)
+> **Important**: When concatenating columns, include a space to ensure proper tokenization.
 
-To find all `books` where `description` contains BOTH of the words `little` and `big`, we can use the `&` symbol:
+### Match All Search Words
 
-SQLJavaScriptDartSwiftKotlinPythonData
+To find books where the description contains BOTH "little" AND "big", use the `&` operator:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-select  *from  bookswhere  to_tsvector(description)  @@ to_tsquery('little & big'); -- use & for AND in the search query
+```sql
+SELECT *
+FROM books
+WHERE to_tsvector(description) @@ to_tsquery('little & big');
 ```
 
-### Match any search words [\#](https://supabase.com/docs/guides/database/full-text-search\#match-any-search-words)
+### Match Any Search Words
 
-To find all `books` where `description` contain ANY of the words `little` or `big`, use the `|` symbol:
+To find books where the description contains EITHER "little" OR "big", use the `|` operator:
 
-SQLJavaScriptDartSwiftKotlinPythonData
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-select  *from  bookswhere  to_tsvector(description)  @@ to_tsquery('little | big'); -- use | for OR in the search query
+```sql
+SELECT *
+FROM books
+WHERE to_tsvector(description) @@ to_tsquery('little | big');
 ```
 
-Notice how searching for `big` includes results with the word `bigger` (or `biggest`, etc).
+## Partial Search
 
-## Partial search [\#](https://supabase.com/docs/guides/database/full-text-search\#partial-search)
+Partial search allows you to match words that begin with a specific prefix.
 
-Partial search is particularly useful when you want to find matches on substrings within your data.
+### Using the Prefix Operator
 
-### Implementing partial search [\#](https://supabase.com/docs/guides/database/full-text-search\#implementing-partial-search)
+The `:*` operator lets you perform prefix searches:
 
-You can use the `:*` syntax with `to_tsquery()`. Here's an example that searches for any book titles beginning with "Lit":
-
-```flex
-
-1
-select title from books where to_tsvector(title) @@ to_tsquery('Lit:*');
+```sql
+SELECT title 
+FROM books 
+WHERE to_tsvector(title) @@ to_tsquery('Lit:*');
 ```
 
-### Extending functionality with RPC [\#](https://supabase.com/docs/guides/database/full-text-search\#extending-functionality-with-rpc)
+This finds books with titles containing words that start with "Lit", such as "Little".
 
-To make the partial search functionality accessible through the API, you can wrap the search logic in a stored procedure.
+### Creating a Stored Procedure for Prefix Search
 
-After creating this function, you can invoke it from your application using the SDK for your platform. Here's an example:
+You can wrap the prefix search logic in a function for easier API access:
 
-SQLJavaScriptDartSwiftKotlinPython
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-create or replace function search_books_by_title_prefix(prefix text)returns setof books AS $$begin  return query  select * from books where to_tsvector('english', title) @@ to_tsquery(prefix || ':*');end;$$ language plpgsql;
+```sql
+CREATE OR REPLACE FUNCTION search_books_by_title_prefix(prefix text)
+RETURNS SETOF books AS $$
+BEGIN
+  RETURN QUERY
+  SELECT * FROM books 
+  WHERE to_tsvector('english', title) @@ to_tsquery(prefix || ':*');
+END;
+$$ LANGUAGE plpgsql;
 ```
 
-This function takes a prefix parameter and returns all books where the title contains a word starting with that prefix. The `:*` operator is used to denote a prefix match in the `to_tsquery()` function.
+### Handling Multiple Words in Queries
 
-## Handling spaces in queries [\#](https://supabase.com/docs/guides/database/full-text-search\#handling-spaces-in-queries)
+When searching for phrases, use the `+` operator to replace spaces:
 
-When you want the search term to include a phrase or multiple words, you can concatenate words using a `+` as a placeholder for space:
-
-```flex
-
-1
-select * from search_books_by_title_prefix('Little+Puppy');
+```sql
+SELECT * FROM search_books_by_title_prefix('Little+Puppy');
 ```
 
-## Creating indexes [\#](https://supabase.com/docs/guides/database/full-text-search\#creating-indexes)
+## Creating Search Indexes
 
-Now that we have Full Text Search working, let's create an `index`. This will allow Postgres to "build" the documents preemptively so that they
-don't need to be created at the time we execute the query. This will make our queries much faster.
+For large datasets, creating an index significantly improves search performance.
 
-### Searchable columns [\#](https://supabase.com/docs/guides/database/full-text-search\#searchable-columns)
+### Using Generated Columns for Indexing
 
-Let's create a new column `fts` inside the `books` table to store the searchable index of the `title` and `description` columns.
+Create a dedicated column that stores the pre-computed `tsvector`:
 
-We can use a special feature of Postgres called
-[Generated Columns](https://www.postgresql.org/docs/current/ddl-generated-columns.html)
-to ensure that the index is updated any time the values in the `title` and `description` columns change.
+```sql
+ALTER TABLE books
+ADD COLUMN fts tsvector 
+GENERATED ALWAYS AS (to_tsvector('english', description || ' ' || title)) STORED;
 
-SQLData
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-alter table  booksadd column  fts tsvector generated always as (to_tsvector('english', description || ' ' || title)) stored;create index books_fts on books using gin (fts); -- generate the indexselect id, ftsfrom books;
+CREATE INDEX books_fts ON books USING GIN (fts);
 ```
 
-### Search using the new column [\#](https://supabase.com/docs/guides/database/full-text-search\#search-using-the-new-column)
+This creates a [GIN index](https://www.postgresql.org/docs/current/gin.html) (Generalized Inverted Index) which is optimized for FTS operations.
 
-Now that we've created and populated our index, we can search it using the same techniques as before:
+### Querying the Indexed Column
 
-SQLJavaScriptDartSwiftKotlinPythonData
+Once indexed, your queries become simpler and faster:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-select  *from  bookswhere  fts @@ to_tsquery('little & big');
+```sql
+SELECT *
+FROM books
+WHERE fts @@ to_tsquery('little & big');
 ```
 
-## Query operators [\#](https://supabase.com/docs/guides/database/full-text-search\#query-operators)
+## Advanced Query Operators
 
-Visit [Postgres: Text Search Functions and Operators](https://www.postgresql.org/docs/current/functions-textsearch.html)
-to learn about additional query operators you can use to do more advanced `full text queries`, such as:
+### Proximity Searches
 
-### Proximity: `<->` [\#](https://supabase.com/docs/guides/database/full-text-search\#proximity)
+The `<->` operator finds words that appear near each other:
 
-The proximity symbol is useful for searching for terms that are a certain "distance" apart.
-For example, to find the phrase `big dreams`, where the a match for "big" is followed immediately by a match for "dreams":
+```sql
+-- Words adjacent to each other
+SELECT *
+FROM books
+WHERE to_tsvector(description) @@ to_tsquery('big <-> dreams');
 
-SQLJavaScriptDartSwiftKotlinPython
-
-```flex
-
-1
-2
-3
-4
-5
-6
-select  *from  bookswhere  to_tsvector(description) @@ to_tsquery('big <-> dreams');
+-- Words within 2 words of each other
+SELECT *
+FROM books
+WHERE to_tsvector(description) @@ to_tsquery('year <2> school');
 ```
 
-We can also use the `<->` to find words within a certain distance of each other. For example to find `year` and `school` within 2 words of each other:
+### Negation
 
-SQLJavaScriptDartSwiftKotlinPython
+The `!` operator excludes words from the search:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-select  *from  bookswhere  to_tsvector(description) @@ to_tsquery('year <2> school');
+```sql
+SELECT *
+FROM books
+WHERE to_tsvector(description) @@ to_tsquery('big & !little');
 ```
 
-### Negation: `!` [\#](https://supabase.com/docs/guides/database/full-text-search\#negation)
+This finds books with "big" but not "little" in the description.
 
-The negation symbol can be used to find phrases which _don't_ contain a search term.
-For example, to find records that have the word `big` but not `little`:
+## Language Support
 
-SQLJavaScriptDartSwiftKotlinPython
+By default, PostgreSQL uses English stemming rules. To specify a different language:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-select  *from  bookswhere  to_tsvector(description) @@ to_tsquery('big & !little');
+```sql
+SELECT to_tsvector('spanish', 'Los perros y gatos');
 ```
 
-## Resources [\#](https://supabase.com/docs/guides/database/full-text-search\#resources)
+## Performance Considerations
 
-- [Postgres: Text Search Functions and Operators](https://www.postgresql.org/docs/12/functions-textsearch.html)
+1. **Always index** your search columns for production use
+2. **Use generated columns** to maintain search vectors automatically
+3. **Consider query complexity** - complex queries may require more resources
+4. **Monitor performance** of FTS queries in production
+5. **Use language-specific configurations** for non-English content
 
-Watch video guide
+## Resources
 
-![Video guide preview](https://supabase.com/docs/_next/image?url=https%3A%2F%2Fimg.youtube.com%2Fvi%2Fb-mgca_2Oe4%2F0.jpg&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Preparation](https://supabase.com/docs/guides/database/full-text-search#preparation) [Usage](https://supabase.com/docs/guides/database/full-text-search#usage) [to\_tsvector()](https://supabase.com/docs/guides/database/full-text-search#to-tsvector) [to\_tsquery()](https://supabase.com/docs/guides/database/full-text-search#to-tsquery) [Match: @@](https://supabase.com/docs/guides/database/full-text-search#match) [Basic full text queries](https://supabase.com/docs/guides/database/full-text-search#basic-full-text-queries) [Search a single column](https://supabase.com/docs/guides/database/full-text-search#search-a-single-column) [Search multiple columns](https://supabase.com/docs/guides/database/full-text-search#search-multiple-columns) [Match all search words](https://supabase.com/docs/guides/database/full-text-search#match-all-search-words) [Match any search words](https://supabase.com/docs/guides/database/full-text-search#match-any-search-words) [Partial search](https://supabase.com/docs/guides/database/full-text-search#partial-search) [Implementing partial search](https://supabase.com/docs/guides/database/full-text-search#implementing-partial-search) [Extending functionality with RPC](https://supabase.com/docs/guides/database/full-text-search#extending-functionality-with-rpc) [Handling spaces in queries](https://supabase.com/docs/guides/database/full-text-search#handling-spaces-in-queries) [Creating indexes](https://supabase.com/docs/guides/database/full-text-search#creating-indexes) [Searchable columns](https://supabase.com/docs/guides/database/full-text-search#searchable-columns) [Search using the new column](https://supabase.com/docs/guides/database/full-text-search#search-using-the-new-column) [Query operators](https://supabase.com/docs/guides/database/full-text-search#query-operators) [Proximity: <->](https://supabase.com/docs/guides/database/full-text-search#proximity) [Negation: !](https://supabase.com/docs/guides/database/full-text-search#negation) [Resources](https://supabase.com/docs/guides/database/full-text-search#resources)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+For more advanced usage, refer to:
+- [PostgreSQL Text Search Functions and Operators](https://www.postgresql.org/docs/current/functions-textsearch.html)
+- [PostgreSQL Full Text Search Introduction](https://www.postgresql.org/docs/current/textsearch-intro.html)

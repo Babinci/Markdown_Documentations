@@ -1,31 +1,24 @@
-Database
-
 # Connecting with DBeaver
-
-* * *
 
 If you do not have DBeaver, you can download it from its [website](https://dbeaver.io/download/).
 
-1
+## Connection Steps
 
-### Create a new database connection
+### 1. Create a new database connection
 
-Create a new database connection
+Click the "New Database Connection" button or use the menu to create a new connection.
 
 ![new database connection](https://supabase.com/docs/img/guides/database/connecting-to-postgres/dbeaver/new_database_connection.png)
 
-2
+### 2. Select PostgreSQL
 
-### Select PostgreSQL
+In the database selection dialog, choose PostgreSQL.
 
 ![Selection Menu](https://supabase.com/docs/img/guides/database/connecting-to-postgres/dbeaver/select_postgres.png)
 
-3
-
-### Get Your Credentials
+### 3. Get Your Credentials
 
 Inside the Dashboard's [Database Settings](https://supabase.com/dashboard/project/_/settings/database), note your session mode's:
-
 - host
 - username
 
@@ -35,46 +28,26 @@ If you're in an [IPv6 environment](https://github.com/orgs/supabase/discussions/
 
 ![database credentials](https://supabase.com/docs/img/guides/database/connecting-to-postgres/dbeaver/session_mode.png)
 
-4
+### 4. Fill out credentials
 
-### Fill out credentials
-
-In DBeaver's Main menu, add your host, username, and password
+In DBeaver's Main menu, add your host, username, and password.
 
 ![filling out form](https://supabase.com/docs/img/guides/database/connecting-to-postgres/dbeaver/filling_credentials.png)
 
-5
-
-### Download certificate
+### 5. Download certificate
 
 In the [Database Settings](https://supabase.com/dashboard/project/_/settings/database), download your SSL certificate.
 
 ![filling out form](https://supabase.com/docs/img/guides/database/connecting-to-postgres/dbeaver/certificate.png)
 
-6
+### 6. Secure your connection
 
-### Secure your connection
-
-In DBeaver's SSL tab, add your SSL certificate
+In DBeaver's SSL tab, add your SSL certificate.
 
 ![filling out form](https://supabase.com/docs/img/guides/database/connecting-to-postgres/dbeaver/ssl_tab.png)
 
-7
+### 7. Connect
 
-### Connect
-
-Test your connection and then click finish. You should now be able to interact with your database with DBeaver
+Test your connection and then click finish. You should now be able to interact with your database with DBeaver.
 
 ![connected dashboard](https://supabase.com/docs/img/guides/database/connecting-to-postgres/dbeaver/finished.png)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

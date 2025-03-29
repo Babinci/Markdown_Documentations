@@ -1,120 +1,96 @@
-Edge Functions
-
 # Deploy to Production
 
-## Deploy your Edge Functions to your remote Supabase Project.
-
-* * *
+## Deploy your Edge Functions to your remote Supabase Project
 
 Once you have developed your Edge Functions locally, you can deploy them to your Supabase project.
 
-## Login to the CLI [\#](https://supabase.com/docs/guides/functions/deploy\#login-to-the-cli)
+## Login to the CLI
 
 Log in to the Supabase CLI if necessary:
 
-```flex
-
-1
+```bash
 supabase login
 ```
 
-##### CLI not installed?
+> **CLI not installed?**
+> See the [CLI Docs](https://supabase.com/docs/guides/cli) to learn how to install the Supabase CLI on your local machine.
 
-See the [CLI Docs](https://supabase.com/docs/guides/cli) to learn how to install the Supabase CLI on your local machine.
-
-## Get your project ID [\#](https://supabase.com/docs/guides/functions/deploy\#get-your-project-id)
+## Get your project ID
 
 Get the project ID associated with your function by running:
 
-```flex
-
-1
+```bash
 supabase projects list
 ```
 
-##### Need a new project?
+> **Need a new project?**
+> If you haven't yet created a Supabase project, you can do so by visiting [database.new](https://database.new/).
 
-If you haven't yet created a Supabase project, you can do so by visiting [database.new](https://database.new/).
-
-## Link your local project [\#](https://supabase.com/docs/guides/functions/deploy\#link-your-local-project)
+## Link your local project
 
 [Link](https://supabase.com/docs/reference/cli/usage#supabase-link) your local project to your remote Supabase project using the ID you just retrieved:
 
-```flex
-
-1
+```bash
 supabase link --project-ref your-project-id
 ```
 
-## Deploy your Edge Functions [\#](https://supabase.com/docs/guides/functions/deploy\#deploy-your-edge-functions)
+## Deploy your Edge Functions
 
-##### Docker required
-
-Since Supabase CLI version 1.123.4, you must have [Docker Desktop](https://docs.docker.com/desktop/) installed to deploy Edge Functions.
+> **Docker required**
+> Since Supabase CLI version 1.123.4, you must have [Docker Desktop](https://docs.docker.com/desktop/) installed to deploy Edge Functions.
 
 You can deploy all of your Edge Functions with a single command:
 
-```flex
-
-1
+```bash
 supabase functions deploy
 ```
 
 You can deploy individual Edge Functions by specifying the name of the function in the deploy command:
 
-```flex
-
-1
+```bash
 supabase functions deploy hello-world
 ```
 
 By default, Edge Functions require a valid JWT in the authorization header. If you want to use Edge Functions without Authorization checks (commonly used for Stripe webhooks), you can pass the `--no-verify-jwt` flag when deploying your Edge Functions.
 
-```flex
-
-1
+```bash
 supabase functions deploy hello-world --no-verify-jwt
 ```
 
 Be careful when using this flag, as it will allow anyone to invoke your Edge Function without a valid JWT. The Supabase client libraries automatically handle authorization.
 
-## Invoking remote functions [\#](https://supabase.com/docs/guides/functions/deploy\#invoking-remote-functions)
+## Invoking remote functions
 
 You can now invoke your Edge Function using the project's `ANON_KEY`, which can be found in the [API settings](https://supabase.com/dashboard/project/_/settings/api) of the Supabase Dashboard.
 
-cURLJavaScript
+### cURL
 
-```flex
+```bash
+curl --request POST 'https://<project_id>.supabase.co/functions/v1/hello-world' \
+  --header 'Authorization: Bearer ANON_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{ "name":"Functions" }'
+```
 
-1
-2
-3
-4
-curl --request POST 'https://<project_id>.supabase.co/functions/v1/hello-world' \  --header 'Authorization: Bearer ANON_KEY' \  --header 'Content-Type: application/json' \  --data '{ "name":"Functions" }'
+### JavaScript
+
+```javascript
+async function callFunction() {
+  const SUPABASE_URL = 'https://<project_id>.supabase.co'
+  const SUPABASE_ANON_KEY = 'ANON_KEY'
+  
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/hello-world`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name: 'Functions' })
+  })
+  
+  const data = await response.json()
+  console.log(data)
+}
 ```
 
 You should receive the response `{ "message":"Hello Functions!" }`.
-
-Watch video guide
-
-![Video guide preview](https://supabase.com/docs/_next/image?url=https%3A%2F%2Fimg.youtube.com%2Fvi%2F5OWH9c4u68M%2F0.jpg&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Login to the CLI](https://supabase.com/docs/guides/functions/deploy#login-to-the-cli) [Get your project ID](https://supabase.com/docs/guides/functions/deploy#get-your-project-id) [Link your local project](https://supabase.com/docs/guides/functions/deploy#link-your-local-project) [Deploy your Edge Functions](https://supabase.com/docs/guides/functions/deploy#deploy-your-edge-functions) [Invoking remote functions](https://supabase.com/docs/guides/functions/deploy#invoking-remote-functions)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

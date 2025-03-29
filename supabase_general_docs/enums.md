@@ -1,159 +1,121 @@
-31 APR - 04 MAR / 7AM PT
+# Managing Enums in PostgreSQL
 
-Launch Week 14
+This guide explains how to create and manage enumerated types (enums) in PostgreSQL databases.
 
-03d
+## What Are Enums?
 
-:
+Enums in PostgreSQL are custom data types that allow you to define a fixed set of possible values for a column. They're useful when you need to constrain a column to a predetermined list of options.
 
-18h
+## Creating Enums
 
-:
+You can define a PostgreSQL enum using the `CREATE TYPE` statement:
 
-20m
-
-:
-
-12s
-
-[Claim ticket](https://supabase.com/launch-week)Dismiss
-
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-Database
-
-# Managing Enums in Postgres
-
-* * *
-
-Enums in Postgres are a custom data type. They allow you to define a set of values (or labels) that a column can hold. They are useful when you have a fixed set of possible values for a column.
-
-## Creating enums [\#](https://supabase.com/docs/guides/database/postgres/enums\#creating-enums)
-
-You can define a Postgres Enum using the `create type` statement. Here's an example:
-
-```flex
-
-1
-2
-3
-4
-5
-6
-create type mood as enum (  'happy',  'sad',  'excited',  'calm');
+```sql
+CREATE TYPE mood AS ENUM (
+  'happy',
+  'sad',
+  'excited',
+  'calm'
+);
 ```
 
-In this example, we've created an Enum called "mood" with four possible values.
+In this example, we've created an enum called "mood" with four possible values.
 
-## When to use enums [\#](https://supabase.com/docs/guides/database/postgres/enums\#when-to-use-enums)
+## When to Use Enums
 
-There is a lot of overlap between Enums and foreign keys. Both can be used to define a set of values for a column. However, there are some advantages to using Enums:
+There's overlap between enums and foreign keys, as both can restrict a column to specific values. Here are some considerations:
 
-- Performance: You can query a single table instead of finding the value from a lookup table.
-- Simplicity: Generally the SQL is easier to read and write.
+### Advantages of Enums
 
-There are also some disadvantages to using Enums:
+- **Performance**: Queries only need to access a single table instead of joining with a lookup table
+- **Simplicity**: SQL is generally easier to read and write
+- **Type Safety**: PostgreSQL enforces the constraint at the database level
 
-- Limited Flexibility: Adding and removing values requires modifying the database schema (i.e.: using migrations) rather than adding data to a table.
-- Maintenance Overhead: Enum types require ongoing maintenance. If your application's requirements change frequently, maintaining enums can become burdensome.
+### Disadvantages of Enums
 
-In general you should only use Enums when the list of values is small, fixed, and unlikely to change often. Things like "a list of continents" or "a list of departments" are good candidates for Enums.
+- **Limited Flexibility**: Adding or removing values requires schema modifications (via migrations)
+- **Maintenance Overhead**: Enums require schema updates when values change
+- **Internationalization Challenges**: Enum labels can't be easily translated
 
-## Using enums in tables [\#](https://supabase.com/docs/guides/database/postgres/enums\#using-enums-in-tables)
+**Best Practice**: Use enums when the list of values is small, fixed, and unlikely to change often. Good candidates include:
+- Continents
+- Departments
+- Status codes with fixed meanings
+- Card suits
 
-To use the Enum in a table, you can define a column with the Enum type. For example:
+## Using Enums in Tables
 
-```flex
+To use an enum in a table, define a column with the enum type:
 
-1
-2
-3
-4
-5
-create table person (  id serial primary key,  name text,  current_mood mood);
+```sql
+CREATE TABLE person (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  current_mood mood
+);
 ```
 
-Here, the `current_mood` column can only have values from the "mood" Enum.
+Here, the `current_mood` column can only contain values from the "mood" enum.
 
-### Inserting data with enums [\#](https://supabase.com/docs/guides/database/postgres/enums\#inserting-data-with-enums)
+### Inserting Data with Enums
 
-You can insert data into a table with Enum columns by specifying one of the Enum values:
+Insert data by specifying one of the enum values:
 
-```flex
-
-1
-2
-3
-4
-insert into person  (name, current_mood)values  ('Alice', 'happy');
+```sql
+INSERT INTO person
+  (name, current_mood)
+VALUES
+  ('Alice', 'happy');
 ```
 
-### Querying data with enums [\#](https://supabase.com/docs/guides/database/postgres/enums\#querying-data-with-enums)
+### Querying Data with Enums
 
-When querying data, you can filter and compare Enum values as usual:
+Filter and compare enum values as you would with other data types:
 
-```flex
-
-1
-2
-3
-select * from person where current_mood = 'sad';
+```sql
+SELECT * FROM person WHERE current_mood = 'sad';
 ```
 
-## Managing enums [\#](https://supabase.com/docs/guides/database/postgres/enums\#managing-enums)
+## Managing Enums
 
-You can manage your Enums using the `alter type` statement. Here are some examples:
+You can manage your enums using the `ALTER TYPE` statement.
 
-### Updating enum values [\#](https://supabase.com/docs/guides/database/postgres/enums\#updating-enum-values)
+### Updating Enum Values
 
-You can update the value of an Enum column:
+Update the value of an enum column:
 
-```flex
-
-1
-2
-3
-update personset current_mood = 'excited'where name = 'Alice';
+```sql
+UPDATE person
+SET current_mood = 'excited'
+WHERE name = 'Alice';
 ```
 
-### Adding enum values [\#](https://supabase.com/docs/guides/database/postgres/enums\#adding-enum-values)
+### Adding Enum Values
 
-To add new values to an existing Postgres Enum, you can use the `ALTER TYPE` statement. Here's how you can do it:
+Add new values to an existing enum:
 
-Let's say you have an existing Enum called `mood`, and you want to add a new value, `content`:
-
-```flex
-
-1
-alter type mood add value 'content';
+```sql
+ALTER TYPE mood ADD VALUE 'content';
 ```
 
-### Removing enum values [\#](https://supabase.com/docs/guides/database/postgres/enums\#removing-enum-values)
+**Important**: New values can only be added to the end of an enum's list by default. To add values at specific positions, use `ALTER TYPE mood ADD VALUE 'content' BEFORE 'happy'` or `AFTER 'sad'`.
 
-Even though it is possible, it is unsafe to remove enum values once they have been created. It's better to leave the enum value in place.
+### Removing Enum Values
 
-Read the [Postgres mailing list](https://www.postgresql.org/message-id/21012.1459434338%40sss.pgh.pa.us) for more information:
+It is **unsafe** to remove enum values once they have been created. It's better to leave unused enum values in place.
 
-There is no `ALTER TYPE DELETE VALUE` in Postgres. Even if you delete every occurrence of an Enum value within a table (and vacuumed away those rows), the target value could still exist in upper index pages. If you delete the `pg_enum` entry you'll break the index.
+As noted in the [PostgreSQL mailing list](https://www.postgresql.org/message-id/21012.1459434338%40sss.pgh.pa.us), there is no `ALTER TYPE DELETE VALUE` command in PostgreSQL. Even if you delete every occurrence of an enum value within tables, the value could still exist in index pages, which would break if you removed the `pg_enum` entry.
 
-### Getting a list of enum values [\#](https://supabase.com/docs/guides/database/postgres/enums\#getting-a-list-of-enum-values)
+### Getting a List of Enum Values
 
-Check your existing Enum values by querying the enum\_range function:
+Query your existing enum values using the `enum_range` function:
 
-```flex
-
-1
-select enum_range(null::mood);
+```sql
+SELECT enum_range(NULL::mood);
 ```
 
-## Resources [\#](https://supabase.com/docs/guides/database/postgres/enums\#resources)
+This returns an array of all values in the enum.
 
-- Official Postgres Docs: [Enumerated Types](https://www.postgresql.org/docs/current/datatype-enum.html)
+## Resources
 
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Creating enums](https://supabase.com/docs/guides/database/postgres/enums#creating-enums) [When to use enums](https://supabase.com/docs/guides/database/postgres/enums#when-to-use-enums) [Using enums in tables](https://supabase.com/docs/guides/database/postgres/enums#using-enums-in-tables) [Inserting data with enums](https://supabase.com/docs/guides/database/postgres/enums#inserting-data-with-enums) [Querying data with enums](https://supabase.com/docs/guides/database/postgres/enums#querying-data-with-enums) [Managing enums](https://supabase.com/docs/guides/database/postgres/enums#managing-enums) [Updating enum values](https://supabase.com/docs/guides/database/postgres/enums#updating-enum-values) [Adding enum values](https://supabase.com/docs/guides/database/postgres/enums#adding-enum-values) [Removing enum values](https://supabase.com/docs/guides/database/postgres/enums#removing-enum-values) [Getting a list of enum values](https://supabase.com/docs/guides/database/postgres/enums#getting-a-list-of-enum-values) [Resources](https://supabase.com/docs/guides/database/postgres/enums#resources)
+- Official PostgreSQL Documentation: [Enumerated Types](https://www.postgresql.org/docs/current/datatype-enum.html)

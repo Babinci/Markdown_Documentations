@@ -1,84 +1,59 @@
-Storage
+# Serving Assets from Storage
 
-# Serving assets from Storage
+This guide explains how to serve and download files from Supabase Storage buckets.
 
-## Serving assets from Storage
+## Public Buckets
 
-* * *
+Assets uploaded to public buckets are accessible to anyone with the URL, without authentication. These files benefit from a high CDN cache hit ratio, improving performance.
 
-## Public buckets [\#](https://supabase.com/docs/guides/storage/serving/downloads\#public-buckets)
+### Accessing Public Files
 
-As mentioned in the [Buckets Fundamentals](https://supabase.com/docs/guides/storage/buckets/fundamentals) all files uploaded in a public bucket are publicly accessible and benefit a high CDN cache HIT ratio.
+You can access public files using this URL pattern:
 
-You can access them by using this conventional URL:
-
-```flex
-
-1
+```
 https://[project_id].supabase.co/storage/v1/object/public/[bucket]/[asset-name]
 ```
 
-You can also use the Supabase SDK `getPublicUrl` to generate this URL for you
+You can also generate this URL using the Supabase SDK:
 
-```flex
-
-1
-2
-3
-const { data } = supabase.storage.from('bucket').getPublicUrl('filePath.jpg')console.log(data.publicUrl)
+```javascript
+const { data } = supabase.storage.from('bucket').getPublicUrl('filePath.jpg')
+console.log(data.publicUrl)
 ```
 
-### Downloading [\#](https://supabase.com/docs/guides/storage/serving/downloads\#downloading)
+### Downloading Files
 
-If you want the browser to start an automatic download of the asset instead of trying serving it, you can add the `?download` query string parameter.
+To trigger an automatic download of the file instead of serving it in the browser, add the `?download` query parameter to the URL:
 
-By default it will use the asset name to save the file on disk. You can optionally pass a custom name to the `download` parameter as following: `?download=customname.jpg`
-
-## Private buckets [\#](https://supabase.com/docs/guides/storage/serving/downloads\#private-buckets)
-
-Assets stored in a non-public bucket are considered private and are not accessible via a public URL like the public buckets.
-
-You can access them only by:
-
-- Signing a time limited URL on the Server, for example with Edge Functions.
-- with a GET request the URL `https://[project_id].supabase.co/storage/v1/object/authenticated/[bucket]/[asset-name]` and the user Authorization header
-
-### Signing URLs [\#](https://supabase.com/docs/guides/storage/serving/downloads\#signing-urls)
-
-You can sign a time-limited URL that you can share to your users by invoking the `createSignedUrl` method on the SDK.
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-const { data, error } = await supabase.storage  .from('bucket')  .createSignedUrl('private-document.pdf', 3600)if (data) {  console.log(data.signedUrl)}
+```
+https://[project_id].supabase.co/storage/v1/object/public/[bucket]/[asset-name]?download
 ```
 
-Watch video guide
+By default, the download will use the original filename. You can specify a custom filename:
 
-![Video guide preview](https://supabase.com/docs/_next/image?url=https%3A%2F%2Fimg.youtube.com%2Fvi%2FdLqSmxX3r7I%2F0.jpg&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+```
+https://[project_id].supabase.co/storage/v1/object/public/[bucket]/[asset-name]?download=customname.jpg
+```
 
-### Is this helpful?
+## Private Buckets
 
-NoYes
+Assets stored in non-public buckets are private and cannot be accessed via a public URL. You can access these files only through:
 
-### On this page
+1. Signing a time-limited URL (server-side approach, e.g., with Edge Functions)
+2. Making an authenticated GET request to `https://[project_id].supabase.co/storage/v1/object/authenticated/[bucket]/[asset-name]` with a valid user Authorization header
 
-[Public buckets](https://supabase.com/docs/guides/storage/serving/downloads#public-buckets) [Downloading](https://supabase.com/docs/guides/storage/serving/downloads#downloading) [Private buckets](https://supabase.com/docs/guides/storage/serving/downloads#private-buckets) [Signing URLs](https://supabase.com/docs/guides/storage/serving/downloads#signing-urls)
+### Signing URLs
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+You can create a time-limited signed URL to share with users by using the `createSignedUrl` method:
 
+```javascript
+const { data, error } = await supabase.storage
+  .from('bucket')
+  .createSignedUrl('private-document.pdf', 3600) // URL valid for 1 hour (3600 seconds)
 
+if (data) {
+  console.log(data.signedUrl)
+}
+```
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+This approach allows you to generate temporary access links to private files without requiring the recipient to be authenticated with your application.

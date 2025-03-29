@@ -1,151 +1,123 @@
-Database
+# HTTP: RESTful Client Extension for PostgreSQL
 
-# http: RESTful Client
+The `http` extension allows you to call RESTful endpoints directly from within PostgreSQL functions and queries. This powerful capability enables your database to interact with external services without needing an intermediate application layer.
 
-* * *
+## Overview
 
-The `http` extension allows you to call RESTful endpoints within Postgres.
+The extension lets you make HTTP requests to external services using standard REST protocols:
 
-## Quick demo [\#](https://supabase.com/docs/guides/database/extensions/http\#quick-demo)
+- **GET** - Read-only access to a resource
+- **POST** - Create a new resource
+- **DELETE** - Remove a resource
+- **PUT** - Update an existing resource or create a new resource
+- **HEAD** - Similar to GET but only retrieves headers
 
-Using PostgreSQL functions to call an API with Supabase - YouTube
+With this functionality, you can build database functions that fetch real-time data or trigger external services directly from your Supabase database.
 
-Supabase
+## Enabling the Extension
 
-47.5K subscribers
+You can enable the `http` extension through the Supabase Dashboard:
 
-[Using PostgreSQL functions to call an API with Supabase](https://www.youtube.com/watch?v=rARgrELRCwY)
+1. Navigate to the [Database](https://supabase.com/dashboard/project/_/database/tables) page
+2. Click on **Extensions** in the sidebar
+3. Search for `http` and enable the extension
 
-Supabase
+Alternatively, you can enable it with SQL:
 
-Search
-
-Info
-
-Shopping
-
-Tap to unmute
-
-If playback doesn't begin shortly, try restarting your device.
-
-You're signed out
-
-Videos you watch may be added to the TV's watch history and influence TV recommendations. To avoid this, cancel and sign in to YouTube on your computer.
-
-CancelConfirm
-
-Share
-
-Include playlist
-
-An error occurred while retrieving sharing information. Please try again later.
-
-Watch later
-
-Share
-
-Copy link
-
-Watch on
-
-0:00
-
-/ •Live
-
-•
-
-[Watch on YouTube](https://www.youtube.com/watch?v=rARgrELRCwY "Watch on YouTube")
-
-## Overview [\#](https://supabase.com/docs/guides/database/extensions/http\#overview)
-
-Let's cover some basic concepts:
-
-- REST: stands for REpresentational State Transfer. It's a way to request data from external services.
-- RESTful APIs are servers which accept HTTP "calls". The calls are typically:
-  - `GET` − Read only access to a resource.
-  - `POST` − Creates a new resource.
-  - `DELETE` − Removes a resource.
-  - `PUT` − Updates an existing resource or creates a new resource.
-
-You can use the `http` extension to make these network requests from Postgres.
-
-## Usage [\#](https://supabase.com/docs/guides/database/extensions/http\#usage)
-
-### Enable the extension [\#](https://supabase.com/docs/guides/database/extensions/http\#enable-the-extension)
-
-DashboardSQL
-
-1. Go to the [Database](https://supabase.com/dashboard/project/_/database/tables) page in the Dashboard.
-2. Click on **Extensions** in the sidebar.
-3. Search for `http` and enable the extension.
-
-### Available functions [\#](https://supabase.com/docs/guides/database/extensions/http\#available-functions)
-
-While the main usage is `http('http_request')`, there are 5 wrapper functions for specific functionality:
-
-- `http_get()`
-- `http_post()`
-- `http_put()`
-- `http_delete()`
-- `http_head()`
-
-### Returned values [\#](https://supabase.com/docs/guides/database/extensions/http\#returned-values)
-
-A successful call to a web URL from the `http` extension returns a record with the following fields:
-
-- `status`: integer
-- `content_type`: character varying
-- `headers`: http\_header\[\]
-- `content`: character varying. Typically you would want to cast this to `jsonb` using the format `content::jsonb`
-
-## Examples [\#](https://supabase.com/docs/guides/database/extensions/http\#examples)
-
-### Simple `GET` example [\#](https://supabase.com/docs/guides/database/extensions/http\#simple-get-example)
-
-```flex
-
-1
-2
-3
-4
-select  "status", "content"::jsonbfrom  http_get('https://jsonplaceholder.typicode.com/todos/1');
+```sql
+CREATE EXTENSION http WITH SCHEMA extensions;
 ```
 
-### Simple `POST` example [\#](https://supabase.com/docs/guides/database/extensions/http\#simple-post-example)
+## Available Functions
 
-```flex
+While the main function is `http('http_request')`, the extension provides 5 wrapper functions for specific HTTP methods:
 
-1
-2
-3
-4
-5
-6
-7
-8
-select  "status", "content"::jsonbfrom  http_post(    'https://jsonplaceholder.typicode.com/posts',    '{ "title": "foo", "body": "bar", "userId": 1 }',    'application/json'  );
+| Function | Description |
+|----------|-------------|
+| `http_get()` | Makes a GET request |
+| `http_post()` | Makes a POST request |
+| `http_put()` | Makes a PUT request |
+| `http_delete()` | Makes a DELETE request |
+| `http_head()` | Makes a HEAD request |
+
+## Response Structure
+
+A successful call to a web URL returns a record with the following fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | integer | HTTP status code of the response |
+| `content_type` | character varying | Content type header value |
+| `headers` | http_header[] | Array of response headers |
+| `content` | character varying | Response body (typically cast to `jsonb` using `content::jsonb`) |
+
+## Examples
+
+### Simple GET Request
+
+Retrieve a single todo item from a public API:
+
+```sql
+SELECT 
+  status, 
+  content::jsonb
+FROM 
+  http_get('https://jsonplaceholder.typicode.com/todos/1');
 ```
 
-## Resources [\#](https://supabase.com/docs/guides/database/extensions/http\#resources)
+### POST Request with JSON Body
 
-- Official [`http` GitHub Repository](https://github.com/pramsey/pgsql-http)
+Create a new resource on a public API:
 
-### Is this helpful?
+```sql
+SELECT 
+  status, 
+  content::jsonb
+FROM 
+  http_post(
+    'https://jsonplaceholder.typicode.com/posts',
+    '{ "title": "foo", "body": "bar", "userId": 1 }',
+    'application/json'
+  );
+```
 
-NoYes
+### Using with Headers
 
-### On this page
+Make a request with custom headers:
 
-[Quick demo](https://supabase.com/docs/guides/database/extensions/http#quick-demo) [Overview](https://supabase.com/docs/guides/database/extensions/http#overview) [Usage](https://supabase.com/docs/guides/database/extensions/http#usage) [Enable the extension](https://supabase.com/docs/guides/database/extensions/http#enable-the-extension) [Available functions](https://supabase.com/docs/guides/database/extensions/http#available-functions) [Returned values](https://supabase.com/docs/guides/database/extensions/http#returned-values) [Examples](https://supabase.com/docs/guides/database/extensions/http#examples) [Simple GET example](https://supabase.com/docs/guides/database/extensions/http#simple-get-example) [Simple POST example](https://supabase.com/docs/guides/database/extensions/http#simple-post-example) [Resources](https://supabase.com/docs/guides/database/extensions/http#resources)
+```sql
+SELECT
+  status,
+  content::jsonb
+FROM
+  http((
+    'GET',
+    'https://api.example.com/data',
+    ARRAY[
+      ('Authorization'::text, 'Bearer your-token-here'::text),
+      ('Content-Type'::text, 'application/json'::text)
+    ],
+    NULL,
+    NULL
+  )::http_request);
+```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+## Practical Applications
 
+- Fetch exchange rates or financial data in real-time
+- Send notifications through 3rd party services
+- Synchronize data with external systems
+- Trigger webhooks from database functions
+- Enrich database records with external API data
 
+## Security Considerations
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+- The database user running the function needs network access to the external services
+- Consider timeouts for external API calls
+- Handle errors gracefully to prevent database query failures
+- Credentials in functions should be properly secured
 
+## Resources
 
-
-
-
-   AcceptOpt outPrivacy settings
+- [Official `http` GitHub Repository](https://github.com/pramsey/pgsql-http)
+- [Video Tutorial: Using PostgreSQL functions to call an API with Supabase](https://www.youtube.com/watch?v=rARgrELRCwY)

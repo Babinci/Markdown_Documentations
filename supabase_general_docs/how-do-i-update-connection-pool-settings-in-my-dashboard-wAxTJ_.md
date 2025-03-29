@@ -1,43 +1,38 @@
-# How do I update connection pool settings in my dashboard?
+# How to Update Connection Pool Settings in Your Dashboard
 
 Last edited: 2/21/2025
 
-* * *
+This guide covers common questions about updating settings for PgBouncer or Supavisor, the connection poolers available in Supabase.
 
-Common questions about updating settings for PgBouncer or Supavisor:
+## How to identify your connection pooler
 
-- How to tell which connection pooler you're using:
-The PgBouncer connection string looks like: `postgres://postgres:[YOUR-PASSWORD]@db.xxxxxxxxxx.supabase.co:6543/postgres`
+You can tell which connection pooler you're using by examining your connection string:
 
-The Supavisor connection string looks like: `postgres://postgres.xxxxxxxxx:[YOUR-PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres`
+- **PgBouncer** connection string looks like:  
+  `postgres://postgres:[YOUR-PASSWORD]@db.xxxxxxxxxx.supabase.co:6543/postgres`
 
-The subdomain will vary depending on the region a project is deployed in. The project reference is to be included in the username following a `.`. If the username is `postgres` the username you use for Supavisor is `postgres.[PROJECT_REF]`.
+- **Supavisor** connection string looks like:  
+  `postgres://postgres.xxxxxxxxx:[YOUR-PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres`
 
-- How to update the size of the connection pool to the database:
-You can set the `Max Client Connections` field in your database settings here:
+Note: The subdomain will vary depending on your project's region. For Supavisor, the project reference must be included in the username following a period (e.g., `postgres.[PROJECT_REF]`).
 
-[https://supabase.com/dashboard/project/\_/settings/database](https://supabase.com/dashboard/project/_/settings/database)
+## Adjusting Connection Pool Settings
 
-- How to change the client connection limit:
-You can set the `Default Pool Size` field in your database settings:
+You can modify the following settings in your database configuration page at:
+[https://supabase.com/dashboard/project/_/settings/database](https://supabase.com/dashboard/project/_/settings/database)
 
-[https://supabase.com/dashboard/project/\_/settings/database](https://supabase.com/dashboard/project/_/settings/database)
+### Pool Size Settings
 
-- How to use `session` mode:
-With Supavisor you can automatically use `session` mode by using the connection string with port `5432` in it.
+- **Max Client Connections**: Controls the maximum number of connections to the database
+- **Default Pool Size**: Adjusts the client connection limit
 
-You can also set the pooler port 6543 to use `session` mode in the database settings:
+### Connection Mode Settings
 
-[https://supabase.com/dashboard/project/\_/settings/database](https://supabase.com/dashboard/project/_/settings/database)
+With Supavisor, you can:
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+1. Automatically use `session` mode by using the connection string with port `5432`
+2. Configure port 6543 to use `session` mode in the database settings
 
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+The connection mode determines how transactions are handled:
+- **Transaction mode**: Each query uses a new connection from the pool (default)
+- **Session mode**: Maintains a dedicated connection for the duration of a session

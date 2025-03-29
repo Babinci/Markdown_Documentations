@@ -1,21 +1,34 @@
-# "JWT Expired" Error in Supabase Dashboard
+# Resolving "JWT Expired" Error in Supabase Dashboard
 
-Last edited: 1/18/2025
+When you encounter "JWT Expired" errors in the Supabase Dashboard, it usually means your computer's time is not properly synchronized with the actual time.
 
-* * *
+## Problem
 
-When the Dashboard issues JWT expired errors, it usually means your computer's time is not in sync with the actual time.
+The error occurs because JSON Web Tokens (JWTs) have an expiration timestamp. If your computer's clock is incorrect, the token might appear expired to your system even when it's still valid.
 
-Go to [https://time.is/](https://time.is/) to compare your computer's clock with your local time. If your computer's time is inaccurate, sync it to resolve the issue
+## Solution
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+1. Go to [https://time.is/](https://time.is/) to compare your computer's clock with the actual time.
+2. If your computer's time is inaccurate, sync it to resolve the issue using the instructions below.
 
+### Windows
+1. Right-click on the time in the taskbar
+2. Select "Adjust date/time"
+3. Toggle "Set time automatically" to On
+4. Click "Sync now"
 
+### macOS
+1. Open System Preferences
+2. Go to "Date & Time"
+3. Make sure "Set date and time automatically" is checked
+4. Select a suitable time server from the dropdown
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+### Linux
+1. Open a terminal and run `sudo timedatectl set-ntp true`
+2. Verify with `timedatectl status`
 
+After synchronizing your computer's time, refresh the Supabase Dashboard and the error should be resolved.
 
+## Prevention
 
-
-
-   AcceptOpt outPrivacy settings
+Ensure your system is configured to regularly synchronize time with internet time servers to prevent this issue from recurring.

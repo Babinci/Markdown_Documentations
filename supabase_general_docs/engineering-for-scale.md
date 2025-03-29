@@ -1,129 +1,158 @@
-AI & Vectors
+# Engineering for Scale: Vector Architecture
 
-# Engineering for Scale
+This guide explains how to build an enterprise-grade vector database architecture that can scale as your application grows.
 
-## Building an enterprise-grade vector architecture.
+## Introduction
 
-* * *
+Content sources for vectors can be extremely large. As your application scales, you may need to distribute your vector workloads across several secondary databases (sometimes called "pods"), allowing each collection to scale independently.
 
-Content sources for vectors can be extremely large. As you grow you should run your Vector workloads across several secondary databases (sometimes called "pods"), which allows each collection to scale independently.
+## Simple Workloads
 
-## Simple workloads [\#](https://supabase.com/docs/guides/ai/engineering-for-scale\#simple-workloads)
+For small to medium workloads, a single database approach is typically sufficient.
 
-For small workloads, it's typical to store your data in a single database.
+If you've used [Vecs](https://supabase.com/docs/guides/ai/vecs-python-client) to create collections (for example, collections named `docs`, `posts`, and `images`), you can expose these collections to your web or mobile application using [views](https://supabase.com/docs/guides/database/tables#views).
 
-If you've used [Vecs](https://supabase.com/docs/guides/ai/vecs-python-client) to create 3 different collections, you can expose collections to your web or mobile application using [views](https://supabase.com/docs/guides/database/tables#views):
+For example, to expose the "docs" collection in the public schema:
 
-For example, with 3 collections, called `docs`, `posts`, and `images`, we could expose the "docs" inside the public schema like this:
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-create view public.docs asselect  id,  embedding,  metadata, # Expose the metadata as JSON  (metadata->>'url')::text as url # Extract the URL as a stringfrom vector
+```sql
+create view public.docs as
+select
+  id,
+  embedding,
+  metadata, -- Expose the metadata as JSON
+  (metadata->>'url')::text as url -- Extract the URL as a string
+from vector
 ```
 
-You can then use any of the client libraries to access your collections within your applications:
+You can then access your collections within your applications using any of the client libraries:
 
-```flex
-
-1
-2
-3
-4
-const { data, error } = await supabase  .from('docs')  .select('id, embedding, metadata')  .eq('url', '/hello-world')
+```javascript
+const { data, error } = await supabase
+  .from('docs')
+  .select('id, embedding, metadata')
+  .eq('url', '/hello-world')
 ```
 
-## Enterprise workloads [\#](https://supabase.com/docs/guides/ai/engineering-for-scale\#enterprise-workloads)
+## Enterprise Workloads
 
-As you move into production, we recommend splitting your collections into separate projects. This is because it allows your vector stores to scale independently of your production data. Vectors typically grow faster than operational data, and they have different resource requirements. Running them on separate databases removes the single-point-of-failure.
+As you move into production with larger workloads, it's recommended to split your collections into separate projects. This approach offers several advantages:
 
-You can use as many secondary databases as you need to manage your collections. With this architecture, you have 2 options for accessing collections within your application:
+- Allows vector stores to scale independently of production data
+- Accommodates different resource requirements for vector vs. operational data
+- Removes single points of failure
+- Isolates performance impact of vector operations
 
-1. Query the collections directly using Vecs.
-2. Access the collections from your Primary database through a Wrapper.
+You can use as many secondary databases as needed to manage your collections efficiently.
 
-You can use both of these in tandem to suit your use-case. We recommend option `1` wherever possible, as it offers the most scalability.
+### Accessing Collections: Two Approaches
 
-### Query collections using Vecs [\#](https://supabase.com/docs/guides/ai/engineering-for-scale\#query-collections-using-vecs)
+With a multi-database architecture, you have two options for accessing collections:
 
-Vecs provides methods for querying collections, either using a [cosine similarity function](https://supabase.github.io/vecs/api/#basic) or with [metadata filtering](https://supabase.github.io/vecs/api/#metadata-filtering).
+1. **Direct Query Using Vecs** - Query the collections directly using the Vecs API
+2. **Wrapper Access** - Access collections from your primary database through Foreign Data Wrappers
 
-```flex
+Both approaches can be used together depending on your use case, but direct querying with Vecs is generally recommended for maximum scalability.
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-# cosine similaritydocs.query(query_vector=[0.4,0.5,0.6], limit=5)# metadata filteringdocs.query(    query_vector=[0.4,0.5,0.6],    limit=5,    filters={"year": {"$eq": 2012}}, # metadata filters)
+### Option 1: Query Collections Using Vecs
+
+Vecs provides methods for querying collections using either cosine similarity or metadata filtering:
+
+```python
+# Cosine similarity search
+docs.query(query_vector=[0.4, 0.5, 0.6], limit=5)
+
+# Metadata filtering
+docs.query(
+    query_vector=[0.4, 0.5, 0.6],
+    limit=5,
+    filters={"year": {"$eq": 2012}}  # metadata filters
+)
 ```
 
-### Accessing external collections using Wrappers [\#](https://supabase.com/docs/guides/ai/engineering-for-scale\#accessing-external-collections-using-wrappers)
+### Option 2: Accessing External Collections Using Wrappers
 
-Supabase supports [Foreign Data Wrappers](https://supabase.com/blog/postgres-foreign-data-wrappers-rust). Wrappers allow you to connect two databases together so that you can query them over the network.
+Supabase supports [Foreign Data Wrappers](https://supabase.com/blog/postgres-foreign-data-wrappers-rust), which allow you to connect databases together and query them over the network.
 
-This involves 2 steps: connecting to your remote database from the primary and creating a Foreign Table.
+#### Step 1: Connect to the Remote Database
 
-#### Connecting your remote database [\#](https://supabase.com/docs/guides/ai/engineering-for-scale\#connecting-your-remote-database)
+In your primary database, provide credentials to access the secondary database:
 
-Inside your Primary database we need to provide the credentials to access the secondary database:
+```sql
+create extension postgres_fdw;
 
-```flex
+create server docs_server
+foreign data wrapper postgres_fdw
+options (host 'db.xxx.supabase.co', port '5432', dbname 'postgres');
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-create extension postgres_fdw;create server docs_serverforeign data wrapper postgres_fdwoptions (host 'db.xxx.supabase.co', port '5432', dbname 'postgres');create user mapping for docs_userserver docs_serveroptions (user 'postgres', password 'password');
+create user mapping for docs_user
+server docs_server
+options (user 'postgres', password 'password');
 ```
 
-#### Create a foreign table [\#](https://supabase.com/docs/guides/ai/engineering-for-scale\#create-a-foreign-table)
+#### Step 2: Create a Foreign Table
 
-We can now create a foreign table to access the data in our secondary project.
+Create a foreign table to access the data in your secondary project:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-create foreign table docs (  id text not null,  embedding vector(384),  metadata jsonb,  url text)server docs_serveroptions (schema_name 'public', table_name 'docs');
+```sql
+create foreign table docs (
+  id text not null,
+  embedding vector(384),
+  metadata jsonb,
+  url text
+)
+server docs_server
+options (schema_name 'public', table_name 'docs');
 ```
 
-This looks very similar to our View example above, and you can continue to use the client libraries to access your collections through the foreign table:
+You can then continue to use the client libraries to access your collections through the foreign table:
 
-```flex
-
-1
-2
-3
-4
-const { data, error } = await supabase  .from('docs')  .select('id, embedding, metadata')  .eq('url', '/hello-world')
+```javascript
+const { data, error } = await supabase
+  .from('docs')
+  .select('id, embedding, metadata')
+  .eq('url', '/hello-world')
 ```
 
-### Enterprise architecture [\#](https://supabase.com/docs/guides/ai/engineering-for-scale\#enterprise-architecture)
+## Enterprise Architecture Diagram
 
-This diagram provides an example architecture that allows you to access the collections either with our client libraries or using Vecs. You can add as many secondary databases as you need (in this example we only show one):
+The recommended enterprise architecture allows you to access collections either with client libraries or using Vecs directly:
 
-### Is this helpful?
+```
+┌─────────────────┐     ┌─────────────────┐
+│                 │     │                 │
+│  Web/Mobile App │     │     Vecs API    │
+│                 │     │                 │
+└────────┬────────┘     └────────┬────────┘
+         │                       │
+         ▼                       │
+┌─────────────────┐              │
+│                 │              │
+│ Primary Database│              │
+│  (Foreign Data  │              │
+│    Wrapper)     │              │
+│                 │              │
+└────────┬────────┘              │
+         │                       │
+         ├───────────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│                 │
+│   Secondary     │
+│   Database      │
+│  (Vector Data)  │
+│                 │
+└─────────────────┘
+```
 
-NoYes
+You can add as many secondary databases as needed to accommodate different collections or workloads.
+
+## Scaling Considerations
+
+When implementing an enterprise vector architecture, consider:
+
+- **Collection Size**: Larger collections may require dedicated resources
+- **Query Patterns**: High-frequency search operations may benefit from specialized tuning
+- **Isolation Requirements**: Some collections may need to be isolated for security or compliance
+- **Index Types**: Different vector collections may benefit from different index types (HNSW, IVF, etc.)
+- **Resource Allocation**: Allocate computing resources based on the importance and usage patterns of each collection

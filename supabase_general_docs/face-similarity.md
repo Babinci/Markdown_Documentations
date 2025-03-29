@@ -1,92 +1,95 @@
-AI & Vectors
+# Face Similarity Search with Supabase Vecs
 
-# Face similarity search
+This guide demonstrates how to build a face similarity search system that can identify celebrities who look most similar to any given face using Supabase Vecs and the pgvector extension.
 
-## Identify the celebrities who look most similar to you using Supabase Vecs.
+## Overview
 
-* * *
+You'll learn how to:
+1. Set up a Postgres database with pgvector for storing face embeddings
+2. Run a Jupyter notebook that connects to your database
+3. Load the "ashraq/tmdb-people-image" celebrity dataset
+4. Generate face embeddings using the `face_recognition` model
+5. Perform similarity searches to find matching faces
 
-This guide will walk you through a ["Face Similarity Search"](https://github.com/supabase/supabase/blob/master/examples/ai/face_similarity.ipynb) example using Colab and Supabase Vecs. You will be able to identify the celebrities who look most similar to you (or any other person). You will:
+## Project Setup
 
-1. Launch a Postgres database that uses pgvector to store embeddings
-2. Launch a notebook that connects to your database
-3. Load the " `ashraq/tmdb-people-image`" celebrity dataset
-4. Use the `face_recognition` model to create an embedding for every celebrity photo.
-5. Search for similar faces inside the dataset.
+First, create a Supabase database to store your face embeddings:
 
-## Project setup [\#](https://supabase.com/docs/guides/ai/quickstarts/face-similarity\#project-setup)
+1. [Create a new project](https://database.new/) in the Supabase dashboard
+2. Enter your project details and save your password securely
+3. Wait for your database to be provisioned (usually takes less than a minute)
 
-Let's create a new Postgres database. This is as simple as starting a new Project in Supabase:
+### Finding Your Credentials
 
-1. [Create a new project](https://database.new/) in the Supabase dashboard.
-2. Enter your project details. Remember to store your password somewhere safe.
+You'll need these details to connect to your database:
+- **Database credentials**: Find connection strings in [Database Settings](https://supabase.com/dashboard/project/_/settings/database)
+- **API credentials**: Your API URL and keys in [API Settings](https://supabase.com/dashboard/project/_/settings/api)
 
-Your database will be available in less than a minute.
+## Launching the Notebook
 
-**Finding your credentials:**
+The face similarity example is available as a Jupyter notebook:
 
-You can find your project credentials inside the project [settings](https://supabase.com/dashboard/project/_/settings/), including:
+[![Open In Colab](https://supabase.com/docs/img/ai/colab-badge.svg)](https://colab.research.google.com/github/supabase/supabase/blob/master/examples/ai/face_similarity.ipynb)
 
-- [Database credentials](https://supabase.com/dashboard/project/_/settings/database): connection strings and connection pooler details.
-- [API credentials](https://supabase.com/dashboard/project/_/settings/database): your serverless API URL and `anon` / `service_role` keys.
+1. Click the "Open in Colab" button above
+2. Click "Copy to Drive" at the top of the notebook to save it to your Google Drive
+3. Run the notebook in Google Colab
 
-## Launching a notebook [\#](https://supabase.com/docs/guides/ai/quickstarts/face-similarity\#launching-a-notebook)
+## Connecting to Your Database
 
-Launch our [`semantic_text_deduplication`](https://github.com/supabase/supabase/blob/master/examples/ai/face_similarity.ipynb) notebook in Colab:
+In the notebook, locate the cell that defines the database connection:
 
-[![](https://supabase.com/docs/img/ai/colab-badge.svg)](https://colab.research.google.com/github/supabase/supabase/blob/master/examples/ai/face_similarity.ipynb)
-
-At the top of the notebook, you'll see a button `Copy to Drive`. Click this button to copy the notebook to your Google Drive.
-
-## Connecting to your database [\#](https://supabase.com/docs/guides/ai/quickstarts/face-similarity\#connecting-to-your-database)
-
-Inside the Notebook, find the cell which specifies the `DB_CONNECTION`. It will contain some code like this:
-
-```flex
-
-1
-2
-3
-4
-5
-6
-import vecsDB_CONNECTION = "postgresql://<user>:<password>@<host>:<port>/<db_name>"# create vector store clientvx = vecs.create_client(DB_CONNECTION)
+```python
+import vecs
+DB_CONNECTION = "postgresql://<user>:<password>@<host>:<port>/<db_name>"
+# create vector store client
+vx = vecs.create_client(DB_CONNECTION)
 ```
 
-Replace the `DB_CONNECTION` with your own connection string for your database. You can find the Postgres connection string in the [Database Settings](https://supabase.com/dashboard/project/_/settings/database) of your Supabase project.
+Replace the `DB_CONNECTION` string with your Supabase database connection string with these modifications:
 
-SQLAlchemy requires the connection string to start with `postgresql://` (instead of `postgres://`). Don't forget to rename this after copying the string from the dashboard.
+1. Use the **connection pooling** string (ending with `*.pooler.supabase.com`) since Colab doesn't support IPv6
+2. Change the protocol from `postgres://` to `postgresql://` as required by SQLAlchemy
 
-You must use the "connection pooling" string (domain ending in `*.pooler.supabase.com`) with Google Colab since Colab does not support IPv6.
+You can find your connection string in the [Database Settings](https://supabase.com/dashboard/project/_/settings/database) page of your Supabase project.
 
-## Stepping through the notebook [\#](https://supabase.com/docs/guides/ai/quickstarts/face-similarity\#stepping-through-the-notebook)
+## Notebook Walkthrough
 
-Now all that's left is to step through the notebook. You can do this by clicking the "execute" button ( `ctrl+enter`) at the top left of each code cell. The notebook guides you through the process of creating a collection, adding data to it, and querying it.
+Follow these steps in the notebook:
 
-You can view the inserted items in the [Table Editor](https://supabase.com/dashboard/project/_/editor/), by selecting the `vecs` schema from the schema dropdown.
+1. **Install Dependencies**: The notebook installs necessary packages like `face_recognition`, `vecs`, and `Pillow`
 
-![Colab documents](https://supabase.com/docs/img/ai/google-colab/colab-documents.png)
+2. **Load Celebrity Dataset**: The notebook loads a dataset of celebrity face images
 
-## Next steps [\#](https://supabase.com/docs/guides/ai/quickstarts/face-similarity\#next-steps)
+3. **Generate Face Embeddings**: For each image:
+   - Detect faces using the `face_recognition` library
+   - Generate an embedding (feature vector) for each detected face
+   - Store the embedding in your Supabase vector database
 
-You can now start building your own applications with Vecs. Check our [examples](https://supabase.com/docs/guides/ai#examples) for ideas.
+4. **Create a Search Collection**: The notebook creates a named collection in your database to store and query the face embeddings
 
-### Is this helpful?
+5. **Perform Similarity Searches**: Upload your own image or use a test image to:
+   - Generate an embedding for the query face
+   - Find the most similar celebrity faces in the database
+   - Display the matching faces with similarity scores
 
-NoYes
+## Viewing Results in Supabase
 
-### On this page
+You can view the stored embeddings in the Supabase dashboard:
 
-[Project setup](https://supabase.com/docs/guides/ai/quickstarts/face-similarity#project-setup) [Launching a notebook](https://supabase.com/docs/guides/ai/quickstarts/face-similarity#launching-a-notebook) [Connecting to your database](https://supabase.com/docs/guides/ai/quickstarts/face-similarity#connecting-to-your-database) [Stepping through the notebook](https://supabase.com/docs/guides/ai/quickstarts/face-similarity#stepping-through-the-notebook) [Next steps](https://supabase.com/docs/guides/ai/quickstarts/face-similarity#next-steps)
+1. Go to the [Table Editor](https://supabase.com/dashboard/project/_/editor/)
+2. Select the `vecs` schema from the schema dropdown
+3. Explore the collections and vectors tables
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+![Supabase Table Editor](https://supabase.com/docs/img/ai/google-colab/colab-documents.png)
 
+## Next Steps
 
+Now that you understand how to implement face similarity search with Supabase Vecs, you can:
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+1. **Build a web application**: Create a user interface for face matching
+2. **Enhance the model**: Add more features like age detection or emotion recognition
+3. **Scale your database**: Optimize for larger datasets with indexing strategies
+4. **Implement privacy features**: Add consent mechanisms and data protection measures
 
-
-
-
-
-   AcceptOpt outPrivacy settings
+For more AI application examples using Supabase, check out the [examples section](https://supabase.com/docs/guides/ai#examples) in the documentation.

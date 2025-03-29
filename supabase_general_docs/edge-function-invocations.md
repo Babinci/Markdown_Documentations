@@ -1,20 +1,18 @@
-Platform
+# Managing Edge Function Invocations Usage
 
-# Manage Edge Function Invocations usage
+This guide explains how Supabase charges for Edge Function invocations, how to view your usage, and includes billing examples.
 
-* * *
-
-## What you are charged for [\#](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations\#what-you-are-charged-for)
+## What You Are Charged For
 
 You are charged for the number of times your functions get invoked, regardless of the response status code.
 
-## How charges are calculated [\#](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations\#how-charges-are-calculated)
+## How Charges Are Calculated
 
-Edge Function Invocations are billed using Package pricing, with each package representing 1 million invocations. If your usage falls between two packages, you are billed for the next whole package.
+Edge Function Invocations are billed using package pricing, with each package representing 1 million invocations. If your usage falls between two packages, you are billed for the next whole package.
 
-### Example [\#](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations\#example)
+### Example
 
-For simplicity, let's assume a package size of 1 million and a charge of $2 per package without a free quota.
+For simplicity, let's assume a package size of 1 million and a charge of $2 per package without a free quota:
 
 | Invocations | Packages Billed | Costs |
 | --- | --- | --- |
@@ -23,13 +21,13 @@ For simplicity, let's assume a package size of 1 million and a charge of $2 per 
 | 1,000,001 | 2 | $4 |
 | 1,500,000 | 2 | $4 |
 
-### Usage on your invoice [\#](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations\#usage-on-your-invoice)
+### Usage on Your Invoice
 
 Usage is shown as "Function Invocations" on your invoice.
 
-## Pricing [\#](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations\#pricing)
+## Pricing
 
-$2 per 1 million invocations. You are only charged for usage exceeding your subscription plan's quota.
+The current pricing is $2 per 1 million invocations. You are only charged for usage exceeding your subscription plan's quota.
 
 | Plan | Quota | Over-Usage |
 | --- | --- | --- |
@@ -38,11 +36,11 @@ $2 per 1 million invocations. You are only charged for usage exceeding your subs
 | Team | 2 million | $2 per 1 million invocations |
 | Enterprise | Custom | Custom |
 
-## Billing examples [\#](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations\#billing-examples)
+## Billing Examples
 
-### Within quota [\#](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations\#within-quota)
+### Within Quota
 
-The organization's function invocations are within the quota, so no charges apply.
+When your organization's function invocations are within the quota, no additional charges apply:
 
 | Line Item | Units | Costs |
 | --- | --- | --- |
@@ -53,9 +51,9 @@ The organization's function invocations are within the quota, so no charges appl
 | Compute Credits |  | -$10 |
 | **Total** |  | **$25** |
 
-### Exceeding quota [\#](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations\#exceeding-quota)
+### Exceeding Quota
 
-The organization's function invocations exceed the quota by 1.4 million, incurring charges for this additional usage.
+When your organization's function invocations exceed the quota, you incur charges for the additional usage:
 
 | Line Item | Units | Costs |
 | --- | --- | --- |
@@ -66,36 +64,17 @@ The organization's function invocations exceed the quota by 1.4 million, incurri
 | Compute Credits |  | -$10 |
 | **Total** |  | **$29** |
 
-## View usage [\#](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations\#view-usage)
+In this example, the usage exceeds the quota by 1.4 million invocations, resulting in charges for 2 additional million invocations.
 
-You can view Edge Function Invocations usage on the [organization's usage page](https://supabase.com/dashboard/org/_/usage). The page shows the usage of all projects by default. To view the usage for a specific project, select it from the dropdown. You can also select a different time period.
+## Viewing Your Usage
 
-![Usage page navigation bar](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-navbar--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+You can view Edge Function Invocations usage on your [organization's usage page](https://supabase.com/dashboard/org/_/usage). The page shows the usage of all projects by default:
 
-In the Edge Function Invocations section, you can see how many invocations your projects have had during the selected time period.
+1. To view usage for a specific project, select it from the dropdown menu
+2. You can also select a different time period for the usage report
 
-![Usage page Edge Function Invocations section](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-function-invocations--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+![Usage page navigation bar](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-navbar--light.png&w=3840&q=75)
 
-### Is this helpful?
+In the Edge Function Invocations section, you can see how many invocations your projects have had during the selected time period:
 
-NoYes
-
-### On this page
-
-[What you are charged for](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations#what-you-are-charged-for) [How charges are calculated](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations#how-charges-are-calculated) [Example](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations#example) [Usage on your invoice](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations#usage-on-your-invoice) [Pricing](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations#pricing) [Billing examples](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations#billing-examples) [Within quota](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations#within-quota) [Exceeding quota](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations#exceeding-quota) [View usage](https://supabase.com/docs/guides/platform/manage-your-usage/edge-function-invocations#view-usage)
-
-![Usage page navigation bar](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-navbar--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-![Usage page Edge Function Invocations section](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-function-invocations--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+![Usage page Edge Function Invocations section](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-function-invocations--light.png&w=3840&q=75)

@@ -1,10 +1,6 @@
-Storage
-
 # The Storage Schema
 
 ## Learn about the storage schema
-
-* * *
 
 Storage uses Postgres to store metadata regarding your buckets and objects. Users can use RLS (Row-Level Security) policies for access control. This data is stored in a dedicated schema within your project called `storage`.
 
@@ -18,28 +14,8 @@ Here is the schema that represents the Storage service:
 
 You have the option to query this table directly to retrieve information about your files in Storage without the need to go through our API.
 
-## Modifying the schema [\#](https://supabase.com/docs/guides/storage/schema/design\#modifying-the-schema)
+## Modifying the schema
 
 We strongly recommend refraining from making any alterations to the `storage` schema and treating it as read-only. This approach is important because any modifications to the schema on your end could potentially clash with our future updates, leading to downtime.
 
 However, we encourage you to add custom indexes as they can significantly improve the performance of the RLS policies you create for enforcing access control.
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Modifying the schema](https://supabase.com/docs/guides/storage/schema/design#modifying-the-schema)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

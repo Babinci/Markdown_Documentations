@@ -1,10 +1,6 @@
-Database
+# Index Advisor: Query Optimization
 
-# index\_advisor: query optimization
-
-* * *
-
-[Index advisor](https://github.com/supabase/index_advisor) is a Postgres extension for recommending indexes to improve query performance.
+[Index Advisor](https://github.com/supabase/index_advisor) is a Postgres extension for recommending indexes to improve query performance.
 
 Features:
 
@@ -17,169 +13,141 @@ Features:
 
 ![Supabase Studio index_advisor integration.](https://supabase.com/docs/img/index_advisor_studio.png)
 
-Alternatively, you can use index\_advisor directly via SQL.
+Alternatively, you can use index_advisor directly via SQL.
 
 For example:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-select    *from  index_advisor('select book.id from book where title = $1'); startup_cost_before | startup_cost_after | total_cost_before | total_cost_after |                  index_statements                   | errors---------------------+--------------------+-------------------+------------------+-----------------------------------------------------+-------- 0.00                | 1.17               | 25.88             | 6.40             | {"CREATE INDEX ON public.book USING btree (title)"},| {}(1 row)
+```sql
+SELECT *
+FROM index_advisor('SELECT book.id FROM book WHERE title = $1');
 ```
 
-## Installation [\#](https://supabase.com/docs/guides/database/extensions/index_advisor\#installation)
-
-To get started, enable index\_advisor by running
-
-```flex
-
-1
-create extension index_advisor;
+Result:
+```
+ startup_cost_before | startup_cost_after | total_cost_before | total_cost_after |                  index_statements                   | errors
+---------------------+--------------------+-------------------+------------------+-----------------------------------------------------+--------
+ 0.00                | 1.17               | 25.88             | 6.40             | {"CREATE INDEX ON public.book USING btree (title)"},| {}
+(1 row)
 ```
 
-## API [\#](https://supabase.com/docs/guides/database/extensions/index_advisor\#api)
+## Installation
 
-Index advisor exposes a single function `index_advisor(query text)` that accepts a query and searches for a set of SQL DDL `create index` statements that improve the query's execution time.
+To get started, enable index_advisor by running:
+
+```sql
+CREATE EXTENSION index_advisor;
+```
+
+## API
+
+Index advisor exposes a single function `index_advisor(query text)` that accepts a query and searches for a set of SQL DDL `CREATE INDEX` statements that improve the query's execution time.
 
 The function's signature is:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-index_advisor(query text)returns    table  (        startup_cost_before jsonb,        startup_cost_after jsonb,        total_cost_before jsonb,        total_cost_after jsonb,        index_statements text[],        errors text[]    )
+```sql
+index_advisor(query text)
+RETURNS TABLE (
+    startup_cost_before jsonb,
+    startup_cost_after jsonb,
+    total_cost_before jsonb,
+    total_cost_after jsonb,
+    index_statements text[],
+    errors text[]
+)
 ```
 
-## Usage [\#](https://supabase.com/docs/guides/database/extensions/index_advisor\#usage)
+## Usage
 
 As a minimal example, the `index_advisor` function can be given a single table query with a filter on an unindexed column.
 
-```flex
+```sql
+CREATE EXTENSION IF NOT EXISTS index_advisor CASCADE;
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-create extension if not exists index_advisor cascade;create table book(  id int primary key,  title text not null);select  *from  index_advisor('select book.id from book where title = $1'); startup_cost_before | startup_cost_after | total_cost_before | total_cost_after |                  index_statements                   | errors---------------------+--------------------+-------------------+------------------+-----------------------------------------------------+-------- 0.00                | 1.17               | 25.88             | 6.40             | {"CREATE INDEX ON public.book USING btree (title)"},| {}(1 row)
+CREATE TABLE book(
+  id int PRIMARY KEY,
+  title text NOT NULL
+);
+
+SELECT *
+FROM index_advisor('SELECT book.id FROM book WHERE title = $1');
+```
+
+Result:
+```
+ startup_cost_before | startup_cost_after | total_cost_before | total_cost_after |                  index_statements                   | errors
+---------------------+--------------------+-------------------+------------------+-----------------------------------------------------+--------
+ 0.00                | 1.17               | 25.88             | 6.40             | {"CREATE INDEX ON public.book USING btree (title)"},| {}
+(1 row)
 ```
 
 and will return a row recommending an index on the unindexed column.
 
 More complex queries may generate additional suggested indexes:
 
-```flex
+```sql
+CREATE EXTENSION IF NOT EXISTS index_advisor CASCADE;
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-create extension if not exists index_advisor cascade;create table author(    id serial primary key,    name text not null);create table publisher(    id serial primary key,    name text not null,    corporate_address text);create table book(    id serial primary key,    author_id int not null references author(id),    publisher_id int not null references publisher(id),    title text);create table review(    id serial primary key,    book_id int references book(id),    body text not null);select    *from    index_advisor('        select            book.id,            book.title,            publisher.name as publisher_name,            author.name as author_name,            review.body review_body        from            book            join publisher                on book.publisher_id = publisher.id            join author                on book.author_id = author.id            join review                on book.id = review.book_id        where            author.id = $1            and publisher.id = $2    '); startup_cost_before | startup_cost_after | total_cost_before | total_cost_after |                  index_statements                         | errors---------------------+--------------------+-------------------+------------------+-----------------------------------------------------------+-------- 27.26               | 12.77              | 68.48             | 42.37            | {"CREATE INDEX ON public.book USING btree (author_id)",   | {}                                                                                    "CREATE INDEX ON public.book USING btree (publisher_id)",                                                                                    "CREATE INDEX ON public.review USING btree (book_id)"}(3 rows)
+CREATE TABLE author(
+    id serial PRIMARY KEY,
+    name text NOT NULL
+);
+
+CREATE TABLE publisher(
+    id serial PRIMARY KEY,
+    name text NOT NULL,
+    corporate_address text
+);
+
+CREATE TABLE book(
+    id serial PRIMARY KEY,
+    author_id int NOT NULL REFERENCES author(id),
+    publisher_id int NOT NULL REFERENCES publisher(id),
+    title text
+);
+
+CREATE TABLE review(
+    id serial PRIMARY KEY,
+    book_id int REFERENCES book(id),
+    body text NOT NULL
+);
+
+SELECT *
+FROM index_advisor('
+    SELECT
+        book.id,
+        book.title,
+        publisher.name AS publisher_name,
+        author.name AS author_name,
+        review.body review_body
+    FROM
+        book
+        JOIN publisher
+            ON book.publisher_id = publisher.id
+        JOIN author
+            ON book.author_id = author.id
+        JOIN review
+            ON book.id = review.book_id
+    WHERE
+        author.id = $1
+        AND publisher.id = $2
+');
 ```
 
-## Limitations [\#](https://supabase.com/docs/guides/database/extensions/index_advisor\#limitations)
+Result:
+```
+ startup_cost_before | startup_cost_after | total_cost_before | total_cost_after |                  index_statements                         | errors
+---------------------+--------------------+-------------------+------------------+-----------------------------------------------------------+--------
+ 27.26               | 12.77              | 68.48             | 42.37            | {"CREATE INDEX ON public.book USING btree (author_id)",   | {}
+                                                                                 "CREATE INDEX ON public.book USING btree (publisher_id)",
+                                                                                 "CREATE INDEX ON public.review USING btree (book_id)"}
+(3 rows)
+```
 
-- index\_advisor will only recommend single column, B-tree indexes. More complex indexes will be supported in future releases.
-- when a generic argument's type is not discernible from context, an error is returned in the `errors` field. To resolve those errors, add explicit type casting to the argument. e.g. `$1::int`.
+## Limitations
 
-## Resources [\#](https://supabase.com/docs/guides/database/extensions/index_advisor\#resources)
+- Index_advisor will only recommend single column, B-tree indexes. More complex indexes will be supported in future releases.
+- When a generic argument's type is not discernible from context, an error is returned in the `errors` field. To resolve those errors, add explicit type casting to the argument. e.g. `$1::int`.
 
-- [`index_advisor`](https://github.com/supabase/index_advisor) repo
+## Resources
 
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Installation](https://supabase.com/docs/guides/database/extensions/index_advisor#installation) [API](https://supabase.com/docs/guides/database/extensions/index_advisor#api) [Usage](https://supabase.com/docs/guides/database/extensions/index_advisor#usage) [Limitations](https://supabase.com/docs/guides/database/extensions/index_advisor#limitations) [Resources](https://supabase.com/docs/guides/database/extensions/index_advisor#resources)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+- [`index_advisor`](https://github.com/supabase/index_advisor) repository

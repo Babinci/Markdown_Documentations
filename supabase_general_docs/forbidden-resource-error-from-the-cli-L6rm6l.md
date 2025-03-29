@@ -1,29 +1,97 @@
-# Forbidden resource error from the CLI
+# Resolving "Forbidden Resource" Errors in the Supabase CLI
 
-Last edited: 2/21/2025
+When using the Supabase CLI, you might encounter a "Forbidden resource" error. This error is a security measure that prevents unauthorized access to protected operations and resources within your Supabase project.
 
-* * *
+## Common Error Messages
 
-This error typically occurs as a protective measure to prevent unauthorized access to critical operations.
+The error message might appear in different forms, such as:
 
-To address this issue, we recommend following these troubleshooting steps:
+```
+Error: Forbidden resource: <resource>
+```
 
-- Verify Project ID: Ensure the $PROJECT\*REF variable in your commands contains the correct Project ID. You can find your Reference ID under [Project -> Settings -> General](https://supabase.com/dashboard/project/*/settings/general) in your Supabase Dashboard. A Reference ID looks something like `xvljpkujuwroxcuvossw`.
-- Authorization Check: Confirm that you’ve been properly authorized. You can also generate a new Access Token in your dashboard and use it for login. Generate a new token [here](https://supabase.com/dashboard/account/tokens) and use it to [log in](https://supabase.com/docs/reference/cli/supabase-login).
-- Re-link Project: Try [re-linking](https://supabase.com/docs/reference/cli/supabase-link) your project with the newly generated token.
-- Owner/Admin Permissions: Make sure you have [Owner/Admin](https://supabase.com/docs/guides/platform/access-control) permissions for the project.
-- CLI Version: Ensure you are using the latest version of the Supabase CLI. If not, update to the most recent version available at [Supabase CLI GitHub](https://github.com/supabase/cli).
+or
 
-If the issue persists, add a --debug --create-ticket flags to your command and contact [support](https://supabase.com/support) with the ticket id and debug logs, which can help in diagnosing the problem further.
+```
+Error: Authorization failed. You don't have access to this resource.
+```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+## Troubleshooting Steps
 
+Follow these steps to resolve the forbidden resource error:
 
+### 1. Verify Your Project Reference ID
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+Ensure you're using the correct Project Reference ID in your commands:
 
+```bash
+supabase db pull --project-ref <project-ref>
+```
 
+Your Project Reference ID can be found in the [Project Settings > General](https://supabase.com/dashboard/project/_/settings/general) section of your Supabase Dashboard. It typically looks like `xvljpkujuwroxcuvossw`.
 
+### 2. Check Your Authorization
 
+Verify that your CLI is properly authenticated with Supabase:
 
-   AcceptOpt outPrivacy settings
+```bash
+supabase status
+```
+
+If you're not authenticated or your token has expired, generate a new Access Token:
+
+1. Go to [Dashboard > Account > Access Tokens](https://supabase.com/dashboard/account/tokens)
+2. Create a new token
+3. Login with the new token:
+   ```bash
+   supabase login --token <your-access-token>
+   ```
+
+### 3. Re-link Your Project
+
+Sometimes, you need to re-establish the link between your local project and your Supabase project:
+
+```bash
+supabase link --project-ref <project-ref>
+```
+
+This refreshes the connection and updates local configuration.
+
+### 4. Verify Your Permissions
+
+Ensure you have the appropriate role (Owner or Administrator) for the project:
+
+1. Check your role in the [Dashboard > Project > Settings > Members](https://supabase.com/dashboard/project/_/settings/members)
+2. If you're not an Owner or Administrator, ask a project Owner to upgrade your permissions
+
+### 5. Update the CLI
+
+Make sure you're using the latest version of the Supabase CLI:
+
+```bash
+# For Homebrew
+brew upgrade supabase
+
+# For other platforms, download the latest version from:
+# https://github.com/supabase/cli/releases
+```
+
+## Advanced Troubleshooting
+
+If the issue persists after trying the steps above, run your command with debug flags and create a support ticket:
+
+```bash
+supabase db pull --project-ref <project-ref> --debug --create-ticket
+```
+
+This will generate a ticket ID and detailed logs that you can share with Supabase Support to help diagnose the issue.
+
+## Common Causes
+
+1. **Expired or Revoked Token**: Access tokens might expire or be revoked
+2. **Permission Changes**: Your role in the project might have changed
+3. **Project Ownership Transfer**: If the project has been transferred to a different organization
+4. **CLI Version Mismatch**: Using an outdated CLI version that lacks required features
+5. **Network Issues**: Proxy, firewall, or other network restrictions affecting CLI communication
+
+If you've tried all troubleshooting steps and still encounter the error, contact [Supabase Support](https://supabase.com/support) with your ticket ID and debug logs.

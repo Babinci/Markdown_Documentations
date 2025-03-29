@@ -1,10 +1,8 @@
-Realtime
+# Realtime Operational Error Codes
 
-# Operational Error Codes
+This reference guide provides a comprehensive list of operational error codes for Supabase Realtime, helping you understand deployment and usage issues.
 
-## List of operational codes to help understand your deployment and usage.
-
-* * *
+## Error Code Reference Table
 
 | Code | Description | Action |
 | --- | --- | --- |
@@ -40,18 +38,34 @@ Realtime
 | `UnhandledProcessMessage` | Unhandled message received by a Realtime process | Contact support for further instructions |
 | `UnknownError` | An unknown error occurred | Contact support for further instructions |
 
-### Is this helpful?
+## Common Error Troubleshooting
 
-NoYes
+### Rate Limit Errors
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+If you encounter any of these errors:
+- `ChannelRateLimitReached`
+- `ConnectionRateLimitReached`
+- `ClientJoinRateLimitReached`
 
+Consider these solutions:
+1. Optimize your client connection strategy to reduce simultaneous connections
+2. Implement connection pooling if applicable
+3. Contact Supabase support to discuss increasing your rate limits
 
+### Configuration Errors
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+For errors like:
+- `RealtimeDisabledForConfiguration`
+- `TableHasSpacesInName`
 
+Check your channel configuration and table naming conventions:
+1. Ensure tables are properly registered for Postgres Changes
+2. Rename tables to avoid spaces and special characters
+3. Verify your Realtime subscription settings
 
+### System-Level Errors
 
-
-
-   AcceptOpt outPrivacy settings
+Most other errors in the table above require Supabase support assistance. When contacting support about these errors:
+1. Include the specific error code
+2. Describe your Realtime implementation and usage
+3. Share any relevant logs or timestamps when the error occurred

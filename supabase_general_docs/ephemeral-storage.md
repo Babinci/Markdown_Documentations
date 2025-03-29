@@ -1,77 +1,93 @@
-Edge Functions
+# Using Ephemeral Storage in Edge Functions
 
-# Ephemeral Storage
+Supabase Edge Functions provides ephemeral file storage capabilities, allowing you to read and write files to the `/tmp` directory during function execution.
 
-## Read and write from temporary directory
+## Understanding Ephemeral Storage
 
-* * *
+Ephemeral storage resets on each function invocation. This means:
 
-Edge Functions provides ephemeral file storage. You can read and write files to the `/tmp` directory.
+- Files you write during one invocation can only be read within the same invocation
+- All data is lost when the function execution completes
+- Each function instance has its own isolated storage space
 
-Ephemeral storage will reset on each function invocation. This means the files you write during an invocation can only be read within the same invocation.
+## Use Cases
 
-### Use cases [\#](https://supabase.com/docs/guides/functions/ephemeral-storage\#use-cases)
+Ephemeral storage is useful for scenarios that require temporary file processing:
 
-Here are some use cases where ephemeral storage can be useful:
+- **File Transformation**: Unzipping archives and processing their contents
+- **Data Processing**: Reading and transforming CSV files before uploading to the database
+- **Image Manipulation**: Custom image processing workflows using libraries like [`magick-wasm`](https://supabase.com/docs/guides/functions/examples/image-manipulation)
+- **Temporary Storage**: Holding uploaded files for validation before storing them permanently
 
-- Unzip an archive of CSVs and then add them as records to the DB
-- Custom image manipulation workflows (using [`magick-wasm`](https://supabase.com/docs/guides/functions/examples/image-manipulation))
+For processing tasks that might exceed the function timeout, consider using [Background Tasks](https://supabase.com/docs/guides/functions/background-tasks) to handle file operations asynchronously.
 
-You can use [Background Tasks](https://supabase.com/docs/guides/functions/background-tasks) to handle slow file processing outside of a request.
+## How to Use
 
-### How to use [\#](https://supabase.com/docs/guides/functions/ephemeral-storage\#how-to-use)
+You can work with ephemeral storage using either:
 
-You can use [Deno File System APIs](https://docs.deno.com/api/deno/file-system) or the [`node:fs` module](https://docs.deno.com/api/node/fs/) to access the `/tmp` path.
+1. [Deno File System APIs](https://docs.deno.com/api/deno/file-system)
+2. The [`node:fs` module](https://docs.deno.com/api/node/fs/)
 
-### Example [\#](https://supabase.com/docs/guides/functions/ephemeral-storage\#example)
+All file operations should target the `/tmp` directory.
 
-Here is an example of how to write a user-uploaded zip file into temporary storage for further processing.
+### Example: Processing an Uploaded ZIP File
 
-```flex
+```typescript
+Deno.serve(async (req) => {
+  if (req.headers.get('content-type') !== 'application/zip') {
+    return new Response('file must be a zip file', {
+      status: 400,
+    })
+  }
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-Deno.serve(async (req) => {  if (req.headers.get('content-type') !== 'application/zip') {    return new Response('file must be a zip file', {      status: 400,    })  }  const uploadId = crypto.randomUUID()  await Deno.writeFile('/tmp/' + uploadId, req.body)  // do something with the written zip file  return new Response('ok')})
+  const uploadId = crypto.randomUUID()
+  await Deno.writeFile('/tmp/' + uploadId, req.body)
+  
+  // do something with the written zip file
+  
+  return new Response('ok')
+})
 ```
 
-### Unavailable APIs [\#](https://supabase.com/docs/guides/functions/ephemeral-storage\#unavailable-apis)
+### Example: Reading and Writing Text Files
 
-Currently, the synchronous APIs (e.g. `Deno.writeFileSync` or `Deno.mkdirSync`) for creating or writing files are not supported.
+```typescript
+Deno.serve(async (req) => {
+  const data = await req.text();
+  
+  // Write to a temporary file
+  const filePath = `/tmp/data-${Date.now()}.txt`;
+  await Deno.writeTextFile(filePath, data);
+  
+  // Read from the temporary file
+  const fileContent = await Deno.readTextFile(filePath);
+  
+  return new Response(`File processed: ${fileContent.length} characters`);
+})
+```
 
-You can use sync variations of read APIs (e.g. `Deno.readFileSync`).
+## API Limitations
 
-### Limits [\#](https://supabase.com/docs/guides/functions/ephemeral-storage\#limits)
+There are some limitations to be aware of when working with ephemeral storage:
 
-In the hosted platform, a free project can write up to 256MB of data to ephemeral storage. A paid project can write up to 512MB.
+- **Synchronous Write APIs Not Supported**: Functions like `Deno.writeFileSync` or `Deno.mkdirSync` are not available
+- **Synchronous Read APIs Are Available**: You can use functions like `Deno.readFileSync`
+- **No Persistence Between Invocations**: Data is lost between function calls
 
-### Is this helpful?
+## Storage Limits
 
-NoYes
+Storage capacity depends on your Supabase project tier:
 
-### On this page
+| Project Type | Storage Limit |
+|--------------|---------------|
+| Free         | 256MB         |
+| Paid         | 512MB         |
 
-[Use cases](https://supabase.com/docs/guides/functions/ephemeral-storage#use-cases) [How to use](https://supabase.com/docs/guides/functions/ephemeral-storage#how-to-use) [Example](https://supabase.com/docs/guides/functions/ephemeral-storage#example) [Unavailable APIs](https://supabase.com/docs/guides/functions/ephemeral-storage#unavailable-apis) [Limits](https://supabase.com/docs/guides/functions/ephemeral-storage#limits)
+These limits apply to the total amount of data you can write to ephemeral storage during a single function invocation.
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+## Best Practices
 
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+- Use unique filenames (e.g., with UUIDs or timestamps) to avoid conflicts
+- Clean up files when done to free up memory, although this isn't strictly necessary
+- For larger files, consider streaming the data rather than loading it all into memory
+- Remember that ephemeral storage is not meant for persistent data storage - use Supabase Storage for permanent files

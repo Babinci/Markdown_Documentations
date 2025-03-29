@@ -1,69 +1,32 @@
-31 APR - 04 MAR / 7AM PT
+# Manage Monthly Active Third-Party Users Usage
 
-Launch Week 14
-
-03d
-
-:
-
-18h
-
-:
-
-06m
-
-:
-
-01s
-
-[Claim ticket](https://supabase.com/launch-week)Dismiss
-
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-Platform
-
-# Manage Monthly Active Third-Party Users usage
-
-* * *
-
-## What you are charged for [\#](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party\#what-you-are-charged-for)
+## What you are charged for
 
 You are charged for the number of distinct users who log in or refresh their token during the billing cycle using a third-party authentication provider. Each unique user is counted only once per billing cycle, regardless of how many times they authenticate. These users are referred to as "Third-Party MAUs".
 
-### Example [\#](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party\#example)
+### Example
 
-Your billing cycle runs from January 1 to January 31. Although User-1 was signed in multiple times, they are counted as a single SSO MAU for this billing cycle.
+Your billing cycle runs from January 1 to January 31. Although User-1 was signed in multiple times, they are counted as a single Third-Party MAU for this billing cycle.
 
-1
+#### 1. User-1 signs in via Auth0 on January 3
 
-### User-1 signs in via Auth0 on January 3
+The Third-Party MAU count increases from 0 to 1.
 
-The Third-Party MAU count increases
-from 0 to 1.
+#### 2. User-1 signs out on January 4.
 
-![Third-Party MAU login screen](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fthird-party-mau-auth0-login-screen.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-2
-
-### User-1 signs out on January 4.
-
-3
-
-### User-1 signs in via Auth0 again on January 17
+#### 3. User-1 signs in via Auth0 again on January 17
 
 The Third-Party MAU count remains 1.
 
-![Third-Party MAU login screen](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fthird-party-mau-auth0-login-screen.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-## How charges are calculated [\#](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party\#how-charges-are-calculated)
+## How charges are calculated
 
 You are charged by Third-Party MAU.
 
-### Usage on your invoice [\#](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party\#usage-on-your-invoice)
+### Usage on your invoice
 
 Usage is shown as "Monthly Active Third-Party Users" on your invoice.
 
-## Pricing [\#](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party\#pricing)
+## Pricing
 
 $0.00325 per Third-Party MAU. You are only charged for usage exceeding your subscription plan's quota.
 
@@ -76,9 +39,9 @@ The count resets at the start of each billing cycle.
 | Team | 100,000 | $0.00325 per Third-Party MAU |
 | Enterprise | Custom | Custom |
 
-## Billing examples [\#](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party\#billing-examples)
+## Billing examples
 
-### Within quota [\#](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party\#within-quota)
+### Within quota
 
 The organization's Third-Party MAU usage for the billing cycle is within the quota, so no charges apply.
 
@@ -91,9 +54,9 @@ The organization's Third-Party MAU usage for the billing cycle is within the quo
 | Compute Credits |  | -$10 |
 | **Total** |  | **$25** |
 
-### Exceeding quota [\#](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party\#exceeding-quota)
+### Exceeding quota
 
-The organization's Third-Party MAU usage for the billing cycle exceeds the quota by 4950, incurring charges for this additional usage.
+The organization's Third-Party MAU usage for the billing cycle exceeds the quota by 30,000, incurring charges for this additional usage.
 
 | Line Item | Units | Costs |
 | --- | --- | --- |
@@ -104,20 +67,6 @@ The organization's Third-Party MAU usage for the billing cycle exceeds the quota
 | Compute Credits |  | -$10 |
 | **Total** |  | **$122.50** |
 
-## View usage [\#](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party\#view-usage)
+## View usage
 
 You can view Monthly Active Third-Party Users usage on the [organization's usage page](https://supabase.com/dashboard/org/_/usage). The page shows the usage of all projects by default. To view the usage for a specific project, select it from the dropdown. You can also select a different time period.
-
-![Usage page Monthly Active SSO Users section](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-mau-third-party--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[What you are charged for](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party#what-you-are-charged-for) [Example](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party#example) [How charges are calculated](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party#how-charges-are-calculated) [Usage on your invoice](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party#usage-on-your-invoice) [Pricing](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party#pricing) [Billing examples](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party#billing-examples) [Within quota](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party#within-quota) [Exceeding quota](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party#exceeding-quota) [View usage](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users-third-party#view-usage)
-
-![Third-Party MAU login screen](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fthird-party-mau-auth0-login-screen.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-![Third-Party MAU login screen](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fthird-party-mau-auth0-login-screen.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)

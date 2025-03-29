@@ -1,74 +1,64 @@
-# How Postgres chooses which index to use
+# How PostgreSQL Chooses Which Index to Use
 
 Last edited: 2/21/2025
 
-* * *
+> For a complete list of built-in PostgreSQL index types, see the [official documentation](https://www.postgresql.org/docs/current/indexes-types.html).
 
-> For the curious: [here is a list of all built-in indexes in Postgres](https://www.postgresql.org/docs/current/indexes-types.html)
+## PostgreSQL Internals
 
-### Postgres internals [\#](https://supabase.com/docs/guides/troubleshooting/how-postgres-chooses-which-index-to-use-_JHrf4\#postgres-internals)
-
-#### How an index is chosen [\#](https://supabase.com/docs/guides/troubleshooting/how-postgres-chooses-which-index-to-use-_JHrf4\#how-an-index-is-chosen)
-
-Postgres, internally, contains a few components that manage query execution:
+PostgreSQL processes queries through several components:
 
 | Module | Description |
 | --- | --- |
-| Parser | Converts SQL into an traversable query tree |
-| Planner/Optimizer | Takes the query tree and uses rules and database statistics to find the optimal strategy for getting the data |
+| Parser | Converts SQL into a traversable query tree |
+| Planner/Optimizer | Uses rules and database statistics to find the optimal strategy for retrieving data |
 | Executor | Executes the plan created by the planner |
 
-The planner will consider using an index when an indexed column is present in a filter statement, such as:
+### How an Index is Chosen
 
-- `WHERE`
-- `LIKE`
-- `ILIKE`
-- `DISTINCT`
-- `SIMILAR TO`
-- `JOIN`
-- `ORDER BY`
+The planner considers using an index when an indexed column appears in specific operations:
 
-Otherwise, it will likely perform a full table scan (sequential scan).
+- `WHERE` clauses
+- `LIKE` and `ILIKE` expressions
+- `DISTINCT` operations
+- `SIMILAR TO` comparisons
+- `JOIN` conditions
+- `ORDER BY` clauses
 
-In the majority of cases, the indexed column must not only be present but also must be filtered by a comparison operator ( `=`, `>`, `<>`) that is compatible with the index.
+Without these conditions, PostgreSQL typically performs a full table scan (sequential scan).
 
-As an example, one can create the following table:
+In most cases, the indexed column must be used with a compatible comparison operator (`=`, `>`, `<`, etc.) that works with the specific index type.
+
+#### Example with GIN Index for JSONB
+
+Consider a table with the following structure:
 
 | Column Name | Data Type |
 | --- | --- |
 | id | INT |
 | data | JSONB |
 
-On the data column, a GIN index can be applied, which is excellent for filtering JSONB datatypes:
+You can create a GIN index for the JSONB column:
 
-```flex
-
-1
-CREATE INDEX some_arbitary_index_name ON some_table USING gin (data);
+```sql
+CREATE INDEX some_arbitrary_index_name ON some_table USING gin (data);
 ```
 
-Here's a [link](https://www.postgresql.org/docs/current/gist-builtin-opclasses.html) to the list operators supported by the GIN index; notably, it does not support greater than `>`:
+GIN indexes support specific operators like `@>` but not others like `>`:
 
-```flex
+```sql
+-- GIN index will NOT be used
+SELECT * FROM some_table
+WHERE data -> 'val' > 5;
 
-1
-2
-3
-4
--- GIN index will never be usedselect *from some_tablewhere data -> val > 5;
+-- GIN index WILL be considered
+SELECT id FROM some_table
+WHERE data @> '[ { "itemId": "p11" } ]';
 ```
 
-GIN does support the `@>` operator:
+### B-tree Indexes (Default)
 
-```flex
-
-1
-2
-3
---GIN will be consideredSELECT id FROM some_tableWHERE data @> '[ { "itemId": "p11" } ]';
-```
-
-In most cases, developers work with the default BTREE index. It is the most practical and performant in the majority of cases and is compatible with the following filter [operators](https://www.postgresql.org/docs/current/btree-behavior.html):
+The most common index type is B-tree, which supports the following comparison operators:
 
 | Comparison Operator |
 | --- |
@@ -78,114 +68,91 @@ In most cases, developers work with the default BTREE index. It is the most prac
 | `>=` |
 | `>` |
 
-An operator's functional equivalents, such as `IN`, `BETWEEN`, and `ANY`, are also valid.
+Functional equivalents like `IN`, `BETWEEN`, and `ANY` are also valid.
 
-However, just because the base requirements (relevant column, filter, and operators) are present, doesn't mean that an index will be used.
+### Index Selection Factors
 
-Indexes have a startup cost, so for small tables, Postgres might use a sequential scan if it believes that it will take less time. The database keeps statistics about each table that it uses to inform these choices.
+Meeting the basic requirements doesn't guarantee index usage. PostgreSQL considers additional factors:
 
-In very rare cases, these statistics can become stale, and Postgres may opt to use a slower index or sequential scan when a better option is available.
+1. **Table Size**: For small tables, a sequential scan might be faster than index lookup
+2. **Result Set Size**: If many rows will be returned, an index may not be beneficial
+3. **Statistics**: PostgreSQL maintains statistics about tables to inform these decisions
 
-You can see the query plan with the `EXPLAIN` keyword:
+You can view the query plan with the `EXPLAIN` command:
 
-```flex
-
-1
+```sql
 EXPLAIN <your query>
 ```
 
-To understand how to interpret its output, you can check out this [explainer](https://github.com/orgs/supabase/discussions/22839).
+For interpretation help, see this [detailed explainer](https://github.com/orgs/supabase/discussions/22839).
 
-To reset statistics within the database, you can use the following query:
+If statistics become stale, you can reset them:
 
-```flex
-
-1
-2
--- use judiciouslyselect pg_stat_reset();
+```sql
+-- Use judiciously
+SELECT pg_stat_reset();
 ```
 
-### Complex or composite indexes [\#](https://supabase.com/docs/guides/troubleshooting/how-postgres-chooses-which-index-to-use-_JHrf4\#complex-or-composite-indexes)
+## Advanced Index Types
 
-> For a more complete rundown, check the [Postgres Official Docs](https://www.postgresql.org/docs/current/indexes-multicolumn.html)
+### Multi-column Indexes
 
-#### Multi-column indexes [\#](https://supabase.com/docs/guides/troubleshooting/how-postgres-chooses-which-index-to-use-_JHrf4\#multi-column-indexes)
+Instead of using multiple individual indexes, you can create a single index across multiple columns:
 
-If you make independent indexes on multiple columns, Postgres will likely use each of them independently to find the relevant rows and then combine the results together.
+```sql
+-- Multi-column index
+CREATE INDEX test2_mm_idx ON test2 (major, minor);
 
-It is possible to make [multi-column indexes](https://www.postgresql.org/docs/current/indexes-multicolumn.html). If you are regularly filtering against multiple columns, there can be performance benefits using them instead of several independent indexes.
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
--- multi-column indexcreate index test2_mm_idx on test2 (major, minor);-- multi-column comparison:select namefrom test2where major = constant and minor = constant;
+-- Query that can use this index:
+SELECT name
+FROM test2
+WHERE major = constant AND minor = constant;
 ```
 
-#### Ordered indexes [\#](https://supabase.com/docs/guides/troubleshooting/how-postgres-chooses-which-index-to-use-_JHrf4\#ordered-indexes)
+### Ordered Indexes
 
-If you're using an ORDER BY clause, [indexes can also be pre-sorted by DESC/ASC](https://www.postgresql.org/docs/current/indexes-ordering.html) for better performance.
+You can pre-sort indexes for better performance with `ORDER BY` clauses:
 
-```flex
-
-1
-2
--- organizes the index in a DESC order, places NULL values at the endCREATE INDEX test3_desc_index ON test3 (id DESC NULLS LAST);
+```sql
+-- Organizes the index in descending order, placing NULL values at the end
+CREATE INDEX test3_desc_index ON test3 (id DESC NULLS LAST);
 ```
 
-#### Functional indexes [\#](https://supabase.com/docs/guides/troubleshooting/how-postgres-chooses-which-index-to-use-_JHrf4\#functional-indexes)
+### Functional Indexes
 
-Although not as common, indexes can also be leveraged against modified values, such as when using a LOWER function:
+Indexes can be created on transformed column values:
 
-```flex
+```sql
+-- Index on modified column through function
+CREATE INDEX test1_lower_col1_idx ON test1 (lower(col1));
 
-1
-2
-3
-4
-5
--- Index on modified column through functioncreate index test1_lower_col1_idx on test1 (lower(col1));-- Index will be considered for the following query:select * from test1 where lower(col1) = 'value';
+-- Index will be considered for this query:
+SELECT * FROM test1 WHERE lower(col1) = 'value';
 ```
 
-#### Covering indexes [\#](https://supabase.com/docs/guides/troubleshooting/how-postgres-chooses-which-index-to-use-_JHrf4\#covering-indexes)
+### Covering Indexes
 
-Indexes contain pointers to a specific row, but you could instruct an index to actually hold a copy of a column's value for even faster retrieval. These are known as `covering` indexes. Because maintaining a copy is storage intensive, you should avoid using it for values with large data footprints. [FULL VIDEO ON TOPIC](https://www.youtube.com/watch?v=bBu_V8CfWgM)
+You can include additional columns in an index for faster retrieval:
 
-```flex
-
-1
-CREATE INDEX a_b_idx ON x (a,b) INCLUDE (c);
+```sql
+CREATE INDEX a_b_idx ON x (a, b) INCLUDE (c);
 ```
 
-#### Indexes on JSONB [\#](https://supabase.com/docs/guides/troubleshooting/how-postgres-chooses-which-index-to-use-_JHrf4\#indexes-on-jsonb)
+This technique (also called a "covering index") stores copies of the included columns directly in the index, reducing the need to access the table. However, this increases storage requirements, so use it judiciously.
 
-Although a GIN/GIST index can be used to index entire JSONB bodies, you can also target just specific Key-values with standard BTREE indexes:
+### Indexes on JSONB
 
-```flex
+While GIN/GIST indexes can index entire JSONB documents, you can also target specific key-values with standard B-tree indexes:
 
-1
-2
-3
-4
-5
-6
-7
--- Example tablecreate table person (  id serial primary key,  data jsonb);create index index_name on person ((data ->> 'name'));
+```sql
+-- Example table
+CREATE TABLE person (
+  id serial primary key,
+  data jsonb
+);
+
+-- Index on a specific JSON property
+CREATE INDEX index_name ON person ((data ->> 'name'));
 ```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+For more details, check the [PostgreSQL documentation on multi-column indexes](https://www.postgresql.org/docs/current/indexes-multicolumn.html).

@@ -1,152 +1,154 @@
-Auth
-
 # MFA Verification Hook
 
-* * *
+You can enhance the [Supabase Multi-Factor Authentication (MFA)](https://supabase.com/docs/guides/auth/auth-mfa) implementation with custom verification hooks. These hooks allow you to implement additional security measures and business logic during the MFA verification process.
 
-You can add additional checks to the [Supabase MFA implementation](https://supabase.com/docs/guides/auth/auth-mfa) with hooks. For example, you can:
+## Common Use Cases
 
-- Limit the number of verification attempts performed over a period of time.
-- Sign out users who have too many invalid verification attempts.
-- Count, rate limit, or ban sign-ins.
+With MFA verification hooks, you can:
 
-**Inputs**
+- Limit the number of verification attempts within a specific time period
+- Sign out users who exceed a threshold of invalid verification attempts
+- Implement rate limiting for verification attempts
+- Record and analyze verification attempt patterns
+- Implement IP-based restrictions during verification
 
-Supabase Auth will send a payload containing these fields to your hook:
+## Hook Payload
+
+### Inputs
+
+When a user attempts MFA verification, Supabase Auth sends the following payload to your hook:
 
 | Field | Type | Description |
 | --- | --- | --- |
 | `factor_id` | `string` | Unique identifier for the MFA factor being verified |
-| `factor_type` | `string` | `totp` or `phone` |
-| `user_id` | `string` | Unique identifier for the user |
-| `valid` | `boolean` | Whether the verification attempt was valid. For TOTP, this means that the six digit code was correct (true) or incorrect (false). |
+| `factor_type` | `string` | Type of factor: `totp` (time-based one-time password) or `phone` |
+| `user_id` | `string` | Unique identifier for the user attempting verification |
+| `valid` | `boolean` | Whether the verification attempt was successful (true) or failed (false) |
 
-JSONJSON Schema
+Example payload:
 
-```flex
-
-1
-2
-3
-4
-5
-{  "factor_id": "6eab6a69-7766-48bf-95d8-bd8f606894db",  "user_id": "3919cb6e-4215-4478-a960-6d3454326cec",  "valid": true}
+```json
+{
+  "factor_id": "6eab6a69-7766-48bf-95d8-bd8f606894db",
+  "factor_type": "totp",
+  "user_id": "3919cb6e-4215-4478-a960-6d3454326cec",
+  "valid": false
+}
 ```
 
-**Outputs**
+### Outputs
 
-Return this if your hook processed the input without errors.
+Your hook should return a response with the following structure:
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `decision` | `string` | The decision on whether to allow authentication to move forward. Use `reject` to deny the verification attempt and log the user out of all active sessions. Use `continue` to use the default Supabase Auth behavior. |
-| `message` | `string` | The message to show the user if the decision was `reject`. |
+| `decision` | `string` | How to proceed with the verification: <br>- `continue`: Allow Supabase Auth to proceed with default behavior<br>- `reject`: Deny the verification attempt and log out the user from all active sessions |
+| `message` | `string` | (Optional) Message to display to the user if the decision is `reject` |
 
-```flex
+Example response to reject a verification attempt:
 
-1
-2
-3
-4
-{  "decision": "reject",  "message": "You have exceeded maximum number of MFA attempts."}
+```json
+{
+  "decision": "reject",
+  "message": "You have exceeded the maximum number of MFA attempts."
+}
 ```
 
-SQL
+## Implementation Example: Rate Limiting Failed Attempts
 
-Limit failed MFA verification attempts
+This example implements a 2-second cooldown period between failed MFA verification attempts.
 
-Your company requires that a user can input an incorrect MFA Verification code no more than once every 2 seconds.
+### Step 1: Create a table to track failed attempts
 
-Create a table to record the last time a user had an incorrect MFA verification attempt for a factor.
-
-```flex
-
-1
-2
-3
-4
-5
-6
-create table public.mfa_failed_verification_attempts (  user_id uuid not null,  factor_id uuid not null,  last_failed_at timestamp not null default now(),  primary key (user_id, factor_id));
+```sql
+create table public.mfa_failed_verification_attempts (
+  user_id uuid not null,
+  factor_id uuid not null,
+  last_failed_at timestamp not null default now(),
+  primary key (user_id, factor_id)
+);
 ```
 
-Create a hook to read and write information to this table. For example:
+### Step 2: Create the verification hook function
 
-```flex
+```sql
+create function public.hook_mfa_verification_attempt(event jsonb)
+  returns jsonb
+  language plpgsql
+as $$
+  declare
+    last_failed_at timestamp;
+  begin
+    if (event->>'valid')::boolean is true then
+      -- code is valid, accept it
+      return jsonb_build_object('decision', 'continue');
+    end if;
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-create function public.hook_mfa_verification_attempt(event jsonb)  returns jsonb  language plpgsqlas $$  declare    last_failed_at timestamp;  begin    if event->'valid' is true then      -- code is valid, accept it      return jsonb_build_object('decision', 'continue');    end if;    select last_failed_at into last_failed_at      from public.mfa_failed_verification_attempts      where        user_id = event->'user_id'          and        factor_id = event->'factor_id';    if last_failed_at is not null and now() - last_failed_at < interval '2 seconds' then      -- last attempt was done too quickly      return jsonb_build_object(        'error', jsonb_build_object(          'http_code', 429,          'message',   'Please wait a moment before trying again.'        )      );    end if;    -- record this failed attempt    insert into public.mfa_failed_verification_attempts      (        user_id,        factor_id,        last_refreshed_at      )      values      (        event->'user_id',        event->'factor_id',        now()      )      on conflict do update        set last_refreshed_at = now();    -- finally let Supabase Auth do the default behavior for a failed attempt    return jsonb_build_object('decision', 'continue');  end;$$;-- Assign appropriate permissions and revoke accessgrant all  on table public.mfa_failed_verification_attempts  to supabase_auth_admin;revoke all  on table public.mfa_failed_verification_attempts  from authenticated, anon, public;
+    -- Check when the last failed attempt occurred
+    select mfa.last_failed_at into last_failed_at
+      from public.mfa_failed_verification_attempts as mfa
+      where
+        mfa.user_id = (event->>'user_id')::uuid
+        and
+        mfa.factor_id = (event->>'factor_id')::uuid;
+
+    if last_failed_at is not null and now() - last_failed_at < interval '2 seconds' then
+      -- Last attempt was too recent - reject with a 429 (Too Many Requests) error
+      return jsonb_build_object(
+        'error', jsonb_build_object(
+          'http_code', 429,
+          'message', 'Please wait a moment before trying again.'
+        )
+      );
+    end if;
+
+    -- Record this failed attempt
+    insert into public.mfa_failed_verification_attempts
+      (
+        user_id,
+        factor_id,
+        last_failed_at
+      )
+      values
+      (
+        (event->>'user_id')::uuid,
+        (event->>'factor_id')::uuid,
+        now()
+      )
+      on conflict (user_id, factor_id) do update
+        set last_failed_at = now();
+
+    -- Allow Supabase Auth to handle the failed attempt with default behavior
+    return jsonb_build_object('decision', 'continue');
+  end;
+$$;
 ```
 
-### Is this helpful?
+### Step 3: Set appropriate permissions
 
-NoYes
+```sql
+-- Grant access to the Auth admin role
+grant all
+  on table public.mfa_failed_verification_attempts
+  to supabase_auth_admin;
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+-- Revoke access from other roles
+revoke all
+  on table public.mfa_failed_verification_attempts
+  from authenticated, anon, public;
+```
 
+### Step 4: Enable the hook in project settings
 
+1. Navigate to Authentication > Hooks in the Supabase Dashboard
+2. Enable the "MFA Verification" hook
+3. Select your `hook_mfa_verification_attempt` function
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+## Advanced Use Cases
 
+You can extend the basic example to implement more sophisticated security measures:
 
-
-
-
-   AcceptOpt outPrivacy settings
+- Count and limit total failed attempts within a longer time window (e.g., 5 attempts per hour)
+- Implement progressive timeouts that increase with each consecutive failed attempt
+- Send notifications to administrators when suspicious verification patterns are detected
+- Log verification attempts with IP addresses and device information for security auditing

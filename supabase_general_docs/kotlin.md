@@ -1,217 +1,197 @@
-Getting Started
+# Using Supabase with Android Kotlin
 
-# Use Supabase with Android Kotlin
+This guide will walk you through creating a Supabase project, adding sample data to your database, and querying the data from an Android Kotlin app.
 
-## Learn how to create a Supabase project, add some sample data to your database, and query the data from an Android Kotlin app.
+## Prerequisites
 
-* * *
+- Android Studio installed
+- Basic knowledge of Android development
+- Basic knowledge of Kotlin and Jetpack Compose
 
-1
+## Step 1: Create a Supabase Project
 
-### Create a Supabase project
+1. Go to [database.new](https://database.new/) and create a new Supabase project.
+2. When your project is up and running, go to the SQL Editor and run the following snippet to create a table with sample data:
 
-Go to [database.new](https://database.new/) and create a new Supabase project.
+```sql
+-- Create the table
+CREATE TABLE instruments (
+  id bigint primary key generated always as identity,
+  name text not null
+);
 
-When your project is up and running, go to the [Table Editor](https://supabase.com/dashboard/project/_/editor), create a new table and insert some data.
+-- Insert some sample data into the table
+INSERT INTO instruments (name)
+VALUES
+  ('violin'),
+  ('viola'),
+  ('cello');
 
-Alternatively, you can run the following snippet in your project's [SQL Editor](https://supabase.com/dashboard/project/_/sql/new). This will create a `instruments` table with some sample data.
+-- Enable Row Level Security
+ALTER TABLE instruments ENABLE ROW LEVEL SECURITY;
 
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
--- Create the tablecreate table instruments (  id bigint primary key generated always as identity,  name text not null);-- Insert some sample data into the tableinsert into instruments (name)values  ('violin'),  ('viola'),  ('cello');alter table instruments enable row level security;
+-- Make the data in the table publicly readable with an RLS policy
+CREATE POLICY "public can read instruments"
+ON public.instruments
+FOR SELECT TO anon
+USING (true);
 ```
 
-Make the data in your table publicly readable by adding an RLS policy:
+## Step 2: Create an Android App
 
-```flex
+Open Android Studio and create a new Android project with Kotlin and Compose support.
 
-1
-2
-3
-4
-create policy "public can read instruments"on public.instrumentsfor select to anonusing (true);
+## Step 3: Install the Dependencies
+
+Open your `build.gradle.kts` (app) file and add the serialization plugin, Ktor client, and Supabase client:
+
+```kotlin
+plugins {
+    // Existing plugins
+    id("org.jetbrains.kotlin.android")
+    kotlin("plugin.serialization") version "$kotlin_version"
+}
+
+dependencies {
+    // Existing dependencies
+    implementation(platform("io.github.jan-tennert.supabase:bom:$supabase_version"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.ktor:ktor-client-android:$ktor_version")
+}
 ```
 
-2
+> **Note**: Replace `$kotlin_version` with your project's Kotlin version, `$supabase_version` with the [latest supabase-kt version](https://github.com/supabase-community/supabase-kt/releases), and `$ktor_version` with the [latest Ktor version](https://ktor.io/docs/welcome.html).
 
-### Create an Android app with Android Studio
+## Step 4: Add Internet Access Permission
 
-Open Android Studio > New > New Android Project.
+Add the internet permission to your `AndroidManifest.xml` file under the `manifest` tag and outside the `application` tag:
 
-3
-
-### Install the Dependencies
-
-Open `build.gradle.kts` (app) file and add the serialization plug, Ktor client, and Supabase client.
-
-Replace the version placeholders `$kotlin_version` with the Kotlin version of the project, and `$supabase_version` and `$ktor_version` with the respective latest versions.
-
-The latest supabase-kt version can be found [here](https://github.com/supabase-community/supabase-kt/releases) and Ktor version can be found [here](https://ktor.io/docs/welcome.html).
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-plugins {  ...  kotlin("plugin.serialization") version "$kotlin_version"}...dependencies {  ...  implementation(platform("io.github.jan-tennert.supabase:bom:$supabase_version"))  implementation("io.github.jan-tennert.supabase:postgrest-kt")  implementation("io.ktor:ktor-client-android:$ktor_version")}
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
 ```
 
-4
+## Step 5: Initialize the Supabase Client
 
-### Add internet access permission
+Create a Supabase client in your `MainActivity.kt` file just below the imports:
 
-Add the following line to the `AndroidManifest.xml` file under the `manifest` tag and outside the `application` tag.
-
-```flex
-
-1
-2
-3
-...<uses-permission android:name="android.permission.INTERNET" />...
+```kotlin
+val supabase = createSupabaseClient(
+    supabaseUrl = "YOUR_SUPABASE_URL",
+    supabaseKey = "YOUR_SUPABASE_ANON_KEY"
+) {
+    install(Postgrest)
+}
 ```
 
-5
+> **Important**: Replace `YOUR_SUPABASE_URL` and `YOUR_SUPABASE_ANON_KEY` with your actual Supabase project URL and anon key from your project dashboard.
 
-### Initialize the Supabase client
+## Step 6: Create a Data Model
 
-You can create a Supabase client whenever you need to perform an API call.
+Create a serializable data class to represent the data from the database:
 
-For the sake of simplicity, we will create a client in the `MainActivity.kt` file at the top just below the imports.
-
-Replace the `supabaseUrl` and `supabaseKey` with your own:
-
-###### Project URL
-
-No project found
-
-To get your Project URL, [log in](https://supabase.com/dashboard).
-
-###### Anon key
-
-No project found
-
-To get your Anon key, [log in](https://supabase.com/dashboard).
-
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-import ...val supabase = createSupabaseClient(    supabaseUrl = "https://xyzcompany.supabase.co",    supabaseKey = "your_public_anon_key"  ) {    install(Postgrest)}...
+```kotlin
+@Serializable
+data class Instrument(
+    val id: Int,
+    val name: String,
+)
 ```
 
-6
+## Step 7: Query and Display Data
 
-### Create a data model for instruments
+Use `LaunchedEffect` to fetch data from the database and display it in a `LazyColumn`:
 
-Create a serializable data class to represent the data from the database.
+```kotlin
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            YourAppTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    InstrumentsList()
+                }
+            }
+        }
+    }
+}
 
-Add the following below the `createSupabaseClient` function in the `MainActivity.kt` file.
-
-```flex
-
-1
-2
-3
-4
-5
-@Serializabledata class Instrument(    val id: Int,    val name: String,)
+@Composable
+fun InstrumentsList() {
+    var instruments by remember { mutableStateOf<List<Instrument>>(listOf()) }
+    
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            instruments = supabase.from("instruments")
+                           .select().decodeList<Instrument>()
+        }
+    }
+    
+    LazyColumn {
+        items(
+            instruments,
+            key = { instrument -> instrument.id },
+        ) { instrument ->
+            Text(
+                instrument.name,
+                modifier = Modifier.padding(8.dp),
+            )
+        }
+    }
+}
 ```
 
-7
+> **Note**: For production applications, consider using a `ViewModel` to separate UI and data fetching logic.
 
-### Query data from the app
+## Step 8: Run the App
 
-Use `LaunchedEffect` to fetch data from the database and display it in a `LazyColumn`.
+Run the app on an emulator or a physical device by clicking the "Run app" button in Android Studio.
 
-Replace the default `MainActivity` class with the following code.
+You should see a simple list showing the instruments from your Supabase database.
 
-Note that we are making a network request from our UI code. In production, you should probably use a `ViewModel` to separate the UI and data fetching logic.
+## Complete Imports
 
-```flex
+Here's a reference for the imports you'll need:
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-class MainActivity : ComponentActivity() {    override fun onCreate(savedInstanceState: Bundle?) {        super.onCreate(savedInstanceState)        setContent {            SupabaseTutorialTheme {                // A surface container using the 'background' color from the theme                Surface(                    modifier = Modifier.fillMaxSize(),                    color = MaterialTheme.colorScheme.background                ) {                    InstrumentsList()                }            }        }    }}@Composablefun InstrumentsList() {    var instruments by remember { mutableStateOf<List<Instrument>>(listOf()) }    LaunchedEffect(Unit) {        withContext(Dispatchers.IO) {            instruments = supabase.from("instruments")                              .select().decodeList<Instrument>()        }    }    LazyColumn {        items(            instruments,            key = { instrument -> instrument.id },        ) { instrument ->            Text(                instrument.name,                modifier = Modifier.padding(8.dp),            )        }    }}
+```kotlin
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 ```
 
-8
+## Next Steps
 
-### Start the app
+- Add functionality to create, update, and delete instruments
+- Implement user authentication using Supabase Auth
+- Add error handling and loading states
+- Separate data fetching logic into a Repository or ViewModel
 
-Run the app on an emulator or a physical device by clicking the `Run app` button in Android Studio.
+## Resources
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+- [supabase-kt GitHub Repository](https://github.com/supabase-community/supabase-kt)
+- [Supabase Documentation](https://supabase.com/docs)
+- [Android Kotlin Documentation](https://developer.android.com/kotlin)
+- [Jetpack Compose Documentation](https://developer.android.com/jetpack/compose)

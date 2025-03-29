@@ -1,26 +1,35 @@
-# Database Error: remaining connection slots are reserved for non-replication superuser connections
+# Database Error: Remaining Connection Slots Are Reserved For Non-Replication Superuser Connections
 
-Last edited: 1/18/2025
+## Problem
 
-* * *
+This error usually occurs when the database reaches the maximum number of connections allowed based on the compute add-on. The full error message typically looks like:
 
-This error usually occurs when the database reaches the maximum number of connections allowed based on the compute add-on.
+```
+FATAL: remaining connection slots are reserved for non-replication superuser connections
+```
 
-To overcome this, the connections need to be optimized as mentioned here: [https://supabase.com/docs/guides/platform/performance#optimizing-the-number-of-connections](https://supabase.com/docs/guides/platform/performance#optimizing-the-number-of-connections)
+## Solutions
 
-Additionally, you can try using the connection pool to help solve this issue:
-[https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pooler](https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pooler)
+### 1. Optimize Your Connections
 
-If you're already using connection pooling and still hitting the maximum connections, then it is suggested to upgrade your compute add-on that allows more connections: [https://supabase.com/docs/guides/platform/compute-add-ons](https://supabase.com/docs/guides/platform/compute-add-ons)
+Review your application code to make sure you're properly managing database connections. Implement connection pooling at the application level and make sure connections are being closed when they're no longer needed.
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+See the [Performance documentation](https://supabase.com/docs/guides/platform/performance#optimizing-the-number-of-connections) for more details on optimizing the number of connections.
 
+### 2. Use Connection Pooling
 
+Supabase provides connection pooling which can help solve this issue by efficiently managing connections:
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+```
+postgresql://postgres:[YOUR-PASSWORD]@[db.ref.supabase.co]:6543/postgres
+```
 
+Learn more about the [Connection Pooler](https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pooler).
 
+### 3. Upgrade Your Compute Add-on
 
+If you're already using connection pooling and still hitting the maximum connections, consider upgrading your compute add-on to one that allows more connections:
 
+[See available Compute Add-ons](https://supabase.com/docs/guides/platform/compute-add-ons)
 
-   AcceptOpt outPrivacy settings
+Each compute tier supports a different maximum number of connections, and upgrading to a higher tier will provide more connection slots.

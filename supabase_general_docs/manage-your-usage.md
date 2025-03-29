@@ -1,8 +1,4 @@
-Platform
-
 # Manage your usage
-
-* * *
 
 Each subpage breaks down a specific usage item and details what you're charged for, how costs are calculated, and how to optimize usage and reduce costs.
 
@@ -26,19 +22,3 @@ Each subpage breaks down a specific usage item and details what you're charged f
 - [IPv4](https://supabase.com/docs/guides/platform/manage-your-usage/ipv4)
 - [MFA Phone](https://supabase.com/docs/guides/platform/manage-your-usage/advanced-mfa-phone)
 - [Log Drains](https://supabase.com/docs/guides/platform/manage-your-usage/log-drains)
-
-### Is this helpful?
-
-NoYes
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

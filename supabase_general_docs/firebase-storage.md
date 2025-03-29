@@ -1,96 +1,127 @@
-Platform
+# Migrating from Firebase Storage to Supabase Storage
 
-# Migrated from Firebase Storage to Supabase
+This guide explains how to migrate your files from Firebase Storage to Supabase Storage using the community-provided migration tools.
 
-## Migrate Firebase Storage files to Supabase Storage.
+## Overview
 
-* * *
+The migration process involves two main steps:
+1. Downloading files from Firebase Storage to your local filesystem
+2. Uploading these files from your local filesystem to Supabase Storage
 
-Supabase provides several [tools](https://github.com/supabase-community/firebase-to-supabase/tree/main/storage) to convert storage files from Firebase Storage to Supabase Storage. Conversion is a two-step process:
+Supabase provides tools to simplify this migration process, making it straightforward to move your files between services.
 
-1. Files are downloaded from a Firebase storage bucket to a local filesystem.
-2. Files are uploaded from the local filesystem to a Supabase storage bucket.
+## Setting Up the Migration Tool
 
-## Set up the migration tool [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage\#set-up-migration-tool)
+1. Clone the migration repository:
+   ```bash
+   git clone https://github.com/supabase-community/firebase-to-supabase.git
+   ```
 
-1. Clone the [`firebase-to-supabase`](https://github.com/supabase-community/firebase-to-supabase) repository:
+2. Navigate to the storage directory and prepare the Supabase configuration:
+   ```bash
+   cd firebase-to-supabase/storage
+   ```
 
+3. Rename the sample configuration file:
+   ```bash
+   cp supabase-keys-sample.js supabase-keys.js
+   ```
 
+4. Configure your Supabase credentials:
+   - Go to your Supabase project's [API settings](https://supabase.com/dashboard/project/_/settings/api)
+   - Copy the **Project URL** and update the `SUPABASE_URL` value in `supabase-keys.js`
+   - Copy the **service_role** key and update the `SUPABASE_KEY` value in `supabase-keys.js`
 
-```flex
+## Generating a Firebase Private Key
 
+1. Log in to your [Firebase Console](https://console.firebase.google.com/project) and open your project
 
-1
-git clone https://github.com/supabase-community/firebase-to-supabase.git
+2. Access your project settings:
+   - Click the gear icon next to **Project Overview** in the sidebar
+   - Select **Project Settings**
+
+3. Generate a service account key:
+   - Click **Service Accounts** tab
+   - Select **Firebase Admin SDK**
+   - Click **Generate new private key**
+   - Save the downloaded file as `firebase-service.json` in your project directory
+
+## Command Line Options
+
+### Downloading from Firebase Storage
+
+Use the download script to fetch files from Firebase Storage:
+
+```bash
+node download.js <prefix> [<folder>] [<batchSize>] [<limit>] [<token>]
 ```
 
-2. In the `/storage` directory, rename [supabase-keys-sample.js](https://github.com/supabase-community/firebase-to-supabase/blob/main/storage/supabase-keys-sample.js) to `supabase-keys.js`.
+Parameters:
+- `<prefix>`: The prefix of files to download (use `""` for the root bucket)
+- `<folder>`: (Optional) Local subfolder for downloaded files (default: `downloads`)
+- `<batchSize>`: (Optional) Number of files to process in one batch (default: 100)
+- `<limit>`: (Optional) Maximum number of files to process (use `0` for no limit)
+- `<token>`: (Optional) Page token to continue from a previous batch
 
-3. Go to your Supabase project's [API settings](https://supabase.com/dashboard/project/_/settings/api) in the Dashboard.
+For large migrations, you can process files in batches by using the token displayed at the end of each batch to continue where you left off.
 
-4. Copy the **Project URL** and update the `SUPABASE_URL` value in `supabase-keys.js`.
+### Uploading to Supabase Storage
 
-5. Under **Project API keys**, copy the **service\_role** key and update the `SUPABASE_KEY` value in `supabase-keys.js`.
+After downloading the files, use the upload script to move them to Supabase:
 
+```bash
+node upload.js <prefix> <folder> <bucket>
+```
 
-## Generate a Firebase private key [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage\#generate-firebase-private-key)
+Parameters:
+- `<prefix>`: File prefix filter (use `""` to upload all files)
+- `<folder>`: Local folder containing the downloaded files (default: `downloads`)
+- `<bucket>`: Supabase Storage bucket name to upload to
 
-1. Log in to your [Firebase Console](https://console.firebase.google.com/project) and open your project.
-2. Click the gear icon next to **Project Overview** in the sidebar and select **Project Settings**.
-3. Click **Service Accounts** and select **Firebase Admin SDK**.
-4. Click **Generate new private key**.
-5. Rename the downloaded file to `firebase-service.json`.
+If the specified bucket doesn't exist, it will be created as a non-public bucket. You'll need to configure appropriate permissions in the [Supabase Dashboard](https://supabase.com/dashboard/project/_/storage/buckets) after migration.
 
-## Command line options [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage\#command-line-options)
+## Best Practices
 
-### Download Firestore Storage bucket to a local filesystem folder [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage\#download-firestore-storage-bucket)
+1. **Run a test migration first**: Try with a small subset of files before migrating your entire storage.
 
-`node download.js <prefix> [<folder>] [<batchSize>] [<limit>] [<token>]`
+2. **Preserve folder structure**: The migration tools maintain your original folder hierarchy, but verify this with a test run.
 
-- `<prefix>`: The prefix of the files to download. To process the root bucket, use an empty prefix: "".
-- `<folder>`: (optional) Name of subfolder for downloaded files. The selected folder is created as a subfolder of the current folder (e.g., `./downloads/`). The default is `downloads`.
-- `<batchSize>`: (optional) The default is 100.
-- `<limit>`: (optional) Stop after processing this many files. For no limit, use `0`.
-- `<token>`: (optional) Begin processing at this `pageToken`.
+3. **Verify permissions**: After migration, ensure bucket permissions match your security requirements.
 
-To process in batches using multiple command-line executions, you must use the same parameters with a new `<token>` on subsequent calls. Use the token displayed on the last call to continue the process at a given point.
+4. **Update your application code**: Remember to update your client-side code to use Supabase Storage APIs.
 
-### Upload files to Supabase Storage bucket [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage\#upload-to-supabase-storage-bucket)
+5. **Batch processing**: For large migrations (thousands of files), process in smaller batches to avoid timeouts or memory issues.
 
-`node upload.js <prefix> <folder> <bucket>`
+6. **Maintain an audit log**: Keep track of which files have been successfully migrated.
 
-- `<prefix>`: The prefix of the files to download. To process all files, use an empty prefix: "".
-- `<folder>`: Name of subfolder of files to upload. The selected folder is read as a subfolder of the current folder (e.g., `./downloads/`). The default is `downloads`.
-- `<bucket>`: Name of the bucket to upload to.
+## Handling Errors and Resuming Transfers
 
-If the bucket doesn't exist, it's created as a `non-public` bucket. You must set permissions on this new bucket in the [Supabase Dashboard](https://supabase.com/dashboard/project/_/storage/buckets) before users can download any files.
+If the migration process is interrupted or fails:
 
-## Resources [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage\#resources)
+1. Note the last processed token displayed in the console
+2. Re-run the download command with the same parameters, adding the token as the last parameter
+3. Continue the upload process with the files that were successfully downloaded
 
-- [Supabase vs Firebase](https://supabase.com/alternatives/supabase-vs-firebase)
-- [Firestore Data Migration](https://supabase.com/docs/guides/migrations/firestore-data)
-- [Firebase Auth Migration](https://supabase.com/docs/guides/migrations/firebase-auth)
+This allows you to resume the migration from where it left off rather than starting over.
 
-## Enterprise [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage\#enterprise)
+## Post-Migration Steps
 
-[Contact us](https://forms.supabase.com/enterprise) if you need more help migrating your project.
+1. **Verify file integrity**: Spot-check files to ensure they were migrated correctly.
 
-### Is this helpful?
+2. **Configure bucket policies**: Set up appropriate access controls for your Supabase Storage buckets.
 
-NoYes
+3. **Update application references**: Update all Firebase Storage references in your codebase to use Supabase Storage.
 
-### On this page
+4. **Test your application**: Thoroughly test your application with the migrated files.
 
-[Set up the migration tool](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage#set-up-migration-tool) [Generate a Firebase private key](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage#generate-firebase-private-key) [Command line options](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage#command-line-options) [Download Firestore Storage bucket to a local filesystem folder](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage#download-firestore-storage-bucket) [Upload files to Supabase Storage bucket](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage#upload-to-supabase-storage-bucket) [Resources](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage#resources) [Enterprise](https://supabase.com/docs/guides/platform/migrating-to-supabase/firebase-storage#enterprise)
+5. **Monitor storage usage**: Check your Supabase Storage usage to ensure everything is working as expected.
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+## Additional Resources
 
+- [Supabase vs Firebase comparison](https://supabase.com/alternatives/supabase-vs-firebase)
+- [Firestore Data Migration guide](https://supabase.com/docs/guides/migrations/firestore-data)
+- [Firebase Auth Migration guide](https://supabase.com/docs/guides/migrations/firebase-auth)
 
+## Enterprise Support
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+For larger migrations or if you need additional assistance, [contact the Supabase Enterprise team](https://forms.supabase.com/enterprise) for professional migration support.

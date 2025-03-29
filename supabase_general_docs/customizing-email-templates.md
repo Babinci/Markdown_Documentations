@@ -1,28 +1,21 @@
-Local Development
+# Customizing Email Templates
 
-# Customizing email templates
-
-## Customizing local email templates using config.toml.
-
-* * *
+## Customizing local email templates using config.toml
 
 You can customize the email templates for local development [using the `config.toml` settings](https://supabase.com/docs/guides/cli/config#auth-config).
 
-## Configuring templates [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#configuring-templates)
+## Configuring templates
 
-You should provide a relative URL to the `content_path` parameter, pointing to an HTML file which contains the template. For example
+You should provide a relative URL to the `content_path` parameter, pointing to an HTML file which contains the template. For example:
 
-supabase/config.tomlsupabase/templates/invite.html
-
-```flex
-
-1
-2
-3
-[auth.email.template.invite]subject = "You are invited to Acme Inc"content_path = "./supabase/templates/invite.html"
+**supabase/config.toml**
+```toml
+[auth.email.template.invite]
+subject = "You are invited to Acme Inc"
+content_path = "./supabase/templates/invite.html"
 ```
 
-## Available email templates [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#available-email-templates)
+## Available email templates
 
 There are several Auth email templates which can be configured:
 
@@ -32,121 +25,85 @@ There are several Auth email templates which can be configured:
 - `auth.email.template.magic_link`
 - `auth.email.template.email_change`
 
-## Template variables [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#template-variables)
+## Template variables
 
 The templating system provides the following variables for use:
 
-### `ConfirmationURL` [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#confirmationurl)
+### `ConfirmationURL`
 
 Contains the confirmation URL. For example, a signup confirmation URL would look like:
 
-```flex
-
-1
+```
 https://project-ref.supabase.co/auth/v1/verify?token={{ .TokenHash }}&type=email&redirect_to=https://example.com/path
 ```
 
 **Usage**
 
-```flex
-
-1
+```html
 <p>Click here to confirm: {{ .ConfirmationURL }}</p>
 ```
 
-### `Token` [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#token)
+### `Token`
 
 Contains a 6-digit One-Time-Password (OTP) that can be used instead of the `ConfirmationURL`.
 
 **Usage**
 
-```flex
-
-1
+```html
 <p>Here is your one time password: {{ .Token }}</p>
 ```
 
-### `TokenHash` [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#tokenhash)
+### `TokenHash`
 
 Contains a hashed version of the `Token`. This is useful for constructing your own email link in the email template.
 
 **Usage**
 
-```flex
-
-1
-2
-3
-4
-5
-6
-<p>Follow this link to confirm your user:</p><p>  <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email"    >Confirm your email</a  ></p>
+```html
+<p>Follow this link to confirm your user:</p>
+<p>
+  <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email">
+    Confirm your email
+  </a>
+</p>
 ```
 
-### `SiteURL` [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#siteurl)
+### `SiteURL`
 
 Contains your application's Site URL. This can be configured in your project's [authentication settings](https://supabase.com/dashboard/project/_/auth/url-configuration).
 
 **Usage**
 
-```flex
-
-1
+```html
 <p>Visit <a href="{{ .SiteURL }}">here</a> to log in.</p>
 ```
 
-### `Email` [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#email)
+### `Email`
 
 Contains the user's email address.
 
 **Usage**
 
-```flex
-
-1
+```html
 <p>A recovery request was sent to {{ .Email }}.</p>
 ```
 
-### `NewEmail` [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#newemail)
+### `NewEmail`
 
 Contains the new user's email address. This is only available in the `email_change` email template.
 
 **Usage**
 
-```flex
-
-1
+```html
 <p>You are requesting to update your email address to {{ .NewEmail }}.</p>
 ```
 
-## Deploying email templates [\#](https://supabase.com/docs/guides/local-development/customizing-email-templates\#deploying-email-templates)
+## Deploying email templates
 
 These settings are for local development. To apply the changes locally, stop and restart the Supabase containers:
 
-```flex
-
-1
+```bash
 supabase stop && supabase start
 ```
 
 For hosted projects managed by Supabase, copy the templates into the [Email Templates](https://supabase.com/dashboard/project/_/auth/templates) section of the Dashboard.
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Configuring templates](https://supabase.com/docs/guides/local-development/customizing-email-templates#configuring-templates) [Available email templates](https://supabase.com/docs/guides/local-development/customizing-email-templates#available-email-templates) [Template variables](https://supabase.com/docs/guides/local-development/customizing-email-templates#template-variables) [ConfirmationURL](https://supabase.com/docs/guides/local-development/customizing-email-templates#confirmationurl) [Token](https://supabase.com/docs/guides/local-development/customizing-email-templates#token) [TokenHash](https://supabase.com/docs/guides/local-development/customizing-email-templates#tokenhash) [SiteURL](https://supabase.com/docs/guides/local-development/customizing-email-templates#siteurl) [Email](https://supabase.com/docs/guides/local-development/customizing-email-templates#email) [NewEmail](https://supabase.com/docs/guides/local-development/customizing-email-templates#newemail) [Deploying email templates](https://supabase.com/docs/guides/local-development/customizing-email-templates#deploying-email-templates)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

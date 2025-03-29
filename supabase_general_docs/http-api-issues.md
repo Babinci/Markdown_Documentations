@@ -1,61 +1,74 @@
-# Diagnose HTTP API issues
+# Diagnosing HTTP API Issues
 
 Last edited: 2/3/2025
 
-* * *
+When using Supabase's HTTP APIs, you might encounter various issues that affect your application's performance and reliability. This guide will help you identify common problems and implement effective solutions.
 
-Symptoms of HTTP API issues include:
+## Common Symptoms
+
+The main symptoms of HTTP API issues include:
 
 - HTTP timeouts
-- 5xx response codes
+- 5xx response codes (500, 502, 503, 504)
 - High response times
 
-### Under-provisioned resources [\#](https://supabase.com/docs/guides/troubleshooting/http-api-issues\#under-provisioned-resources)
+## Under-Provisioned Resources
 
-The most common class of issues that causes HTTP timeouts and 5xx response codes is the under-provisioning of resources for your project. This can cause your project to be unable to service the traffic it is receiving.
+The most common cause of HTTP timeouts and 5xx response codes is under-provisioning of resources for your project. When your project lacks sufficient resources to handle incoming traffic, API failures occur.
 
-Each Supabase project is provisioned with [segregated compute resources](https://supabase.com/docs/guides/platform/compute-add-ons). This allows the project to serve unlimited requests, as long as they can be handled using the resources that have been provisioned. Complex queries, or queries that process larger amounts of data, will require higher amounts of resources. As such, the amount of resources that can handle a high volume of simple queries (or queries involving small amounts of data), will likely be unable to handle a similar volume of complex queries.
+Each Supabase project has [segregated compute resources](https://supabase.com/docs/guides/platform/compute-add-ons), allowing it to serve unlimited requests within its provisioned capacity. However, complex queries or those processing large amounts of data require more resources than simple operations.
 
-You can view the resource utilization of your Supabase Project using the [reports in the Dashboard](https://supabase.com/dashboard/project/_/reports/database).
+### Monitoring Resource Usage
 
-Some common solutions for this issue are:
+You can monitor your project's resource utilization through the [Dashboard Reports page](https://supabase.com/dashboard/project/_/reports/database).
 
-- [Upgrading](https://supabase.com/dashboard/project/_/settings/compute-and-disk) to a [larger compute add-on](https://supabase.com/docs/guides/platform/compute-add-ons) in order to serve higher volumes of traffic.
-- [Optimizing the queries](https://supabase.com/docs/guides/platform/performance#examining-query-performance) being executed.
-- [Using fewer Postgres connections](https://supabase.com/docs/guides/platform/performance#configuring-clients-to-use-fewer-connections) can reduce the amount of resources needed on the project.
-- [Restarting](https://supabase.com/dashboard/project/_/settings/general) the project. This only temporarily solves the issue by terminating any ongoing workloads that might be tying up your compute resources.
-  - All databases of the project, including [Read replicas](https://supabase.com/docs/guides/platform/read-replicas), will be restarted.
-  - If you only want to restart a specific Read Replica, you can do so from the [Infrastructure Settings page](https://supabase.com/dashboard/project/_/settings/infrastructure).
+### Solutions for Resource Constraints
 
-If your [Disk IO budget](https://supabase.com/docs/guides/platform/compute-add-ons#disk-io) has been drained, you will need to either wait for it to be replenished the next day, or upgrade to a larger compute add-on to increase the budget available to your project.
+1. **Upgrade Compute Resources**:
+   - [Upgrade to a larger compute add-on](https://supabase.com/dashboard/project/_/settings/compute-and-disk) to accommodate higher traffic volumes
+   - Reference the [compute add-ons documentation](https://supabase.com/docs/guides/platform/compute-add-ons) for sizing options
 
-## Unable to connect to your Supabase project [\#](https://supabase.com/docs/guides/troubleshooting/http-api-issues\#unable-to-connect-to-your-supabase-project)
+2. **Optimize Queries**:
+   - [Review and optimize](https://supabase.com/docs/guides/platform/performance#examining-query-performance) the queries being executed
+   - Add appropriate indexes to improve query performance
 
-Symptom: You're unable to connect to your Postgres database directly, but can open the Project in the [Supabase Dashboard](https://supabase.com/dashboard/project/_/).
+3. **Reduce Connection Count**:
+   - [Configure clients to use fewer connections](https://supabase.com/docs/guides/platform/performance#configuring-clients-to-use-fewer-connections)
+   - Use connection pooling when possible
 
-### Too many open connections [\#](https://supabase.com/docs/guides/troubleshooting/http-api-issues\#too-many-open-connections)
+4. **Restart the Project** (temporary solution):
+   - [Restart your project](https://supabase.com/dashboard/project/_/settings/general) to terminate ongoing workloads
+   - This affects all databases including read replicas
+   - For selective restarts, use the [Infrastructure Settings page](https://supabase.com/dashboard/project/_/settings/infrastructure)
 
-Errors about too many open connections can be _temporarily_ resolved by [restarting the database](https://supabase.com/dashboard/project/_/settings/general). However, this won't solve the underlying issue for a permanent solution.
+### Disk I/O Budget Exhaustion
 
-- If you're receiving a `No more connections allowed (max_client_conn)` error:
-  - Configure your applications and services to [use fewer connections](https://supabase.com/docs/guides/platform/performance#configuring-clients-to-use-fewer-connections).
-  - [Upgrade](https://supabase.com/dashboard/project/_/settings/compute-and-disk) to a [larger compute add-on](https://supabase.com/docs/guides/platform/compute-add-ons) to increase the number of available connections.
-- If you're receiving a `sorry, too many clients already` or `remaining connection slots are reserved for non-replication superuser connections` error message in addition to the above suggestions, switch to using the [connection pooler](https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pool) instead.
+If your [Disk I/O budget](https://supabase.com/docs/guides/platform/compute-add-ons#disk-io) has been depleted, you have two options:
+- Wait for automatic replenishment the next day
+- Upgrade to a larger compute add-on to increase the available budget
 
-### Connection refused [\#](https://supabase.com/docs/guides/troubleshooting/http-api-issues\#connection-refused)
+## Connection Issues
 
-If you receive a `connection refused` error after a few initial failed connection attempts, your client has likely been temporarily blocked in order to protect the database from brute-force attacks. You can wait 30 minutes before trying again with the correct password, or you can [contact support](https://supabase.com/dashboard/support/new) with your client's IP address to manually unblock you.
+### Too Many Open Connections
 
-If you're also unable to open the project using the [Supabase Dashboard](https://supabase.com/dashboard/project/_/), review the solutions for [under-provisioned projects](https://supabase.com/docs/guides/troubleshooting/http-api-issues#under-provisioned-resources).
+If you're unable to establish new database connections but can still access the Supabase Dashboard, you might be hitting connection limits.
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+Error messages and solutions:
 
+- **"No more connections allowed (max_client_conn)"**:
+  - Configure applications to [use fewer connections](https://supabase.com/docs/guides/platform/performance#configuring-clients-to-use-fewer-connections)
+  - [Upgrade to a larger compute add-on](https://supabase.com/docs/guides/platform/compute-add-ons) with higher connection limits
 
+- **"Sorry, too many clients already" or "remaining connection slots are reserved for non-replication superuser connections"**:
+  - Implement the solutions above
+  - Switch to using the [connection pooler](https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pool)
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+### Connection Refused
 
+If you receive a "connection refused" error after several failed connection attempts:
 
+1. Your client may be temporarily blocked to protect against brute-force attacks
+2. Wait 30 minutes before retrying with the correct credentials
+3. Alternatively, [contact support](https://supabase.com/dashboard/support/new) with your client's IP address for manual unblocking
 
-
-
-   AcceptOpt outPrivacy settings
+If you also cannot access the project via the Dashboard, review the [under-provisioned resources](#under-provisioned-resources) section.

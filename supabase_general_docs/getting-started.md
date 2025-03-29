@@ -1,165 +1,61 @@
-Getting Started
+# Getting Started with Supabase
 
-# Getting Started
+This guide provides an overview of how to get started with Supabase, along with resources for various frameworks and use cases.
 
-* * *
+## Core Resources
 
-[Features\\
-\\
-A non-exhaustive list of features that Supabase provides for every project.](https://supabase.com/docs/guides/getting-started/features) [Architecture\\
-\\
-An overview of Supabase's architecture and product principles.](https://supabase.com/docs/guides/getting-started/architecture) [Local Development\\
-\\
-Use the Supabase CLI to develop locally and collaborate between teams.](https://supabase.com/docs/guides/cli/getting-started)
+- [Features](https://supabase.com/docs/guides/getting-started/features) - A non-exhaustive list of features that Supabase provides for every project.
+- [Architecture](https://supabase.com/docs/guides/getting-started/architecture) - An overview of Supabase's architecture and product principles.
+- [Local Development](https://supabase.com/docs/guides/cli/getting-started) - Use the Supabase CLI to develop locally and collaborate between teams.
 
-### Use cases [\#](https://supabase.com/docs/guides/getting-started\#use-cases)
+## Use Cases
 
-[![AI, Vectors, and embeddings](https://supabase.com/docs/img/icons/openai_logo-light.svg)\\
-\\
-AI, Vectors, and embeddings\\
-\\
-Build AI-enabled applications using our Vector toolkit.](https://supabase.com/docs/guides/ai#examples) [![Subscription Payments (SaaS)](https://supabase.com/docs/img/icons/nextjs-icon.svg)\\
-\\
-Subscription Payments (SaaS)\\
-\\
-Clone, deploy, and fully customize a SaaS subscription application with Next.js.](https://github.com/vercel/nextjs-subscription-payments#nextjs-subscription-payments-starter) [![Partner Gallery](https://supabase.com/docs/img/icons/nextjs-icon.svg)\\
-\\
-Partner Gallery\\
-\\
-Postgres full-text search, image storage, and more.](https://github.com/supabase-community/partner-gallery-example#supabase-partner-gallery-example)
+- **[AI, Vectors, and embeddings](https://supabase.com/docs/guides/ai#examples)** - Build AI-enabled applications using our Vector toolkit.
+- **[Subscription Payments (SaaS)](https://github.com/vercel/nextjs-subscription-payments#nextjs-subscription-payments-starter)** - Clone, deploy, and fully customize a SaaS subscription application with Next.js.
+- **[Partner Gallery](https://github.com/supabase-community/partner-gallery-example#supabase-partner-gallery-example)** - Postgres full-text search, image storage, and more.
 
-### Framework quickstarts [\#](https://supabase.com/docs/guides/getting-started\#framework-quickstarts)
+## Framework Quickstarts
 
-[![React](https://supabase.com/docs/img/icons/react-icon.svg)\\
-\\
-React\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from a React app.](https://supabase.com/docs/guides/getting-started/quickstarts/reactjs) [![Next.js](https://supabase.com/docs/img/icons/nextjs-icon-light.svg)\\
-\\
-Next.js\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from a Next.js app.](https://supabase.com/docs/guides/getting-started/quickstarts/nextjs) [![Nuxt](https://supabase.com/docs/img/icons/nuxt-icon.svg)\\
-\\
-Nuxt\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from a Nuxt app.](https://supabase.com/docs/guides/getting-started/quickstarts/nuxtjs) [![Hono](https://supabase.com/docs/img/icons/hono-icon.svg)\\
-\\
-Hono\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, secure it with auth, and query the data from a Hono app.](https://supabase.com/docs/guides/getting-started/quickstarts/hono) [![RedwoodJS](https://supabase.com/docs/img/icons/redwood-icon.svg)\\
-\\
-RedwoodJS\\
-\\
-Learn how to create a Supabase project, add some sample data to your database using Prisma migration and seeds, and query the data from a RedwoodJS app.](https://supabase.com/docs/guides/getting-started/quickstarts/redwoodjs) [![Flutter](https://supabase.com/docs/img/icons/flutter-icon.svg)\\
-\\
-Flutter\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from a Flutter app.](https://supabase.com/docs/guides/getting-started/quickstarts/flutter) [![iOS SwiftUI](https://supabase.com/docs/img/icons/swift-icon.svg)\\
-\\
-iOS SwiftUI\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from an iOS app.](https://supabase.com/docs/guides/getting-started/quickstarts/ios-swiftui) [![Android Kotlin](https://supabase.com/docs/img/icons/kotlin-icon.svg)\\
-\\
-Android Kotlin\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from an Android Kotlin app.](https://supabase.com/docs/guides/getting-started/quickstarts/kotlin) [![SvelteKit](https://supabase.com/docs/img/icons/svelte-icon.svg)\\
-\\
-SvelteKit\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from a SvelteKit app.](https://supabase.com/docs/guides/getting-started/quickstarts/sveltekit) [![SolidJS](https://supabase.com/docs/img/icons/solidjs-icon.svg)\\
-\\
-SolidJS\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from a SolidJS app.](https://supabase.com/docs/guides/getting-started/quickstarts/solidjs) [![Vue](https://supabase.com/docs/img/icons/vuejs-icon.svg)\\
-\\
-Vue\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from a Vue app.](https://supabase.com/docs/guides/getting-started/quickstarts/vue) [![refine](https://supabase.com/docs/img/icons/refine-icon.svg)\\
-\\
-refine\\
-\\
-Learn how to create a Supabase project, add some sample data to your database, and query the data from a refine app.](https://supabase.com/docs/guides/getting-started/quickstarts/refine)
+### Web Frameworks
 
-### Web app demos [\#](https://supabase.com/docs/guides/getting-started\#web-app-demos)
+- **[React](https://supabase.com/docs/guides/getting-started/quickstarts/reactjs)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from a React app.
+- **[Next.js](https://supabase.com/docs/guides/getting-started/quickstarts/nextjs)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from a Next.js app.
+- **[Nuxt](https://supabase.com/docs/guides/getting-started/quickstarts/nuxtjs)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from a Nuxt app.
+- **[Hono](https://supabase.com/docs/guides/getting-started/quickstarts/hono)** - Learn how to create a Supabase project, add some sample data to your database, secure it with auth, and query the data from a Hono app.
+- **[RedwoodJS](https://supabase.com/docs/guides/getting-started/quickstarts/redwoodjs)** - Learn how to create a Supabase project, add some sample data to your database using Prisma migration and seeds, and query the data from a RedwoodJS app.
+- **[SvelteKit](https://supabase.com/docs/guides/getting-started/quickstarts/sveltekit)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from a SvelteKit app.
+- **[SolidJS](https://supabase.com/docs/guides/getting-started/quickstarts/solidjs)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from a SolidJS app.
+- **[Vue](https://supabase.com/docs/guides/getting-started/quickstarts/vue)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from a Vue app.
+- **[refine](https://supabase.com/docs/guides/getting-started/quickstarts/refine)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from a refine app.
 
-[![Next.js](https://supabase.com/docs/img/icons/nextjs-icon-light.svg)\\
-\\
-Next.js\\
-\\
-Learn how to build a user management app with Next.js and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-nextjs) [![React](https://supabase.com/docs/img/icons/react-icon.svg)\\
-\\
-React\\
-\\
-Learn how to build a user management app with React and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-react) [![Vue 3](https://supabase.com/docs/img/icons/vuejs-icon.svg)\\
-\\
-Vue 3\\
-\\
-Learn how to build a user management app with Vue 3 and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-vue-3) [![Nuxt 3](https://supabase.com/docs/img/icons/nuxt-icon.svg)\\
-\\
-Nuxt 3\\
-\\
-Learn how to build a user management app with Nuxt 3 and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-nuxt-3) [![Angular](https://supabase.com/docs/img/icons/angular-icon.svg)\\
-\\
-Angular\\
-\\
-Learn how to build a user management app with Angular and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-angular) [![RedwoodJS](https://supabase.com/docs/img/icons/redwood-icon.svg)\\
-\\
-RedwoodJS\\
-\\
-Learn how to build a user management app with RedwoodJS and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-redwoodjs) [![Svelte](https://supabase.com/docs/img/icons/svelte-icon.svg)\\
-\\
-Svelte\\
-\\
-Learn how to build a user management app with Svelte and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-svelte) [![SvelteKit](https://supabase.com/docs/img/icons/svelte-icon.svg)\\
-\\
-SvelteKit\\
-\\
-Learn how to build a user management app with SvelteKit and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-sveltekit) [![refine](https://supabase.com/docs/img/icons/refine-icon.svg)\\
-\\
-refine\\
-\\
-Learn how to build a user management app with refine and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-refine)
+### Mobile Frameworks
 
-### Mobile tutorials [\#](https://supabase.com/docs/guides/getting-started\#mobile-tutorials)
+- **[Flutter](https://supabase.com/docs/guides/getting-started/quickstarts/flutter)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from a Flutter app.
+- **[iOS SwiftUI](https://supabase.com/docs/guides/getting-started/quickstarts/ios-swiftui)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from an iOS app.
+- **[Android Kotlin](https://supabase.com/docs/guides/getting-started/quickstarts/kotlin)** - Learn how to create a Supabase project, add some sample data to your database, and query the data from an Android Kotlin app.
 
-[![Flutter](https://supabase.com/docs/img/icons/flutter-icon.svg)\\
-\\
-Flutter\\
-\\
-Learn how to build a user management app with Flutter and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-flutter) [![Expo React Native](https://supabase.com/docs/img/icons/expo-icon-light.svg)\\
-\\
-Expo React Native\\
-\\
-Learn how to build a user management app with Expo React Native and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native) [![Android Kotlin](https://supabase.com/docs/img/icons/kotlin-icon.svg)\\
-\\
-Android Kotlin\\
-\\
-Learn how to build a product management app with Android and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-kotlin) [![iOS Swift](https://supabase.com/docs/img/icons/swift-icon.svg)\\
-\\
-iOS Swift\\
-\\
-Learn how to build a user management app with iOS and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-swift) [![Ionic React](https://supabase.com/docs/img/icons/ionic-icon.svg)\\
-\\
-Ionic React\\
-\\
-Learn how to build a user management app with Ionic React and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-ionic-react) [![Ionic Vue](https://supabase.com/docs/img/icons/ionic-icon.svg)\\
-\\
-Ionic Vue\\
-\\
-Learn how to build a user management app with Ionic Vue and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-ionic-vue) [![Ionic Angular](https://supabase.com/docs/img/icons/ionic-icon.svg)\\
-\\
-Ionic Angular\\
-\\
-Learn how to build a user management app with Ionic Angular and Supabase Database, Auth, and Storage functionality.](https://supabase.com/docs/guides/getting-started/tutorials/with-ionic-angular)
+## Web App Demos
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+Complete user management application demos with authentication and data management:
 
+- **[Next.js](https://supabase.com/docs/guides/getting-started/tutorials/with-nextjs)** - Build a user management app with Next.js and Supabase Database, Auth, and Storage functionality.
+- **[React](https://supabase.com/docs/guides/getting-started/tutorials/with-react)** - Build a user management app with React and Supabase Database, Auth, and Storage functionality.
+- **[Vue 3](https://supabase.com/docs/guides/getting-started/tutorials/with-vue-3)** - Build a user management app with Vue 3 and Supabase Database, Auth, and Storage functionality.
+- **[Nuxt 3](https://supabase.com/docs/guides/getting-started/tutorials/with-nuxt-3)** - Build a user management app with Nuxt 3 and Supabase Database, Auth, and Storage functionality.
+- **[Angular](https://supabase.com/docs/guides/getting-started/tutorials/with-angular)** - Build a user management app with Angular and Supabase Database, Auth, and Storage functionality.
+- **[RedwoodJS](https://supabase.com/docs/guides/getting-started/tutorials/with-redwoodjs)** - Build a user management app with RedwoodJS and Supabase Database, Auth, and Storage functionality.
+- **[Svelte](https://supabase.com/docs/guides/getting-started/tutorials/with-svelte)** - Build a user management app with Svelte and Supabase Database, Auth, and Storage functionality.
+- **[SvelteKit](https://supabase.com/docs/guides/getting-started/tutorials/with-sveltekit)** - Build a user management app with SvelteKit and Supabase Database, Auth, and Storage functionality.
+- **[refine](https://supabase.com/docs/guides/getting-started/tutorials/with-refine)** - Build a user management app with refine and Supabase Database, Auth, and Storage functionality.
 
+## Mobile Tutorials
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+Complete user management application demos for mobile platforms:
 
-
-
-
-
-   AcceptOpt outPrivacy settings
+- **[Flutter](https://supabase.com/docs/guides/getting-started/tutorials/with-flutter)** - Build a user management app with Flutter and Supabase Database, Auth, and Storage functionality.
+- **[Expo React Native](https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native)** - Build a user management app with Expo React Native and Supabase Database, Auth, and Storage functionality.
+- **[Android Kotlin](https://supabase.com/docs/guides/getting-started/tutorials/with-kotlin)** - Build a product management app with Android and Supabase Database, Auth, and Storage functionality.
+- **[iOS Swift](https://supabase.com/docs/guides/getting-started/tutorials/with-swift)** - Build a user management app with iOS and Supabase Database, Auth, and Storage functionality.
+- **[Ionic React](https://supabase.com/docs/guides/getting-started/tutorials/with-ionic-react)** - Build a user management app with Ionic React and Supabase Database, Auth, and Storage functionality.
+- **[Ionic Vue](https://supabase.com/docs/guides/getting-started/tutorials/with-ionic-vue)** - Build a user management app with Ionic Vue and Supabase Database, Auth, and Storage functionality.
+- **[Ionic Angular](https://supabase.com/docs/guides/getting-started/tutorials/with-ionic-angular)** - Build a user management app with Ionic Angular and Supabase Database, Auth, and Storage functionality.

@@ -1,18 +1,14 @@
-Integrations
+# Scopes for Your OAuth App
 
-# Scopes for your OAuth App
+Scopes let you specify the level of access your integration needs when working with the Supabase Management API.
 
-## Scopes let you specify the level of access your integration needs
-
-* * *
-
-Scopes are only available for OAuth apps. Check out [**our guide**](https://supabase.com/docs/guides/platform/oauth-apps/build-a-supabase-integration) to learn how to build an OAuth app integration.
+> **Note:** Scopes are only available for OAuth apps. Check out [our guide](https://supabase.com/docs/guides/platform/oauth-apps/build-a-supabase-integration) to learn how to build an OAuth app integration.
 
 Scopes restrict access to the specific [Supabase Management API endpoints](https://supabase.com/docs/reference/api/introduction) for OAuth tokens. All scopes can be specified as read and/or write.
 
 Scopes are set when you [create an OAuth app](https://supabase.com/docs/guides/platform/oauth-apps/build-a-supabase-integration#create-an-oauth-app) in the Supabase Dashboard.
 
-## Available scopes [\#](https://supabase.com/docs/guides/integrations/build-a-supabase-integration/oauth-scopes\#available-scopes)
+## Available Scopes
 
 | Name | Type | Description |
 | --- | --- | --- |
@@ -34,23 +30,3 @@ Scopes are set when you [create an OAuth app](https://supabase.com/docs/guides/p
 | `Rest` | `Write` | Update a project's PostgREST configuration |
 | `Secrets` | `Read` | Retrieve a project's API keys<br>Retrieve a project's secrets<br>Retrieve a project's pgsodium config |
 | `Secrets` | `Write` | Create or update a project's secrets<br>Update a project's pgsodium configuration |
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Available scopes](https://supabase.com/docs/guides/integrations/build-a-supabase-integration/oauth-scopes#available-scopes)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

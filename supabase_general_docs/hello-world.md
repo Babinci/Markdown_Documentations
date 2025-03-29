@@ -1,10 +1,4 @@
-AI & Vectors
-
-# Creating and managing collections
-
-## Connecting to your database with Colab.
-
-* * *
+# Creating and Managing Vector Collections
 
 This guide will walk you through a basic ["Hello World"](https://github.com/supabase/supabase/blob/master/examples/ai/vector_hello_world.ipynb) example using Colab and Supabase Vecs. You'll learn how to:
 
@@ -14,7 +8,7 @@ This guide will walk you through a basic ["Hello World"](https://github.com/supa
 4. Add data to the collection
 5. Query the collection
 
-## Project setup [\#](https://supabase.com/docs/guides/ai/quickstarts/hello-world\#project-setup)
+## Project setup
 
 Let's create a new Postgres database. This is as simple as starting a new Project in Supabase:
 
@@ -30,27 +24,25 @@ You can find your project credentials inside the project [settings](https://supa
 - [Database credentials](https://supabase.com/dashboard/project/_/settings/database): connection strings and connection pooler details.
 - [API credentials](https://supabase.com/dashboard/project/_/settings/database): your serverless API URL and `anon` / `service_role` keys.
 
-## Launching a notebook [\#](https://supabase.com/docs/guides/ai/quickstarts/hello-world\#launching-a-notebook)
+## Launching a notebook
 
 Launch our [`vector_hello_world`](https://github.com/supabase/supabase/blob/master/examples/ai/vector_hello_world.ipynb) notebook in Colab:
 
-[![](https://supabase.com/docs/img/ai/colab-badge.svg)](https://colab.research.google.com/github/supabase/supabase/blob/master/examples/ai/vector_hello_world.ipynb)
+[![Open In Colab](https://supabase.com/docs/img/ai/colab-badge.svg)](https://colab.research.google.com/github/supabase/supabase/blob/master/examples/ai/vector_hello_world.ipynb)
 
 At the top of the notebook, you'll see a button `Copy to Drive`. Click this button to copy the notebook to your Google Drive.
 
-## Connecting to your database [\#](https://supabase.com/docs/guides/ai/quickstarts/hello-world\#connecting-to-your-database)
+## Connecting to your database
 
 Inside the Notebook, find the cell which specifies the `DB_CONNECTION`. It will contain some code like this:
 
-```flex
+```python
+import vecs
 
-1
-2
-3
-4
-5
-6
-import vecsDB_CONNECTION = "postgresql://<user>:<password>@<host>:<port>/<db_name>"# create vector store clientvx = vecs.create_client(DB_CONNECTION)
+DB_CONNECTION = "postgresql://<user>:<password>@<host>:<port>/<db_name>"
+
+# create vector store client
+vx = vecs.create_client(DB_CONNECTION)
 ```
 
 Replace the `DB_CONNECTION` with your own connection string for your database. You can find the Postgres connection string in the [Database Settings](https://supabase.com/dashboard/project/_/settings/database) of your Supabase project.
@@ -59,34 +51,14 @@ SQLAlchemy requires the connection string to start with `postgresql://` (instead
 
 You must use the "connection pooling" string (domain ending in `*.pooler.supabase.com`) with Google Colab since Colab does not support IPv6.
 
-## Stepping through the notebook [\#](https://supabase.com/docs/guides/ai/quickstarts/hello-world\#stepping-through-the-notebook)
+## Stepping through the notebook
 
-Now all that's left is to step through the notebook. You can do this by clicking the "execute" button ( `ctrl+enter`) at the top left of each code cell. The notebook guides you through the process of creating a collection, adding data to it, and querying it.
+Now all that's left is to step through the notebook. You can do this by clicking the "execute" button (`ctrl+enter`) at the top left of each code cell. The notebook guides you through the process of creating a collection, adding data to it, and querying it.
 
 You can view the inserted items in the [Table Editor](https://supabase.com/dashboard/project/_/editor/), by selecting the `vecs` schema from the schema dropdown.
 
 ![Colab documents](https://supabase.com/docs/img/ai/google-colab/colab-documents.png)
 
-## Next steps [\#](https://supabase.com/docs/guides/ai/quickstarts/hello-world\#next-steps)
+## Next steps
 
 You can now start building your own applications with Vecs. Check our [examples](https://supabase.com/docs/guides/ai#examples) for ideas.
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Project setup](https://supabase.com/docs/guides/ai/quickstarts/hello-world#project-setup) [Launching a notebook](https://supabase.com/docs/guides/ai/quickstarts/hello-world#launching-a-notebook) [Connecting to your database](https://supabase.com/docs/guides/ai/quickstarts/hello-world#connecting-to-your-database) [Stepping through the notebook](https://supabase.com/docs/guides/ai/quickstarts/hello-world#stepping-through-the-notebook) [Next steps](https://supabase.com/docs/guides/ai/quickstarts/hello-world#next-steps)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

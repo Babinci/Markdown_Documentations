@@ -1,138 +1,138 @@
-Edge Functions
+# Custom Image Manipulation with Edge Functions
 
-# Image Manipulation
+While Supabase Storage offers [built-in image transformations](https://supabase.com/docs/guides/storage/serving/image-transformations) for common needs, you can use Edge Functions to create custom image processing pipelines beyond what's available out-of-the-box.
 
-* * *
+This guide demonstrates how to use the [`magick-wasm`](https://github.com/dlemstra/magick-wasm) library, a WebAssembly port of ImageMagick, to perform advanced image manipulations in Supabase Edge Functions.
 
-Supabase Storage has [out-of-the-box support](https://supabase.com/docs/guides/storage/serving/image-transformations?queryGroups=language&language=js) for the most common image transformations and optimizations you need.
-If you need to do anything custom beyond what Supabase Storage provides, you can use Edge Functions to write custom image manipulation scripts.
+## Library Compatibility
 
-In this example, we will use [`magick-wasm`](https://github.com/dlemstra/magick-wasm) to perform image manipulations. `magick-wasm` is the WebAssembly port of the popular ImageMagick library and supports processing over 100 file formats.
+Edge Functions currently only support WebAssembly-based image processing libraries. Native libraries that require system dependencies (like `Sharp`) are not compatible. The WebAssembly port of ImageMagick (`magick-wasm`) is a good choice because it supports over 100 file formats and provides comprehensive image manipulation capabilities.
 
-Edge Functions currently doesn't support image processing libraries such as `Sharp`, which depend on native libraries. Only WASM-based libraries are supported.
+## Prerequisites
 
-### Prerequisites [\#](https://supabase.com/docs/guides/functions/examples/image-manipulation\#prerequisites)
+Before starting, ensure you have:
 
-Make sure you have the latest version of the [Supabase CLI](https://supabase.com/docs/guides/cli#installation) installed.
+1. The latest version of the [Supabase CLI](https://supabase.com/docs/guides/cli#installation) installed
+2. A Supabase project (local or hosted)
+3. Basic knowledge of TypeScript and Deno
 
-### Create the Edge Function [\#](https://supabase.com/docs/guides/functions/examples/image-manipulation\#create-the-edge-function)
+## Creating an Image Blur Function
 
-Create a new function locally:
+Let's create a function that accepts an uploaded image and returns a blurred thumbnail.
 
-```flex
+### Step 1: Create the Edge Function
 
-1
+Create a new function locally using the Supabase CLI:
+
+```bash
 supabase functions new image-blur
 ```
 
-### Write the function [\#](https://supabase.com/docs/guides/functions/examples/image-manipulation\#write-the-function)
+### Step 2: Implement the Function
 
-In this example, we are implementing a function allowing users to upload an image and get a blurred thumbnail.
+Add the following code to the `index.ts` file:
 
-Here's the implementation in `index.ts` file:
+```typescript
+// This is an example showing how to use Magick WASM to do image manipulations in Edge Functions.
+import {
+  ImageMagick,
+  initializeImageMagick,
+  MagickFormat,
+} from "npm:@imagemagick/magick-wasm@0.0.30";
 
-```flex
+const wasmBytes = await Deno.readFile(
+  new URL(
+    "magick.wasm",
+    import.meta.resolve("npm:@imagemagick/magick-wasm@0.0.30"),
+  ),
+);
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-// This is an example showing how to use Magick WASM to do image manipulations in Edge Functions.//import {  ImageMagick,  initializeImageMagick,  MagickFormat,} from "npm:@imagemagick/magick-wasm@0.0.30";const wasmBytes = await Deno.readFile(  new URL(    "magick.wasm",    import.meta.resolve("npm:@imagemagick/magick-wasm@0.0.30"),  ),);await initializeImageMagick(  wasmBytes,);Deno.serve(async (req) => {  const formData = await req.formData();  const content = await formData.get("file").bytes();  let result = ImageMagick.read(    content,    (img): Uint8Array => {      // resize the image      img.resize(500, 300);      // add a blur of 60x5      img.blur(60, 5);      return img.write(        (data) => data,      );    },  );  return new Response(    result,    { headers: { "Content-Type": "image/png" } },  );});
+await initializeImageMagick(
+  wasmBytes,
+);
+
+Deno.serve(async (req) => {
+  const formData = await req.formData();
+  const content = await formData.get("file").bytes();
+
+  let result = ImageMagick.read(
+    content,
+    (img): Uint8Array => {
+      // resize the image
+      img.resize(500, 300);
+      
+      // add a blur of 60x5
+      img.blur(60, 5);
+      
+      return img.write(
+        (data) => data,
+      );
+    },
+  );
+
+  return new Response(
+    result,
+    { headers: { "Content-Type": "image/png" } },
+  );
+});
 ```
 
-[View source](https://github.com/supabase/supabase/blob/641940e5464f0f894b0cf5b427a85e1686b9259b/examples/edge-functions/supabase/functions/image-manipulation/index.ts)
+This function:
+1. Initializes the ImageMagick WebAssembly module
+2. Accepts an image upload via a form submission
+3. Resizes the image to 500x300 pixels
+4. Applies a blur effect with radius 60 and sigma 5
+5. Returns the processed image with the appropriate content type
 
-### Test it locally [\#](https://supabase.com/docs/guides/functions/examples/image-manipulation\#test-it-locally)
+### Step 3: Test Locally
 
-You can test the function locally by running:
+Start your local Supabase development environment and serve the function:
 
-```flex
-
-1
-2
-supabase startsupabase functions serve --no-verify-jwt
+```bash
+supabase start
+supabase functions serve --no-verify-jwt
 ```
 
-Then, make a request using `curl` or your favorite API testing tool.
+Test the function using cURL or any API testing tool:
 
-```flex
-
-1
-2
-3
-curl --location '<http://localhost:54321/functions/v1/image-blur>' \\--form 'file=@"/path/to/image.png"'--output '/path/to/output.png'
+```bash
+curl --location 'http://localhost:54321/functions/v1/image-blur' \
+--form 'file=@"/path/to/image.png"' \
+--output '/path/to/output.png'
 ```
 
-If you open the `output.png` file you will find a transformed version of your original image.
+If everything works correctly, you should find a blurred, resized version of your original image at the specified output path.
 
-### Deploy to your hosted project [\#](https://supabase.com/docs/guides/functions/examples/image-manipulation\#deploy-to-your-hosted-project)
+### Step 4: Deploy to Production
 
-Now, let's deploy the function to your Supabase project.
+Once you're satisfied with the function, deploy it to your hosted Supabase project:
 
-```flex
-
-1
-2
-supabase linksupabase functions deploy image-blur
+```bash
+supabase link
+supabase functions deploy image-blur
 ```
 
-Hosted Edge Functions have [limits](https://supabase.com/docs/guides/functions/limits) on memory and CPU usage.
+## Performance Considerations
 
-If you try to perform complex image processing or handle large images (> 5MB) your function may return a resource limit exceeded error.
+Hosted Edge Functions have [resource limits](https://supabase.com/docs/guides/functions/limits) on memory and CPU usage. Keep these limitations in mind when processing images:
 
-### Is this helpful?
+- Complex image operations may exceed the resource limits
+- Large images (>5MB) may cause timeout errors
+- Consider implementing progressive enhancement or fallbacks for intensive operations
 
-NoYes
+## Extending the Function
 
-### On this page
+You can extend this example to implement other image manipulations:
 
-[Prerequisites](https://supabase.com/docs/guides/functions/examples/image-manipulation#prerequisites) [Create the Edge Function](https://supabase.com/docs/guides/functions/examples/image-manipulation#create-the-edge-function) [Write the function](https://supabase.com/docs/guides/functions/examples/image-manipulation#write-the-function) [Test it locally](https://supabase.com/docs/guides/functions/examples/image-manipulation#test-it-locally) [Deploy to your hosted project](https://supabase.com/docs/guides/functions/examples/image-manipulation#deploy-to-your-hosted-project)
+- **Watermarking**: Add text or image overlays
+- **Format conversion**: Convert between image formats
+- **Filters and effects**: Apply artistic filters or photo effects
+- **Composite operations**: Combine multiple images
+- **Metadata handling**: Extract or modify image metadata
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+## Resources
 
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+- [ImageMagick Documentation](https://imagemagick.org/script/command-line-options.php)
+- [magick-wasm GitHub Repository](https://github.com/dlemstra/magick-wasm)
+- [Supabase Edge Functions Limits](https://supabase.com/docs/guides/functions/limits)
+- [Example Source Code](https://github.com/supabase/supabase/blob/641940e5464f0f894b0cf5b427a85e1686b9259b/examples/edge-functions/supabase/functions/image-manipulation/index.ts)
