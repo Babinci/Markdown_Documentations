@@ -2,6 +2,8 @@
 
 Generate GPT text completions using OpenAI and Supabase Edge Functions.
 
+## Overview
+
 OpenAI provides a [completions API](https://platform.openai.com/docs/api-reference/completions) that allows you to use their generative GPT models in your own applications.
 
 OpenAI's API is intended to be used from the server-side. Supabase offers Edge Functions to make it easy to interact with third party APIs like OpenAI.
