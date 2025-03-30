@@ -1,24 +1,24 @@
-Platform
+# Manage Realtime Messages Usage
 
-# Manage Realtime Messages usage
+This guide explains how Supabase Realtime Messages are billed and how to monitor your usage.
 
-* * *
+## What You Are Charged For
 
-## What you are charged for [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages\#what-you-are-charged-for)
+You are charged for the number of messages going through Supabase Realtime throughout the billing cycle. This includes database changes, Broadcast, and Presence.
 
-You are charged for the number of messages going through Supabase Realtime throughout the billing cycle. Includes database changes, Broadcast and Presence.
+### Database Changes
 
-**Database changes**
 Each database change counts as one message per client that listens to the event. For example, if a database change occurs and 5 clients listen to that database event, it counts as 5 messages.
 
-**Broadcast**
+### Broadcast
+
 Each broadcast message counts as one message sent plus one message per subscribed client that receives it. For example, if you broadcast a message and 4 clients listen to it, it counts as 5 messages—1 sent and 4 received.
 
-## How charges are calculated [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages\#how-charges-are-calculated)
+## How Charges Are Calculated
 
 Realtime Messages are billed using Package pricing, with each package representing 1 million messages. If your usage falls between two packages, you are billed for the next whole package.
 
-### Example [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages\#example)
+### Example
 
 For simplicity, let's assume a package size of 1,000,000 and a charge of $2.50 per package without quota.
 
@@ -29,11 +29,11 @@ For simplicity, let's assume a package size of 1,000,000 and a charge of $2.50 p
 | 1,000,001 | 2 | $5.00 |
 | 1,500,000 | 2 | $5.00 |
 
-### Usage on your invoice [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages\#usage-on-your-invoice)
+### Usage on Your Invoice
 
 Usage is shown as "Realtime Messages" on your invoice.
 
-## Pricing [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages\#pricing)
+## Pricing
 
 $2.50 per 1 million messages. You are only charged for usage exceeding your subscription plan's quota.
 
@@ -44,9 +44,9 @@ $2.50 per 1 million messages. You are only charged for usage exceeding your subs
 | Team | 5 million | $2.50 per 1 million messages |
 | Enterprise | Custom | Custom |
 
-## Billing examples [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages\#billing-examples)
+## Billing Examples
 
-### Within quota [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages\#within-quota)
+### Within Quota
 
 The organization's Realtime messages are within the quota, so no charges apply.
 
@@ -59,7 +59,7 @@ The organization's Realtime messages are within the quota, so no charges apply.
 | Compute Credits |  | -$10 |
 | **Total** |  | **$25** |
 
-### Exceeding quota [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages\#exceeding-quota)
+### Exceeding Quota
 
 The organization's Realtime messages exceed the quota by 3.5 million, incurring charges for this additional usage.
 
@@ -72,37 +72,26 @@ The organization's Realtime messages exceed the quota by 3.5 million, incurring 
 | Compute Credits |  | -$10 |
 | **Total** |  | **$35** |
 
-## View usage [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages\#view-usage)
+## View Usage
 
 You can view Realtime Messages usage on the [organization's usage page](https://supabase.com/dashboard/org/_/usage). The page shows the usage of all projects by default. To view the usage for a specific project, select it from the dropdown. You can also select a different time period.
 
-![Usage page navigation bar](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-navbar--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+![Usage page navigation bar](https://supabase.com/docs/img/guides/platform/usage-navbar--light.png)
 
 In the Realtime Messages section, you can see the usage for the selected time period.
 
-![Usage page Realtime Messages section](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-realtime-messages--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+![Usage page Realtime Messages section](https://supabase.com/docs/img/guides/platform/usage-realtime-messages--light.png)
 
-### Is this helpful?
+## Managing Usage
 
-NoYes
+To control your Realtime Messages usage, consider these strategies:
 
-### On this page
+1. **Optimize client connections**: Ensure clients only subscribe to the channels they need and unsubscribe when they're done.
 
-[What you are charged for](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages#what-you-are-charged-for) [How charges are calculated](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages#how-charges-are-calculated) [Example](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages#example) [Usage on your invoice](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages#usage-on-your-invoice) [Pricing](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages#pricing) [Billing examples](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages#billing-examples) [Within quota](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages#within-quota) [Exceeding quota](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages#exceeding-quota) [View usage](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-messages#view-usage)
+2. **Filter database changes**: Use more specific filters when subscribing to database changes to reduce the number of messages.
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+3. **Implement throttling**: Consider adding throttling mechanisms for high-frequency events.
 
+4. **Use batch updates**: Instead of multiple individual database changes, batch them together when possible.
 
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
-
-
-![Usage page navigation bar](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-navbar--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-![Usage page Realtime Messages section](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-realtime-messages--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+5. **Monitor usage regularly**: Check your usage dashboard frequently to identify unexpected spikes.

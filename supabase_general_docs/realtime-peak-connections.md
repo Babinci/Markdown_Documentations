@@ -1,14 +1,12 @@
-Platform
+# Manage Realtime Peak Connections Usage
 
-# Manage Realtime Peak Connections usage
+This guide explains how Supabase Realtime Peak Connections are billed and how to monitor your usage.
 
-* * *
+## What You Are Charged For
 
-## What you are charged for [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#what-you-are-charged-for)
+Realtime Peak Connections are measured by tracking the highest number of concurrent connections for each project during the billing cycle. Regardless of fluctuations, only the peak count per project is used for billing, and the totals from all projects are summed. Only successful connections are counted; connection attempts are not included.
 
-Realtime Peak Connections are measured by tracking the highest number of concurrent connections for each project during the billing cycle. Regardless of fluctuations, only the peak count per project is used for billing, and the totals from all projects are summed. Only successful connections are counted, connection attempts are not included.
-
-### Example [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#example)
+### Example of Peak Connection Calculation
 
 For simplicity, this example assumes a billing cycle of only three days.
 
@@ -17,13 +15,13 @@ For simplicity, this example assumes a billing cycle of only three days.
 | Project A | 80 | 100 | 90 |
 | Project B | 120 | 110 | 150 |
 
-**Total billed connections:** 100 (Project A) + 150 (Project B) = **250 connections**
+**Total billed connections:** 100 (Project A's peak) + 150 (Project B's peak) = **250 connections**
 
-## How charges are calculated [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#how-charges-are-calculated)
+## How Charges Are Calculated
 
 Realtime Peak Connections are billed using Package pricing, with each package representing 1,000 peak connections. If your usage falls between two packages, you are billed for the next whole package.
 
-### Example [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#example)
+### Package Pricing Example
 
 For simplicity, let's assume a package size of 1,000 and a charge of $10 per package with no quota.
 
@@ -34,11 +32,11 @@ For simplicity, let's assume a package size of 1,000 and a charge of $10 per pac
 | 1,001 | 2 | $20 |
 | 1,500 | 2 | $20 |
 
-### Usage on your invoice [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#usage-on-your-invoice)
+### Usage on Your Invoice
 
 Usage is shown as "Realtime Peak Connections" on your invoice.
 
-## Pricing [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#pricing)
+## Pricing
 
 $10 per 1,000 peak connections. You are only charged for usage exceeding your subscription plan's quota.
 
@@ -49,9 +47,9 @@ $10 per 1,000 peak connections. You are only charged for usage exceeding your su
 | Team | 500 | $10 per 1,000 peak connections |
 | Enterprise | Custom | Custom |
 
-## Billing examples [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#billing-examples)
+## Billing Examples
 
-### Within quota [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#within-quota)
+### Within Quota
 
 The organization's connections are within the quota, so no charges apply.
 
@@ -64,7 +62,7 @@ The organization's connections are within the quota, so no charges apply.
 | Compute Credits |  | -$10 |
 | **Total** |  | **$25** |
 
-### Exceeding quota [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#exceeding-quota)
+### Exceeding Quota
 
 The organization's connections exceed the quota by 1,200, incurring charges for this additional usage.
 
@@ -73,41 +71,32 @@ The organization's connections exceed the quota by 1,200, incurring charges for 
 | Pro Plan | 1 | $25 |
 | Compute Hours Micro | 744 hours | $10 |
 | Realtime Peak Connections | 1,700 connections | $20 |
-| **Subtotal** |  | **$45** |
+| **Subtotal** |  | **$55** |
 | Compute Credits |  | -$10 |
-| **Total** |  | **$35** |
+| **Total** |  | **$45** |
 
-## View usage [\#](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections\#view-usage)
+## View Usage
 
 You can view Realtime Peak Connections usage on the [organization's usage page](https://supabase.com/dashboard/org/_/usage). The page shows the usage of all projects by default. To view the usage for a specific project, select it from the dropdown. You can also select a different time period.
 
-![Usage page navigation bar](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-navbar--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+![Usage page navigation bar](https://supabase.com/docs/img/guides/platform/usage-navbar--light.png)
 
 In the Realtime Peak Connections section, you can see the usage for the selected time period.
 
-![Usage page Realtime Peak Connections section](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-realtime-peak-connections--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+![Usage page Realtime Peak Connections section](https://supabase.com/docs/img/guides/platform/usage-realtime-peak-connections--light.png)
 
-### Is this helpful?
+## Managing Peak Connections
 
-NoYes
+To control your Realtime Peak Connections usage, consider these strategies:
 
-### On this page
+1. **Optimize connection lifecycle**: Ensure clients disconnect when they're inactive or no longer need the connection.
 
-[What you are charged for](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#what-you-are-charged-for) [Example](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#example) [How charges are calculated](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#how-charges-are-calculated) [Example](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#example) [Usage on your invoice](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#usage-on-your-invoice) [Pricing](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#pricing) [Billing examples](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#billing-examples) [Within quota](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#within-quota) [Exceeding quota](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#exceeding-quota) [View usage](https://supabase.com/docs/guides/platform/manage-your-usage/realtime-peak-connections#view-usage)
+2. **Implement connection pooling**: For server-side applications, use connection pooling to minimize the number of concurrent connections.
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+3. **Use shared connections**: Where possible, share a single connection among multiple features in your application rather than creating separate connections.
 
+4. **Implement progressive loading**: Instead of connecting all users simultaneously during peak times, consider staggering connections.
 
+5. **Monitor connection patterns**: Analyze your usage patterns to identify opportunities for optimization.
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
-
-
-![Usage page navigation bar](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-navbar--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-![Usage page Realtime Peak Connections section](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Fguides%2Fplatform%2Fusage-realtime-peak-connections--light.png&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+6. **Set up alerts**: Configure alerts to notify you when approaching your quota or when there are unusual spikes in connections.

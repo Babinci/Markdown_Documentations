@@ -1,117 +1,98 @@
-Database
+# pg_plan_filter: Restrict Total Query Cost
 
-# pg\_plan\_filter: Restrict Total Cost
+## Introduction
 
-* * *
+[`pg_plan_filter`](https://github.com/pgexperts/pg_plan_filter) is a PostgreSQL extension that blocks execution of statements where the query planner's estimate of the total cost exceeds a specified threshold. This extension gives database administrators a way to restrict the impact that individual queries can have on overall database load.
 
-[`pg_plan_filter`](https://github.com/pgexperts/pg_plan_filter) is Postgres extension to block execution of statements where query planner's estimate of the total cost exceeds a threshold. This is intended to give database administrators a way to restrict the contribution an individual query has on database load.
+By setting cost limits, you can prevent resource-intensive queries from overloading your database, helping maintain consistent performance for all users.
 
-## Enable the extension [\#](https://supabase.com/docs/guides/database/extensions/pg_plan_filter\#enable-the-extension)
+## Enable the Extension
 
-`pg_plan_filter` can be enabled on a per connection basis:
+`pg_plan_filter` can be enabled on a per-connection basis:
 
-```flex
-
-1
-load 'plan_filter';
+```sql
+LOAD 'plan_filter';
 ```
 
-or for all connections:
+Or for all connections (requires database restart):
 
-```flex
-
-1
-alter database some_db set session_preload_libraries = 'plan_filter';
+```sql
+ALTER DATABASE some_db SET session_preload_libraries = 'plan_filter';
 ```
 
-## API [\#](https://supabase.com/docs/guides/database/extensions/pg_plan_filter\#api)
+## Configuration Parameters
 
-`plan_filter.statement_cost_limit`: restricts the maximum total cost for executed statements
-`plan_filter.limit_select_only`: restricts to `select` statements
+The extension provides two primary configuration parameters:
 
-Note that `limit_select_only = true` is not the same as read-only because `select` statements may modify data, for example, through a function call.
+- **`plan_filter.statement_cost_limit`**: Restricts the maximum total cost for executed statements
+- **`plan_filter.limit_select_only`**: When set to true, restricts filtering to `SELECT` statements only
 
-## Example [\#](https://supabase.com/docs/guides/database/extensions/pg_plan_filter\#example)
+Note that `limit_select_only = true` is not the same as read-only mode because `SELECT` statements may still modify data, for example, through function calls.
+
+## Usage Example
 
 To demonstrate total cost filtering, we'll compare how `plan_filter.statement_cost_limit` treats queries that are under and over its cost limit. First, we set up a table with some data:
 
-```flex
+```sql
+CREATE TABLE book(
+  id int primary key
+);
+-- CREATE TABLE
 
-1
-2
-3
-4
-5
-6
-7
-create table book(  id int primary key);-- CREATE TABLEinsert into book(id) select * from generate_series(1, 10000);-- INSERT 0 10000
+INSERT INTO book(id) SELECT * FROM generate_series(1, 10000);
+-- INSERT 0 10000
 ```
 
-Next, we can review the explain plans for a single record select, and a whole table select.
+Next, we can review the explain plans for a single record select and a whole table select:
 
-```flex
+```sql
+EXPLAIN SELECT * FROM book WHERE id = 1;
+                             QUERY PLAN
+---------------------------------------------------------------------------
+ Index Only Scan using book_pkey on book  (cost=0.28..2.49 rows=1 width=4)
+   Index Cond: (id = 1)
+(2 rows)
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-explain select * from book where id =1;                                QUERY PLAN--------------------------------------------------------------------------- Index Only Scan using book_pkey on book  (cost=0.28..2.49 rows=1 width=4)   Index Cond: (id = 1)(2 rows)explain select * from book;                       QUERY PLAN--------------------------------------------------------- Seq Scan on book  (cost=0.00..135.00 rows=10000 width=4)(1 row)
+EXPLAIN SELECT * FROM book;
+                      QUERY PLAN
+---------------------------------------------------------
+ Seq Scan on book  (cost=0.00..135.00 rows=10000 width=4)
+(1 row)
 ```
 
-Now we can choose a `statement_cost_filter` value between the total cost for the single select (2.49) and the whole table select (135.0) so one statement will succeed and one will fail.
+Now we can choose a `statement_cost_limit` value between the total cost for the single select (2.49) and the whole table select (135.0) so one statement will succeed and one will fail:
 
-```flex
+```sql
+LOAD 'plan_filter';
+SET plan_filter.statement_cost_limit = 50; -- between 2.49 and 135.0
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-load 'plan_filter';set plan_filter.statement_cost_limit = 50; -- between 2.49 and 135.0select * from book where id = 1; id----  1(1 row)-- SUCCESS
+SELECT * FROM book WHERE id = 1;
+ id
+----
+  1
+(1 row)
+-- SUCCESS
 ```
 
-```flex
+When we try to run the more expensive query:
 
-1
-2
-3
-4
-5
-select * from book;ERROR:  plan cost limit exceededHINT:  The plan for your query shows that it would probably have an excessive run time. This may be due to a logic error in the SQL, or it maybe just a very costly query. Rewrite your query or increase the configuration parameter "plan_filter.statement_cost_limit".-- FAILURE
+```sql
+SELECT * FROM book;
+ERROR:  plan cost limit exceeded
+HINT:  The plan for your query shows that it would probably have an excessive run time. 
+This may be due to a logic error in the SQL, or it maybe just a very costly query. 
+Rewrite your query or increase the configuration parameter "plan_filter.statement_cost_limit".
+-- FAILURE
 ```
 
-## Resources [\#](https://supabase.com/docs/guides/database/extensions/pg_plan_filter\#resources)
+## Benefits
 
-- Official [`pg_plan_filter` documentation](https://github.com/pgexperts/pg_plan_filter)
+1. **Protection Against Resource-Intensive Queries**: Prevent long-running queries from monopolizing database resources
+2. **Query Optimization Enforcement**: Encourages developers to write optimized queries with proper indexing
+3. **Multi-tenant Environment Protection**: Prevents one tenant's bad query from affecting others
+4. **Application Layer Error Prevention**: Catches problematic queries before they impact the database
+5. **DoS Attack Mitigation**: Adds a layer of protection against simple denial of service attacks
 
-### Is this helpful?
+## Resources
 
-NoYes
-
-### On this page
-
-[Enable the extension](https://supabase.com/docs/guides/database/extensions/pg_plan_filter#enable-the-extension) [API](https://supabase.com/docs/guides/database/extensions/pg_plan_filter#api) [Example](https://supabase.com/docs/guides/database/extensions/pg_plan_filter#example) [Resources](https://supabase.com/docs/guides/database/extensions/pg_plan_filter#resources)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+- [Official pg_plan_filter documentation](https://github.com/pgexperts/pg_plan_filter)

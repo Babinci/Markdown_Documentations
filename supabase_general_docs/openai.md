@@ -96,8 +96,8 @@ supabase functions deploy --no-verify-jwt openai
 supabase secrets set --env-file ./supabase/.env.local
 ```
 
-## Go Deeper
+## Resources
 
-If you're interesting in learning how to use this to build your own ChatGPT, read [the blog post](https://supabase.com/blog/chatgpt-supabase-docs) and check out the video:
+If you're interested in learning how to use this to build your own ChatGPT, read [the blog post](https://supabase.com/blog/chatgpt-supabase-docs) and check out the video:
 
 [ClippyGPT - How I Built Supabase's OpenAI Doc Search (Embeddings)](https://www.youtube.com/watch?v=Yhtjd7yGGGA)

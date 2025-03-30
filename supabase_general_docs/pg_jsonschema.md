@@ -1,115 +1,87 @@
-31 APR - 04 MAR / 7AM PT
+# pg_jsonschema: JSON Schema Validation
 
-Launch Week 14
+## Introduction
 
-03d
+[JSON Schema](https://json-schema.org/) is a language for annotating and validating JSON documents. [`pg_jsonschema`](https://github.com/supabase/pg_jsonschema) is a PostgreSQL extension that adds the ability to validate PostgreSQL's built-in `json` and `jsonb` data types against JSON Schema documents.
 
-:
+## Enable the Extension
 
-18h
+### Using the Dashboard
 
-:
+1. Go to the [Database](https://supabase.com/dashboard/project/_/database/tables) page in the Dashboard
+2. Click on **Extensions** in the sidebar
+3. Search for `pg_jsonschema` and enable the extension
 
-17m
+### Using SQL
 
-:
-
-21s
-
-[Claim ticket](https://supabase.com/launch-week)Dismiss
-
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
-
-Database
-
-# pg\_jsonschema: JSON Schema Validation
-
-* * *
-
-[JSON Schema](https://json-schema.org/) is a language for annotating and validating JSON documents. [`pg_jsonschema`](https://github.com/supabase/pg_jsonschema) is a Postgres extension that adds the ability to validate PostgreSQL's built-in `json` and `jsonb` data types against JSON Schema documents.
-
-## Enable the extension [\#](https://supabase.com/docs/guides/database/extensions/pg_jsonschema\#enable-the-extension)
-
-DashboardSQL
-
-1. Go to the [Database](https://supabase.com/dashboard/project/_/database/tables) page in the Dashboard.
-2. Click on **Extensions** in the sidebar.
-3. Search for `pg_jsonschema` and enable the extension.
-
-## Functions [\#](https://supabase.com/docs/guides/database/extensions/pg_jsonschema\#functions)
-
-- [`json_matches_schema(schema json, instance json)`](https://github.com/supabase/pg_jsonschema#api): Checks if a `json` _instance_ conforms to a JSON Schema _schema_.
-- [`jsonb_matches_schema(schema json, instance jsonb)`](https://github.com/supabase/pg_jsonschema#api): Checks if a `jsonb` _instance_ conforms to a JSON Schema _schema_.
-
-## Usage [\#](https://supabase.com/docs/guides/database/extensions/pg_jsonschema\#usage)
-
-Since `pg_jsonschema` exposes its utilities as functions, we can execute them with a select statement:
-
-```flex
-
-1
-2
-3
-4
-5
-select  extensions.json_matches_schema(    schema := '{"type": "object"}',    instance := '{}'  );
+```sql
+CREATE EXTENSION pg_jsonschema;
 ```
 
-`pg_jsonschema` is generally used in tandem with a [check constraint](https://www.postgresql.org/docs/current/ddl-constraints.html) as a way to constrain the contents of a json/b column to match a JSON Schema.
+## API Functions
 
-```flex
+- **`json_matches_schema(schema json, instance json)`**: Checks if a `json` _instance_ conforms to a JSON Schema _schema_
+- **`jsonb_matches_schema(schema json, instance jsonb)`**: Checks if a `jsonb` _instance_ conforms to a JSON Schema _schema_
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-create table customer(    id serial primary key,    ...    metadata json,    check (        json_matches_schema(            '{                "type": "object",                "properties": {                    "tags": {                        "type": "array",                        "items": {                            "type": "string",                            "maxLength": 16                        }                    }                }            }',            metadata        )    ));-- Example: Valid Payloadinsert into customer(metadata)values ('{"tags": ["vip", "darkmode-ui"]}');-- Result:--   INSERT 0 1-- Example: Invalid Payloadinsert into customer(metadata)values ('{"tags": [1, 3]}');-- Result:--   ERROR:  new row for relation "customer" violates check constraint "customer_metadata_check"--   DETAIL:  Failing row contains (2, {"tags": [1, 3]}).
+## Usage Examples
+
+Since `pg_jsonschema` exposes its utilities as functions, we can execute them with a SELECT statement:
+
+```sql
+SELECT extensions.json_matches_schema(
+  schema := '{"type": "object"}',
+  instance := '{}'
+);
 ```
 
-## Resources [\#](https://supabase.com/docs/guides/database/extensions/pg_jsonschema\#resources)
+`pg_jsonschema` is generally used in tandem with a [check constraint](https://www.postgresql.org/docs/current/ddl-constraints.html) as a way to constrain the contents of a json/b column to match a JSON Schema:
 
-- Official [`pg_jsonschema` documentation](https://github.com/supabase/pg_jsonschema)
+```sql
+CREATE TABLE customer(
+  id serial primary key,
+  metadata json,
+  CHECK (
+    json_matches_schema(
+      '{
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 16
+            }
+          }
+        }
+      }',
+      metadata
+    )
+  )
+);
 
-Watch video guide
+-- Example: Valid Payload
+INSERT INTO customer(metadata)
+VALUES ('{"tags": ["vip", "darkmode-ui"]}');
+-- Result:
+--   INSERT 0 1
 
-![Video guide preview](https://supabase.com/docs/_next/image?url=https%3A%2F%2Fimg.youtube.com%2Fvi%2FamJo48ChLGs%2F0.jpg&w=3840&q=75&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+-- Example: Invalid Payload
+INSERT INTO customer(metadata)
+VALUES ('{"tags": [1, 3]}');
+-- Result:
+--   ERROR:  new row for relation "customer" violates check constraint "customer_metadata_check"
+--   DETAIL:  Failing row contains (2, {"tags": [1, 3]}).
+```
 
-### Is this helpful?
+## Benefits of JSON Schema Validation
 
-NoYes
+1. **Data Integrity**: Ensure all JSON data stored in your database adheres to a specific structure
+2. **Error Prevention**: Catch data validation issues at the database level rather than in application code
+3. **Self-documenting**: JSON Schema acts as documentation for the expected JSON structure
+4. **Type Safety**: Add type checking to otherwise schema-less JSON data
+5. **Complexity Handling**: Validate nested structures, arrays, and complex relationships
 
-### On this page
+## Resources
 
-[Enable the extension](https://supabase.com/docs/guides/database/extensions/pg_jsonschema#enable-the-extension) [Functions](https://supabase.com/docs/guides/database/extensions/pg_jsonschema#functions) [Usage](https://supabase.com/docs/guides/database/extensions/pg_jsonschema#usage) [Resources](https://supabase.com/docs/guides/database/extensions/pg_jsonschema#resources)
+- [Official pg_jsonschema documentation](https://github.com/supabase/pg_jsonschema)
+- [JSON Schema specification](https://json-schema.org/)

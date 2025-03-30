@@ -1,60 +1,50 @@
-REST API
-
 # SQL to REST API Translator
 
-## Translate SQL queries to HTTP requests and Supabase client code
+Translate SQL queries to HTTP requests and Supabase client code
 
-* * *
+## Overview
 
 Sometimes it's challenging to translate SQL queries to the equivalent [PostgREST](https://postgrest.org/) request or Supabase client code. Use this tool to help with this translation.
 
 PostgREST supports a subset of SQL, so not all SQL queries will translate.
 
-Enter SQL to translate
+## Example Translation
 
-1
+**Example SQL:**
+```sql
+select title, description from books 
+where description ilike '%cheese%' 
+order by title desc
+limit 5 offset 10
+```
 
-select
-
-Choose language to translate to
-
-cURLHTTPJavaScript
-
-```curl
-
+**Translated to cURL:**
+```bash
 curl -G http://localhost:54321/rest/v1/books \
-
   -d "select=title,description" \
-
   -d "description=ilike.*cheese*" \
-
   -d "order=title.desc" \
-
   -d "limit=5" \
-
   -d "offset=10"
 ```
 
-### FAQs
+**Translated to Supabase JavaScript client:**
+```javascript
+const { data, error } = await supabase
+  .from('books')
+  .select('title, description')
+  .ilike('description', '%cheese%')
+  .order('title', { ascending: false })
+  .range(10, 14)
+```
 
-What is `curl`?
+## FAQs
 
-What do `-G` and `-d` do?
+**What is `curl`?**  
+cURL is a command-line tool for transferring data using various protocols. It's commonly used to make HTTP requests to REST APIs.
 
-Why is `%` getting converted to `*`?
+**What do `-G` and `-d` do?**  
+The `-G` flag tells curl to use a GET request and append all data specified with `-d` parameters as query parameters. Each `-d` flag adds a new query parameter to the URL.
 
-### Is this helpful?
-
-NoYes
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+**Why is `%` getting converted to `*`?**  
+In URL encoding, the `%` character has special meaning, so PostgREST uses `*` in place of `%` in the URL parameters. The `*` is converted back to `%` when processed by PostgREST.

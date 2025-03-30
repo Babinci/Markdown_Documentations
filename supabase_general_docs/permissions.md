@@ -1,30 +1,25 @@
-Platform
-
 # Permissions
 
-* * *
+## Introduction
 
-The Supabase platform offers additional services (e.g. Storage) on top of the Postgres database that comes with each project. These services default to storing their operational data within your database, to ensure that you retain complete control over it.
+The Supabase platform offers additional services (e.g., Storage) on top of the PostgreSQL database that comes with each project. These services default to storing their operational data within your database, to ensure that you retain complete control over it.
 
-However, these services assume a base level of access to their data, in order to e.g. be able to run migrations over it. Breaking these assumptions runs the risk of rendering these services inoperational for your project:
+## Service Ownership Requirements
 
-- all entities under the `storage` schema are owned by `supabase_storage_admin`
-- all entities under the `auth` schema are owned by `supabase_auth_admin`
+These services assume a base level of access to their data in order to be able to run migrations and function properly. Breaking these assumptions runs the risk of rendering these services inoperational for your project:
 
-It is possible for violations of these assumptions to not cause an immediate outage, but take effect at a later time when a newer migration becomes available.
+- All entities under the `storage` schema are owned by `supabase_storage_admin`
+- All entities under the `auth` schema are owned by `supabase_auth_admin`
 
-### Is this helpful?
+## Long-term Implications
 
-NoYes
+It is possible for violations of these ownership assumptions to not cause an immediate outage, but take effect at a later time when a newer migration becomes available. Therefore, it's important to maintain the correct ownership structure for Supabase service schemas.
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+## Best Practices
 
+When working with Supabase services:
 
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+1. Do not change ownership of tables, functions, or other database objects in the `storage` or `auth` schemas
+2. Do not drop or recreate these schemas
+3. Use Row Level Security (RLS) policies to control access to the data instead of changing ownership
+4. If you need to extend functionality, consider creating your own schemas rather than modifying the existing service schemas

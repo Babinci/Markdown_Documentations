@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Context Protocol (MCP)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        body {
+            @apply font-['Inter'] bg-white text-black;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            @apply font-semibold mb-4 mt-6;
+        }
+
+        h1 { @apply text-3xl border-b border-gray-300 pb-2; }
+        h2 { @apply text-2xl border-b border-gray-300 pb-1; }
+        h3 { @apply text-xl; }
+        h4 { @apply text-lg font-medium; }
+
+        p {
+            @apply mb-4 leading-relaxed;
+        }
+
+        ul {
+            @apply list-disc list-inside mb-4 pl-4;
+        }
+
+        li {
+            @apply mb-1;
+        }
+
+        a {
+            @apply text-black underline hover:text-gray-700;
+        }
+
+        pre {
+            @apply bg-gray-100 border border-gray-300 rounded p-4 mb-4 overflow-x-auto text-sm;
+        }
+
+        code {
+            @apply font-mono; /* Ensure code uses monospace */
+        }
+        /* Style for inline code */
+        code:not(pre > code) {
+             @apply bg-gray-100 text-black px-1 py-0.5 rounded text-sm border border-gray-200;
+        }
+
+        table {
+            @apply w-full border-collapse border border-gray-400 mb-4 text-sm;
+        }
+
+        th, td {
+            @apply border border-gray-300 p-2 text-left;
+        }
+
+        th {
+            @apply bg-gray-100 font-semibold;
+        }
+
+        hr {
+            @apply my-8 border-t border-gray-300;
+        }
+
+        .container {
+            @apply max-w-4xl mx-auto px-4 py-8;
+        }
+
+        /* Specific styling for the table of contents */
+        #toc ul {
+            @apply list-none pl-0;
+        }
+        #toc li {
+            @apply mb-2;
+        }
+        #toc li ul {
+            @apply pl-4 mt-1 list-disc;
+        }
+        #toc > ul > li > a {
+             @apply font-semibold;
+        }
+
+    </style>
+</head>
+<body class="bg-white text-black">
+
+    <div class="container">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-2">Model Context Protocol (MCP)</h1>
+            <p class="text-lg text-gray-700">A standardized protocol for LLM applications to connect with external data sources and tools.</p>
+            <p><a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer">docs.modelcontextprotocol.io</a></p>
+        </header>
+
+        <nav id="toc" class="mb-12 p-6 border border-gray-300 rounded">
+            <h2 class="text-2xl mb-4 !border-none">Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li>
+                    <a href="#protocol-specification">Protocol Specification</a>
+                    <ul>
+                        <li><a href="#messages">Messages</a></li>
+                        <li><a href="#transports">Transports</a></li>
+                        <li><a href="#connection-lifecycle">Connection Lifecycle</a></li>
+                        <li><a href="#protocol-layers">Protocol Layers</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#architecture">Architecture</a>
+                    <ul>
+                        <li><a href="#core-components">Core Components</a></li>
+                        <li><a href="#server-features">Server Features</a>
+                            <ul>
+                                <li><a href="#prompts">Prompts</a></li>
+                                <li><a href="#resources">Resources</a></li>
+                                <li><a href="#tools">Tools</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#client-features">Client Features</a>
+                            <ul>
+                                <li><a href="#sampling">Sampling</a></li>
+                                <li><a href="#roots">Roots</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="#design-principles">Design Principles</a></li>
+                <li><a href="#security">Security and Trust & Safety</a></li>
+                <li>
+                    <a href="#python-sdk">MCP Python SDK</a>
+                    <ul>
+                        <li><a href="#installation">Installation</a></li>
+                        <li><a href="#quickstart">Quickstart</a></li>
+                        <li><a href="#core-concepts">Core Concepts</a>
+                             <ul>
+                                <li><a href="#sdk-server">Server</a></li>
+                                <li><a href="#sdk-resources">Resources</a></li>
+                                <li><a href="#sdk-tools">Tools</a></li>
+                                <li><a href="#sdk-prompts">Prompts</a></li>
+                                <li><a href="#sdk-images">Images</a></li>
+                                <li><a href="#sdk-context">Context</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#running-server">Running Your Server</a></li>
+                        <li><a href="#sdk-examples">Examples</a></li>
+                        <li><a href="#advanced-usage">Advanced Usage</a></li>
+                    </ul>
+                </li>
+                <li><a href="#documentation">Documentation</a></li>
+                <li><a href="#contributing">Contributing</a></li>
+                <li><a href="#license">License</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section id="overview">
+                <h2>Overview</h2>
+                <p>Model Context Protocol (MCP) is an open protocol that enables seamless integration between LLM applications and external data sources and tools. Whether you're building an AI-powered IDE, enhancing a chat interface, or creating custom AI workflows, MCP provides a standardized way to connect LLMs with the context they need.</p>
+                <p>MCP provides a standardized way for applications to:</p>
+                <ul>
+                    <li>Share contextual information with language models</li>
+                    <li>Expose tools and capabilities to AI systems</li>
+                    <li>Build composable integrations and workflows</li>
+                </ul>
+                <p>The protocol uses JSON-RPC 2.0 messages to establish communication between:</p>
+                <ul>
+                    <li><strong>Hosts:</strong> LLM applications that initiate connections</li>
+                    <li><strong>Clients:</strong> Connectors within the host application</li>
+                    <li><strong>Servers:</strong> Services that provide context and capabilities</li>
+                </ul>
+                <p>MCP takes inspiration from the Language Server Protocol, which standardizes how to add support for programming languages across a whole ecosystem of development tools. Similarly, MCP standardizes how to integrate additional context and tools into the ecosystem of AI applications.</p>
+            </section>
+
+            <hr>
+
+            <section id="protocol-specification">
+                <h2>Protocol Specification</h2>
+                <p>The Model Context Protocol specification defines the authoritative protocol requirements, based on the TypeScript schema in <code>schema.ts</code>.</p>
+
+                <section id="messages">
+                    <h3>Messages</h3>
+                    <p>All messages between MCP clients and servers MUST follow the JSON-RPC 2.0 specification. The protocol defines three fundamental types of messages:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Requirements</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Requests</td>
+                                <td>Messages sent to initiate an operation</td>
+                                <td>Must include unique ID and method name</td>
+                            </tr>
+                            <tr>
+                                <td>Responses</td>
+                                <td>Messages sent in reply to requests</td>
+                                <td>Must include same ID as request</td>
+                            </tr>
+                             <tr>
+                                <td>Notifications</td>
+                                <td>Messages with no reply expected</td>
+                                <td>Must not include an ID</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>Responses are further sub-categorized as either successful results or errors. Results can follow any JSON object structure, while errors must include an error code and message at minimum.</p>
+
+                    <h4>Request Format</h4>
+                    <pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "id": "request-id-1",
+  "method": "method-name",
+  "params": {
+    "parameterName": "value"
+  }
+}</code></pre>
+
+                    <h4>Response Format</h4>
+                    <pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "id": "request-id-1",
+  "result": {
+    "propertyName": "value"
+  }
+}</code></pre>
+
+                    <h4>Error Response Format</h4>
+                    <pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "id": "request-id-1",
+  "error": {
+    "code": -32602,
+    "message": "Error description",
+    "data": {
+      "additionalDetails": "value"
+    }
+  }
+}</code></pre>
+
+                    <h4>Notification Format</h4>
+                    <pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "method": "notifications/event-name",
+  "params": {
+    "parameterName": "value"
+  }
+}</code></pre>
+                </section>
+
+                <section id="transports">
+                    <h3>Transports</h3>
+                    <p>MCP defines two standard transport mechanisms for client-server communication:</p>
+                    <ol class="list-decimal list-inside mb-4 pl-4">
+                        <li class="mb-2">
+                            <strong>stdio:</strong> Communication over standard input/output
+                            <ul class="list-disc list-inside mt-1 pl-6">
+                                <li>The client launches the server as a subprocess</li>
+                                <li>Messages are sent via stdin and stdout</li>
+                                <li>Messages are delimited by newlines</li>
+                                <li>Server may use stderr for logging</li>
+                            </ul>
+                        </li>
+                        <li class="mb-2">
+                            <strong>HTTP with Server-Sent Events (SSE):</strong>
+                             <ul class="list-disc list-inside mt-1 pl-6">
+                                <li>Server operates as an independent process</li>
+                                <li>Provides an SSE endpoint for client connections</li>
+                                <li>Provides an HTTP POST endpoint for receiving messages</li>
+                                <li>Server sends an <code>endpoint</code> event with the URI for client messages</li>
+                                <li>All messages use the same JSON-RPC format</li>
+                             </ul>
+                        </li>
+                    </ol>
+                    <p>Custom transports may be implemented as long as they preserve the JSON-RPC message format and lifecycle requirements.</p>
+                </section>
+
+                <section id="connection-lifecycle">
+                    <h3>Connection Lifecycle</h3>
+                    <p>The MCP connection lifecycle consists of three phases:</p>
+                    <ol class="list-decimal list-inside mb-4 pl-4">
+                        <li><strong>Initialization:</strong>
+                            <ul class="list-disc list-inside mt-1 pl-6">
+                                <li>Client sends <code>initialize</code> request with capabilities</li>
+                                <li>Server responds with supported capabilities</li>
+                                <li>Client sends <code>initialized</code> notification</li>
+                            </ul>
+                        </li>
+                        <li><strong>Operation:</strong>
+                             <ul class="list-disc list-inside mt-1 pl-6">
+                                <li>Normal protocol operations based on negotiated capabilities</li>
+                                <li>Both parties respect negotiated protocol version and capabilities</li>
+                             </ul>
+                        </li>
+                        <li><strong>Shutdown:</strong>
+                            <ul class="list-disc list-inside mt-1 pl-6">
+                                <li>Connection termination using transport-specific mechanisms</li>
+                                <li>No specific shutdown messages are defined</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h4>Version Negotiation</h4>
+                    <p>During initialization, clients and servers negotiate protocol versions:</p>
+                    <ul>
+                        <li>Client sends the latest version it supports</li>
+                        <li>Server responds with same version if supported, or another supported version</li>
+                        <li>Client should disconnect if it doesn't support server's version</li>
+                    </ul>
+
+                    <h4>Capability Negotiation</h4>
+                    <p>During initialization, clients and servers exchange capabilities to determine available features:</p>
+                     <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Capability</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Client</td>
+                                <td><code>roots</code></td>
+                                <td>Filesystem root directories</td>
+                            </tr>
+                            <tr>
+                                <td>Client</td>
+                                <td><code>sampling</code></td>
+                                <td>LLM sampling support</td>
+                            </tr>
+                            <tr>
+                                <td>Server</td>
+                                <td><code>prompts</code></td>
+                                <td>Prompt templates</td>
+                            </tr>
+                            <tr>
+                                <td>Server</td>
+                                <td><code>resources</code></td>
+                                <td>Readable resources</td>
+                            </tr>
+                            <tr>
+                                <td>Server</td>
+                                <td><code>tools</code></td>
+                                <td>Callable tools</td>
+                            </tr>
+                             <tr>
+                                <td>Server</td>
+                                <td><code>logging</code></td>
+                                <td>Structured logging</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>Each capability may include sub-capabilities like <code>listChanged</code> (support for list change notifications) or <code>subscribe</code> (support for individual item change subscription).</p>
+                </section>
+
+                <section id="protocol-layers">
+                    <h3>Protocol Layers</h3>
+                    <p>The Model Context Protocol consists of several key components that work together.</p>
+                    <ul>
+                        <li><strong>Base Protocol:</strong> Core JSON-RPC message types</li>
+                        <li><strong>Lifecycle Management:</strong> Connection initialization, capability negotiation, and session control</li>
+                        <li><strong>Server Features:</strong> Resources, prompts, and tools exposed by servers</li>
+                        <li><strong>Client Features:</strong> Sampling and root directory lists provided by clients</li>
+                        <li><strong>Utilities:</strong> Cross-cutting concerns like logging and argument completion</li>
+                    </ul>
+                    <p>All implementations MUST support the base protocol and lifecycle management components. Other components MAY be implemented based on the specific needs of the application.</p>
+                </section>
+            </section>
+
+            <hr>
+
+             <section id="architecture">
+                <h2>Architecture</h2>
+                <p>The Model Context Protocol (MCP) follows a client-host-server architecture where each host can run multiple client instances. This architecture enables users to integrate AI capabilities across applications while maintaining clear security boundaries and isolating concerns. Built on JSON-RPC, MCP provides a stateful session protocol focused on context exchange and sampling coordination between clients and servers.</p>
+
+                <section id="core-components">
+                    <h3>Core Components</h3>
+                    <p>The architecture consists of three main components:</p>
+                    <ol class="list-decimal list-inside mb-4 pl-4">
+                        <li>
+                            <strong>Host</strong>
+                            <p>The host process acts as the container and coordinator:</p>
+                            <ul>
+                                <li>Creates and manages multiple client instances</li>
+                                <li>Controls client connection permissions and lifecycle</li>
+                                <li>Enforces security policies and consent requirements</li>
+                                <li>Handles user authorization decisions</li>
+                                <li>Coordinates AI/LLM integration and sampling</li>
+                                <li>Manages context aggregation across clients</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Clients</strong>
+                             <p>Each client is created by the host and maintains an isolated server connection:</p>
+                            <ul>
+                                <li>Establishes one stateful session per server</li>
+                                <li>Handles protocol negotiation and capability exchange</li>
+                                <li>Routes protocol messages bidirectionally</li>
+                                <li>Manages subscriptions and notifications</li>
+                                <li>Maintains security boundaries between servers</li>
+                            </ul>
+                        </li>
+                         <li>
+                            <strong>Servers</strong>
+                            <p>Servers provide specialized context and capabilities:</p>
+                            <ul>
+                                <li>Expose resources, tools and prompts via MCP primitives</li>
+                                <li>Operate independently with focused responsibilities</li>
+                                <li>Request sampling through client interfaces</li>
+                                <li>Must respect security constraints</li>
+                                <li>Can be local processes or remote services</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </section>
+
+                <section id="server-features">
+                    <h3>Server Features</h3>
+                    <p>Servers provide the fundamental building blocks for adding context to language models via MCP. These primitives enable rich interactions between clients, servers, and language models:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Primitive</th>
+                                <th>Control</th>
+                                <th>Description</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Prompts</td>
+                                <td>User-controlled</td>
+                                <td>Interactive templates invoked by user choice</td>
+                                <td>Slash commands, menu options</td>
+                            </tr>
+                            <tr>
+                                <td>Resources</td>
+                                <td>Application-controlled</td>
+                                <td>Contextual data attached and managed by the client</td>
+                                <td>File contents, git history</td>
+                            </tr>
+                            <tr>
+                                <td>Tools</td>
+                                <td>Model-controlled</td>
+                                <td>Functions exposed to the LLM to take actions</td>
+                                <td>API POST requests, file writing</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <section id="prompts">
+                        <h4>Prompts</h4>
+                        <p>Prompts are user-controlled templates that define structured interactions with language models. They help users perform common tasks and provide consistent instructions to AI models.</p>
+                        <p>Key characteristics:</p>
+                        <ul>
+                            <li><strong>User-controlled:</strong> Typically triggered by explicit user actions (slash commands, menu options)</li>
+                            <li><strong>Parameterized:</strong> Can accept arguments to customize behavior</li>
+                            <li><strong>Structured:</strong> May include multiple messages with different roles (user/assistant)</li>
+                            <li><strong>Multi-modal:</strong> Can contain text, images, or embedded resources</li>
+                        </ul>
+                        <p>Prompt capabilities must be declared during server initialization:</p>
+                        <pre><code class="language-json">{
+  "capabilities": {
+    "prompts": {
+      "listChanged": true
+    }
+  }
+}</code></pre>
+                        <p>Core operations:</p>
+                        <ul>
+                            <li><code>prompts/list</code>: Discover available prompts</li>
+                            <li><code>prompts/get</code>: Retrieve specific prompt with arguments</li>
+                            <li><code>notifications/prompts/list_changed</code>: Notify when available prompts change</li>
+                        </ul>
+                    </section>
+
+                    <section id="resources">
+                        <h4>Resources</h4>
+                        <p>Resources provide contextual data to language models, such as files, database schemas, or application-specific information. Each resource is uniquely identified by a URI.</p>
+                        <p>Key characteristics:</p>
+                        <ul>
+                            <li><strong>Application-controlled:</strong> Host applications determine how to incorporate context</li>
+                            <li><strong>URI-based:</strong> Each resource has a unique URI identifier</li>
+                            <li><strong>Content-typed:</strong> Resources include MIME type information</li>
+                            <li><strong>Subscribable:</strong> Optional notifications for resource changes</li>
+                            <li><strong>Templated:</strong> Parameterized templates allow dynamic resource access</li>
+                        </ul>
+                         <p>Resource capabilities must be declared during server initialization:</p>
+                        <pre><code class="language-json">{
+  "capabilities": {
+    "resources": {
+      "subscribe": true,
+      "listChanged": true
+    }
+  }
+}</code></pre>
+                        <p>Core operations:</p>
+                        <ul>
+                            <li><code>resources/list</code>: Discover available resources</li>
+                            <li><code>resources/read</code>: Retrieve resource contents</li>
+                            <li><code>resources/templates/list</code>: List parameterized resource templates</li>
+                            <li><code>resources/subscribe</code>: Subscribe to resource change notifications</li>
+                            <li><code>notifications/resources/updated</code>: Notify when a resource changes</li>
+                            <li><code>notifications/resources/list_changed</code>: Notify when available resources change</li>
+                        </ul>
+                        <p>Standard URI schemes include:</p>
+                        <ul>
+                            <li><code>https://</code>: Web resources</li>
+                            <li><code>file://</code>: Filesystem-like resources</li>
+                            <li><code>git://</code>: Git version control integration</li>
+                        </ul>
+                    </section>
+
+                    <section id="tools">
+                        <h4>Tools</h4>
+                        <p>Tools enable language models to take actions by invoking functions exposed by the server. They allow models to interact with external systems like databases or APIs.</p>
+                        <p>Key characteristics:</p>
+                        <ul>
+                            <li><strong>Model-controlled:</strong> Language models can discover and invoke tools</li>
+                            <li><strong>Schema-defined:</strong> Each tool declares its input schema with JSON Schema</li>
+                            <li><strong>Interactive:</strong> Results can feed back into the conversation</li>
+                            <li><strong>Error-aware:</strong> Distinct handling for protocol vs. execution errors</li>
+                            <li><strong>Security-focused:</strong> Design emphasizes human oversight</li>
+                        </ul>
+                         <p>Tool capabilities must be declared during server initialization:</p>
+                        <pre><code class="language-json">{
+  "capabilities": {
+    "tools": {
+      "listChanged": true
+    }
+  }
+}</code></pre>
+                        <p>Core operations:</p>
+                        <ul>
+                            <li><code>tools/list</code>: Discover available tools</li>
+                            <li><code>tools/call</code>: Invoke a specific tool with arguments</li>
+                            <li><code>notifications/tools/list_changed</code>: Notify when available tools change</li>
+                        </ul>
+                        <p>For security, implementations should:</p>
+                        <ul>
+                            <li>Validate all tool inputs</li>
+                            <li>Implement proper access controls</li>
+                            <li>Rate limit tool invocations</li>
+                            <li>Sanitize tool outputs</li>
+                            <li>Include human oversight through confirmation prompts</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <section id="client-features">
+                     <h3>Client Features</h3>
+                    <p>Clients can implement additional features to enrich the capabilities of connected MCP servers.</p>
+
+                    <section id="sampling">
+                        <h4>Sampling</h4>
+                        <p>Sampling allows servers to request language model generations ("completions") via clients. This enables servers to implement agentic behaviors by leveraging AI capabilities through a standardized interface, without requiring direct API access or keys.</p>
+                        <p>Key characteristics:</p>
+                        <ul>
+                            <li><strong>Server-initiated:</strong> Servers request generations that clients fulfill</li>
+                            <li><strong>Human-in-the-loop:</strong> Clients typically show prompts to users for review</li>
+                            <li><strong>Model-abstracted:</strong> Uses preference system rather than direct model selection</li>
+                            <li><strong>Multi-modal:</strong> Supports text and image content in both prompts and responses</li>
+                        </ul>
+                         <p>Sampling capabilities must be declared during client initialization:</p>
+                        <pre><code class="language-json">{
+  "capabilities": {
+    "sampling": {}
+  }
+}</code></pre>
+                        <p>Core operations:</p>
+                        <ul>
+                            <li><code>sampling/createMessage</code>: Request language model generation</li>
+                        </ul>
+                        <p>When requesting sampling, servers can specify model preferences through:</p>
+                        <ol class="list-decimal list-inside pl-4">
+                            <li>Capability priorities: Normalized values (0-1) for cost, speed, and intelligence</li>
+                            <li>Model hints: Optional suggestions for specific models or families</li>
+                        </ol>
+                        <pre><code class="language-json">{
+  "hints": [
+    { "name": "claude-3-sonnet"},
+    { "name": "claude" }
+  ],
+  "costPriority": 0.3,
+  "speedPriority": 0.8,
+  "intelligencePriority": 0.5
+}</code></pre>
+                        <p>For security, implementations should:</p>
+                        <ul>
+                            <li>Implement user approval controls</li>
+                            <li>Validate message content</li>
+                            <li>Implement rate limiting</li>
+                            <li>Handle sensitive data appropriately</li>
+                        </ul>
+                    </section>
+
+                    <section id="roots">
+                        <h4>Roots</h4>
+                        <p>Roots allow clients to expose filesystem boundaries to servers. They define the directories and files that servers can access within the filesystem.</p>
+                         <p>Key characteristics:</p>
+                        <ul>
+                            <li><strong>Client-controlled:</strong> Clients define accessible filesystem areas</li>
+                            <li><strong>URI-based:</strong> Each root has a unique <code>file://</code> URI</li>
+                            <li><strong>Boundary-setting:</strong> Establishes clear security perimeters</li>
+                            <li><strong>Dynamically updated:</strong> Can change during a session</li>
+                        </ul>
+                         <p>Root capabilities must be declared during client initialization:</p>
+                        <pre><code class="language-json">{
+  "capabilities": {
+    "roots": {
+      "listChanged": true
+    }
+  }
+}</code></pre>
+                        <p>Core operations:</p>
+                        <ul>
+                            <li><code>roots/list</code>: Retrieve accessible filesystem roots</li>
+                            <li><code>notifications/roots/list_changed</code>: Notify when available roots change</li>
+                        </ul>
+                         <p>For security, implementations should:</p>
+                        <ul>
+                            <li>Only expose roots with appropriate permissions</li>
+                            <li>Validate all root URIs to prevent path traversal</li>
+                            <li>Implement proper access controls</li>
+                            <li>Monitor root accessibility</li>
+                            <li>Prompt users for consent before exposing roots</li>
+                        </ul>
+                    </section>
+                </section>
+            </section>
+
+            <hr>
+
+            <section id="design-principles">
+                <h2>Design Principles</h2>
+                <p>MCP is built on several key design principles:</p>
+                <ol class="list-decimal list-inside mb-4 pl-4">
+                    <li>
+                        <strong>Servers should be extremely easy to build</strong>
+                        <ul>
+                            <li>Host applications handle complex orchestration responsibilities</li>
+                            <li>Servers focus on specific, well-defined capabilities</li>
+                            <li>Simple interfaces minimize implementation overhead</li>
+                            <li>Clear separation enables maintainable code</li>
+                        </ul>
+                    </li>
+                     <li>
+                        <strong>Servers should be highly composable</strong>
+                        <ul>
+                            <li>Each server provides focused functionality in isolation</li>
+                            <li>Multiple servers can be combined seamlessly</li>
+                            <li>Shared protocol enables interoperability</li>
+                            <li>Modular design supports extensibility</li>
+                        </ul>
+                    </li>
+                     <li>
+                        <strong>Servers should not be able to read the whole conversation, nor "see into" other servers</strong>
+                         <ul>
+                            <li>Servers receive only necessary contextual information</li>
+                            <li>Full conversation history stays with the host</li>
+                            <li>Each server connection maintains isolation</li>
+                            <li>Cross-server interactions are controlled by the host</li>
+                            <li>Host process enforces security boundaries</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Features can be added to servers and clients progressively</strong>
+                        <ul>
+                            <li>Core protocol provides minimal required functionality</li>
+                            <li>Additional capabilities can be negotiated as needed</li>
+                            <li>Servers and clients evolve independently</li>
+                            <li>Protocol designed for future extensibility</li>
+                            <li>Backwards compatibility is maintained</li>
+                        </ul>
+                    </li>
+                </ol>
+            </section>
+
+            <hr>
+
+            <section id="security">
+                <h2>Security and Trust & Safety</h2>
+                <p>The Model Context Protocol enables powerful capabilities through arbitrary data access and code execution paths. With this power comes important security and trust considerations that all implementors must carefully address.</p>
+                <h3>Key Principles</h3>
+                 <ol class="list-decimal list-inside mb-4 pl-4">
+                    <li>
+                        <strong>User Consent and Control</strong>
+                        <ul>
+                            <li>Users must explicitly consent to and understand all data access and operations</li>
+                            <li>Users must retain control over what data is shared and what actions are taken</li>
+                            <li>Implementors should provide clear UIs for reviewing and authorizing activities</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Data Privacy</strong>
+                        <ul>
+                            <li>Hosts must obtain explicit user consent before exposing user data to servers</li>
+                            <li>Hosts must not transmit resource data elsewhere without user consent</li>
+                            <li>User data should be protected with appropriate access controls</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Tool Safety</strong>
+                        <ul>
+                            <li>Tools represent arbitrary code execution and must be treated with appropriate caution</li>
+                            <li>Hosts must obtain explicit user consent before invoking any tool</li>
+                            <li>Users should understand what each tool does before authorizing its use</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>LLM Sampling Controls</strong>
+                        <ul>
+                            <li>Users must explicitly approve any LLM sampling requests</li>
+                            <li>Users should control:
+                                <ul>
+                                    <li>Whether sampling occurs at all</li>
+                                    <li>The actual prompt that will be sent</li>
+                                    <li>What results the server can see</li>
+                                </ul>
+                            </li>
+                            <li>The protocol intentionally limits server visibility into prompts</li>
+                        </ul>
+                    </li>
+                 </ol>
+            </section>
+
+            <hr>
+
+            <section id="python-sdk">
+                <h2>MCP Python SDK</h2>
+                <p>The Python SDK implements the full MCP specification, making it easy to:</p>
+                 <ul>
+                    <li>Build MCP clients that can connect to any MCP server</li>
+                    <li>Create MCP servers that expose resources, prompts and tools</li>
+                    <li>Use standard transports like stdio and SSE</li>
+                    <li>Handle all MCP protocol messages and lifecycle events</li>
+                </ul>
+
+                <section id="installation">
+                    <h3>Installation</h3>
+                    <h4>Adding MCP to your python project</h4>
+                    <p>We recommend using <code>uv</code> to manage your Python projects. In a <code>uv</code> managed python project, add mcp to dependencies by:</p>
+                    <pre><code class="language-bash">uv add "mcp[cli]"</code></pre>
+                    <p>Alternatively, for projects using <code>pip</code> for dependencies:</p>
+                     <pre><code class="language-bash">pip install mcp</code></pre>
+
+                    <h4>Running the standalone MCP development tools</h4>
+                    <p>To run the <code>mcp</code> command with <code>uv</code>:</p>
+                    <pre><code class="language-bash">uv run mcp</code></pre>
+                </section>
+
+                 <section id="quickstart">
+                    <h3>Quickstart</h3>
+                    <p>Let's create a simple MCP server that exposes a calculator tool and some data:</p>
+                    <pre><code class="language-python"># server.py
+from mcp.server.fastmcp import FastMCP
+
+# Create an MCP server
+mcp = FastMCP("Demo")
+
+# Add an addition tool
+@mcp.tool()
+def add(a: int, b: int) -> int:
+    """Add two numbers"""
+    return a + b
+
+# Add a dynamic greeting resource
+@mcp.resource("greeting://{name}")
+def get_greeting(name: str) -> str:
+    """Get a personalized greeting"""
+    return f"Hello, {name}!"</code></pre>
+                    <p>You can install this server in Claude Desktop and interact with it right away by running:</p>
+                    <pre><code class="language-bash">mcp install server.py</code></pre>
+                     <p>Alternatively, you can test it with the MCP Inspector:</p>
+                    <pre><code class="language-bash">mcp dev server.py</code></pre>
+                </section>
+
+                 <section id="core-concepts">
+                    <h3>Core Concepts</h3>
+
+                    <section id="sdk-server">
+                        <h4>Server</h4>
+                        <p>The <code>FastMCP</code> server is your core interface to the MCP protocol. It handles connection management, protocol compliance, and message routing:</p>
+                         <pre><code class="language-python"># Add lifespan support for startup/shutdown with strong typing
+from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator
+from dataclasses import dataclass
+# Assume fake_database exists for demonstration
+# from fake_database import Database # Replace with your actual DB type
+@dataclass
+class Database: # Mock Database for example
+    async def connect(self): print("DB Connected"); return self
+    async def disconnect(self): print("DB Disconnected")
+    def query(self): return "DB Query Result"
+
+from mcp.server.fastmcp import Context, FastMCP
+
+# Create a named server
+mcp = FastMCP("My App")
+
+# Specify dependencies for deployment and development
+# mcp = FastMCP("My App", dependencies=["pandas", "numpy"]) # Example
+
+@dataclass
+class AppContext:
+    db: Database
+
+@asynccontextmanager
+async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
+    """Manage application lifecycle with type-safe context"""
+    # Initialize on startup
+    print("Initializing lifespan...")
+    db = await Database().connect()
+    try:
+        yield AppContext(db=db)
+    finally:
+        # Cleanup on shutdown
+        print("Cleaning up lifespan...")
+        await db.disconnect()
+
+# Pass lifespan to server
+mcp_with_lifespan = FastMCP("My App With Lifespan", lifespan=app_lifespan)
+
+# Access type-safe lifespan context in tools
+@mcp_with_lifespan.tool()
+def query_db(ctx: Context) -> str:
+    """Tool that uses initialized resources"""
+    # Accessing context requires a running server and request context
+    # This demonstrates the structure, actual access depends on runtime
+    # db = ctx.request_context.lifespan_context["db"]
+    # return db.query()
+    # Mock return value for static example
+    if hasattr(ctx, 'request_context') and 'db' in ctx.request_context.lifespan_context:
+         db = ctx.request_context.lifespan_context["db"]
+         return db.query()
+    else:
+        # In a real scenario, context would be populated.
+        # For this static example, we simulate access.
+        print("Simulating DB query via context...")
+        return Database().query()
+
+# Note: Running this file directly won't execute lifespan/tool context logic
+# It needs to be run via `mcp run` or integrated into an ASGI app.
+</code></pre>
+                    </section>
+
+                    <section id="sdk-resources">
+                        <h4>Resources</h4>
+                         <p>Resources are how you expose data to LLMs. They're similar to GET endpoints in a REST API - they provide data but shouldn't perform significant computation or have side effects:</p>
+                        <pre><code class="language-python">from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("My App Resources") # Use a different name or reuse 'mcp' instance
+
+@mcp.resource("config://app")
+def get_config() -> str:
+    """Static configuration data"""
+    return "App configuration here"
+
+@mcp.resource("users://{user_id}/profile")
+def get_user_profile(user_id: str) -> str:
+    """Dynamic user data"""
+    return f"Profile data for user {user_id}"
+</code></pre>
+                    </section>
+
+                     <section id="sdk-tools">
+                        <h4>Tools</h4>
+                        <p>Tools let LLMs take actions through your server. Unlike resources, tools are expected to perform computation and have side effects:</p>
+                        <pre><code class="language-python">import httpx # Make sure httpx is installed: pip install httpx
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("My App Tools") # Use a different name or reuse 'mcp' instance
+
+@mcp.tool()
+def calculate_bmi(weight_kg: float, height_m: float) -> float:
+    """Calculate BMI given weight in kg and height in meters"""
+    if height_m <= 0:
+        raise ValueError("Height must be positive")
+    return weight_kg / (height_m ** 2)
+
+@mcp.tool()
+async def fetch_weather(city: str) -> str:
+    """Fetch current weather for a city (example URL)"""
+    # Note: This uses a placeholder URL. Replace with a real weather API.
+    api_url = f"https://api.example-weather.com/?q={city}"
+    try:
+        async with httpx.AsyncClient() as client:
+            # response = await client.get(api_url) # Actual API call
+            # response.raise_for_status() # Check for HTTP errors
+            # return response.text # Return API response
+            # Mock response for demonstration without real API call/key
+            return f"Mock weather data for {city}: Sunny, 25°C"
+    except httpx.RequestError as e:
+        return f"Error fetching weather: {e}"
+    except Exception as e:
+        return f"An unexpected error occurred: {e}"
+</code></pre>
+                     </section>
+
+                     <section id="sdk-prompts">
+                        <h4>Prompts</h4>
+                        <p>Prompts are reusable templates that help LLMs interact with your server effectively:</p>
+                        <pre><code class="language-python">from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.prompts import base
+
+mcp = FastMCP("My App Prompts") # Use a different name or reuse 'mcp' instance
+
+@mcp.prompt()
+def review_code(code: str) -> str:
+    """Creates a prompt message to request code review."""
+    return f"Please review this code:\n\n```\n{code}\n```"
+
+@mcp.prompt()
+def debug_error(error: str) -> list[base.Message]:
+    """Creates a structured prompt conversation for debugging."""
+    return [
+        base.UserMessage(content=f"I'm seeing this error: {error}"),
+        base.AssistantMessage(content="Okay, I can help with that. What steps did you take before encountering this error, and what have you tried so far to resolve it?")
+    ]
+</code></pre>
+                     </section>
+
+                    <section id="sdk-images">
+                        <h4>Images</h4>
+                        <p><code>FastMCP</code> provides an <code>Image</code> class that automatically handles image data:</p>
+                        <pre><code class="language-python">from mcp.server.fastmcp import FastMCP, Image
+from PIL import Image as PILImage # Requires Pillow: pip install Pillow
+import io # Required for saving image to bytes
+
+mcp = FastMCP("My App Images") # Use a different name or reuse 'mcp' instance
+
+@mcp.tool()
+def create_thumbnail(image_path: str) -> Image:
+    """Create a thumbnail from an image file path."""
+    try:
+        with PILImage.open(image_path) as img:
+            img.thumbnail((100, 100)) # Resize inplace to max 100x100
+            # Save image to a bytes buffer
+            img_byte_arr = io.BytesIO()
+            img_format = img.format if img.format else 'PNG' # Use original format or default to PNG
+            img.save(img_byte_arr, format=img_format)
+            img_byte_arr = img_byte_arr.getvalue()
+            # Return MCP Image object
+            return Image(data=img_byte_arr, format=img_format.lower())
+    except FileNotFoundError:
+        raise ValueError(f"Image file not found: {image_path}")
+    except Exception as e:
+        raise RuntimeError(f"Failed to create thumbnail: {e}")
+
+# Example usage (won't run directly here, needs server context):
+# result = create_thumbnail("path/to/your/image.jpg")
+</code></pre>
+                    </section>
+
+                    <section id="sdk-context">
+                        <h4>Context</h4>
+                        <p>The <code>Context</code> object gives your tools and resources access to MCP capabilities like progress reporting and reading other resources:</p>
+                        <pre><code class="language-python">from mcp.server.fastmcp import FastMCP, Context
+import asyncio # For simulating async operations
+
+mcp = FastMCP("My App Context") # Use a different name or reuse 'mcp' instance
+
+@mcp.tool()
+async def long_task(files: list[str], ctx: Context) -> str:
+    """Process multiple files with progress tracking and resource reading."""
+    total_files = len(files)
+    if total_files == 0:
+        return "No files to process."
+
+    ctx.info(f"Starting processing for {total_files} files.") # Log info message
+
+    for i, file_uri in enumerate(files):
+        # Ensure file_uri starts with 'file://' for resource reading
+        if not file_uri.startswith("file://"):
+            file_uri_resource = f"file://{file_uri}"
+        else:
+            file_uri_resource = file_uri
+
+        ctx.info(f"Processing {file_uri_resource} ({i+1}/{total_files})")
+
+        try:
+            # Report progress (current step, total steps)
+            # Note: report_progress might not be directly available on ctx,
+            # check SDK docs for exact method. Simulating concept.
+            # await ctx.report_progress(i + 1, total_files) # Hypothetical progress reporting
+
+            # Read resource content using the context
+            # This requires the server to be running and connected to a client
+            # that provides the file resource.
+            # content, mime_type = await ctx.read_resource(file_uri_resource)
+            # ctx.info(f"Read {len(content)} bytes from {file_uri_resource} (MIME: {mime_type})")
+
+            # Simulate work
+            await asyncio.sleep(0.5)
+
+        except Exception as e:
+            ctx.error(f"Error processing {file_uri_resource}: {e}") # Log error message
+            # Optionally continue or stop processing
+            # return f"Failed during processing of {file_uri_resource}"
+
+    ctx.info("Processing complete.")
+    return f"Successfully processed {total_files} files."
+
+# Example call structure (requires running server):
+# result = await long_task(["/path/to/file1.txt", "/path/to/file2.log"], context_object)
+</code></pre>
+                    </section>
+                </section>
+
+                <section id="running-server">
+                    <h3>Running Your Server</h3>
+                    <h4>Development Mode</h4>
+                    <p>The fastest way to test and debug your server is with the MCP Inspector:</p>
+                    <pre><code class="language-bash"># Assuming your server code is in server.py
+mcp dev server.py
+
+# Add dependencies (if needed and server specifies them)
+# mcp dev server.py --with pandas --with numpy
+
+# Mount local code for live editing (if server supports editable installs)
+# mcp dev server.py --with-editable .</code></pre>
+
+                    <h4>Claude Desktop Integration</h4>
+                     <p>Once your server is ready, install it in Claude Desktop:</p>
+                     <pre><code class="language-bash"># Basic install
+mcp install server.py
+
+# Install with a custom name
+mcp install server.py --name "My Analytics Server"
+
+# Install with environment variables
+mcp install server.py -v API_KEY=abc123 -v DB_URL=postgres://...
+
+# Install using an environment file
+mcp install server.py -f .env</code></pre>
+
+                    <h4>Direct Execution</h4>
+                    <p>For advanced scenarios like custom deployments:</p>
+                     <pre><code class="language-python"># Add this to the bottom of your server.py file
+from mcp.server.fastmcp import FastMCP
+
+# Assume 'mcp' is your FastMCP instance defined earlier in the file
+# mcp = FastMCP("My App")
+# ... (your resources, tools, etc.)
+
+if __name__ == "__main__":
+    # This check ensures run() is called only when script is executed directly
+    # Replace 'mcp' with the actual variable name of your FastMCP instance
+    # For example, if you used 'mcp_with_lifespan', use that here.
+    # Let's assume the main instance is named 'mcp'
+    # mcp.run() # Uncomment the instance you want to run
+    pass # Keep pass if multiple instances are defined for demonstration</code></pre>
+                    <p>Run it with:</p>
+                    <pre><code class="language-bash">python server.py</code></pre>
+                    <p>Or using the MCP CLI:</p>
+                     <pre><code class="language-bash">mcp run server.py</code></pre>
+
+                     <h4>Mounting to an Existing ASGI Server</h4>
+                     <p>You can mount the SSE server to an existing ASGI server (like Starlette or FastAPI) using the <code>sse_app</code> method:</p>
+                     <pre><code class="language-python">from starlette.applications import Starlette
+from starlette.routing import Mount, Host # Correct import for Starlette >= 0.15
+from mcp.server.fastmcp import FastMCP
+
+# Assume 'mcp' is your FastMCP instance
+mcp = FastMCP("My Mounted App")
+# ... define resources/tools on mcp instance
+
+# --- Option 1: Mount at a path ---
+app_path_mount = Starlette(
+    routes=[
+        # Mount the MCP SSE app under the '/mcp' path
+        Mount('/mcp', app=mcp.sse_app()),
+        # ... other routes for your main application
+    ]
+)
+
+# --- Option 2: Mount based on hostname ---
+# This requires running behind a reverse proxy configured for host routing
+app_host_mount = Starlette()
+# Dynamically add host routing (check Starlette docs for current best practice)
+# Example structure:
+# app_host_mount.router.routes.append(
+#     Host('mcp.acme.corp', app=mcp.sse_app())
+# )
+
+# To run this, you'd use an ASGI server like uvicorn:
+# uvicorn your_module:app_path_mount --reload
+# or
+# uvicorn your_module:app_host_mount --reload
+</code></pre>
+                </section>
+
+                <section id="sdk-examples">
+                    <h3>Examples</h3>
+                    <h4>Echo Server</h4>
+                    <p>A simple server demonstrating resources, tools, and prompts:</p>
+                    <pre><code class="language-python">from mcp.server.fastmcp import FastMCP
+
+mcp_echo = FastMCP("Echo")
+
+@mcp_echo.resource("echo://{message}")
+def echo_resource(message: str) -> str:
+    """Echo a message as a resource"""
+    return f"Resource echo: {message}"
+
+@mcp_echo.tool()
+def echo_tool(message: str) -> str:
+    """Echo a message as a tool"""
+    return f"Tool echo: {message}"
+
+@mcp_echo.prompt()
+def echo_prompt(message: str) -> str:
+    """Create an echo prompt"""
+    # Example: Returning a simple string prompt
+    return f"Please process this message: {message}"
+
+# To run this server: save as echo_server.py and run `mcp dev echo_server.py`
+# Or add `if __name__ == "__main__": mcp_echo.run()` and run `python echo_server.py`
+</code></pre>
+
+                    <h4>SQLite Explorer</h4>
+                    <p>A more complex example showing database integration:</p>
+                    <pre><code class="language-python">import sqlite3
+from mcp.server.fastmcp import FastMCP
+import os # To manage database file path
+
+DB_FILE = "mcp_sqlite_explorer.db"
+mcp_sqlite = FastMCP("SQLite Explorer")
+
+def get_db_conn():
+    """Helper function to get DB connection."""
+    # Create DB file if it doesn't exist
+    if not os.path.exists(DB_FILE):
+        print(f"Creating database file: {DB_FILE}")
+        conn = sqlite3.connect(DB_FILE)
+        # Optional: Create a default table for testing
+        try:
+            conn.execute("CREATE TABLE IF NOT EXISTS example (id INTEGER PRIMARY KEY, data TEXT)")
+            conn.execute("INSERT INTO example (data) VALUES ('Sample data')")
+            conn.commit()
+        except Exception as e:
+            print(f"Error initializing DB: {e}")
+        conn.close()
+
+    return sqlite3.connect(DB_FILE)
+
+@mcp_sqlite.resource("schema://main")
+def get_schema() -> str:
+    """Provide the database schema as a resource"""
+    conn = get_db_conn()
+    try:
+        cursor = conn.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+        schema_rows = cursor.fetchall()
+        # Filter out None results and join non-empty SQL statements
+        schema_sql = "\n".join(sql[0] for sql in schema_rows if sql and sql[0])
+        return schema_sql if schema_sql else "-- No tables found --"
+    except Exception as e:
+        return f"Error fetching schema: {str(e)}"
+    finally:
+        conn.close()
+
+@mcp_sqlite.tool()
+def query_data(sql: str) -> str:
+    """Execute safe SQL SELECT queries"""
+    # Basic safety check: only allow SELECT statements
+    if not sql.strip().upper().startswith("SELECT"):
+        return "Error: Only SELECT queries are allowed."
+
+    conn = get_db_conn()
+    try:
+        cursor = conn.execute(sql)
+        results = cursor.fetchall()
+        if not results:
+            return "-- No results --"
+        # Format results nicely
+        column_names = [description[0] for description in cursor.description]
+        header = " | ".join(column_names)
+        rows = [" | ".join(map(str, row)) for row in results]
+        return header + "\n" + "-"*len(header) + "\n" + "\n".join(rows)
+    except sqlite3.Error as e:
+        # Catch specific SQLite errors
+        return f"SQLite Error: {str(e)}"
+    except Exception as e:
+        # Catch other potential errors
+        return f"Execution Error: {str(e)}"
+    finally:
+        conn.close()
+
+# To run this server: save as sqlite_server.py and run `mcp dev sqlite_server.py`
+# Or add `if __name__ == "__main__": mcp_sqlite.run()` and run `python sqlite_server.py`
+</code></pre>
+                </section>
+
+                <section id="advanced-usage">
+                    <h3>Advanced Usage</h3>
+                    <h4>Low-Level Server</h4>
+                    <p>For more control, you can use the low-level server implementation directly:</p>
+                    <pre><code class="language-python">from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator
+# from fake_database import Database # Replace with your actual DB type
+# Mock Database for example
+@dataclass
+class Database:
+    async def connect(self): print("Low-level DB Connected"); return self
+    async def disconnect(self): print("Low-level DB Disconnected")
+    async def query(self, query_params): return [{"result": f"Low-level query result for {query_params}"}]
+
+from mcp.server import Server # Import the base Server class
+from mcp.common.types import ToolCallParams, ToolCallResult # Import necessary types
+
+@asynccontextmanager
+async def server_lifespan(server: Server) -> AsyncIterator[dict]:
+    """Manage server startup and shutdown lifecycle."""
+    print("Initializing low-level lifespan...")
+    db = await Database().connect()
+    try:
+        # Yield context accessible via server.request_context.lifespan_context
+        yield {"db": db}
+    finally:
+        print("Cleaning up low-level lifespan...")
+        await db.disconnect()
+
+# Initialize the low-level server
+low_level_server = Server("example-low-level-server", lifespan=server_lifespan)
+
+# Define a tool handler using the decorator
+@low_level_server.handle_tool_call("query_db_low_level")
+async def handle_query_db(params: ToolCallParams, server: Server) -> ToolCallResult:
+    """Handler for the 'query_db_low_level' tool call."""
+    print(f"Handling tool call: {params.name} with args: {params.arguments}")
+    # Access lifespan context (requires active request context)
+    try:
+        # Lifespan context is typically accessed within an active request scope
+        # For demonstration, we assume context is available.
+        # db = server.request_context.lifespan_context["db"] # Correct access pattern
+        # Mock access for example
+        db = Database() # In real use, get from context
+        query_args = params.arguments.get("query", "default_query")
+        result_data = await db.query(query_args)
+        return ToolCallResult(result=result_data)
+    except Exception as e:
+        print(f"Error in tool handler: {e}")
+        # Return an error structure if needed, check ToolCallResult definition
+        return ToolCallResult(result={"error": str(e)}) # Example error return
+
+# Note: Running this requires setting up transport (stdio/sse) manually
+# or using helper functions from the SDK. This defines the server logic.
+# Example: To run with stdio
+# from mcp.server.stdio import run_stdio_server
+# if __name__ == "__main__":
+#     run_stdio_server(low_level_server)
+</code></pre>
+
+                     <h4>Writing MCP Clients</h4>
+                     <p>The SDK provides a high-level client interface for connecting to MCP servers:</p>
+                     <pre><code class="language-python">import asyncio
+from mcp import ClientSession, StdioServerParameters, types
+from mcp.client.stdio import stdio_client
+
+# Define server parameters for stdio connection
+# Assumes 'server.py' contains a runnable MCP server
+server_params = StdioServerParameters(
+    command=["python", "server.py"], # Command to run the server script
+    # args=["--some-arg"], # Optional command line arguments for the server
+    # env={"MY_VAR": "value"}, # Optional environment variables
+)
+
+# Optional: create a sampling callback function
+async def handle_sampling_message(
+    params: types.CreateMessageRequestParams,
+    session: ClientSession # The session instance is often passed here
+) -> types.CreateMessageResult:
+    """Handles sampling requests from the server."""
+    print(f"Received sampling request from server. Model hints: {params.hints}")
+    print(f"Prompt messages: {params.messages}")
+    # In a real client, you might show this to the user for approval/modification
+    # For this example, we just return a fixed response.
+    return types.CreateMessageResult(
+        # role="assistant", # Role might be part of content or top-level
+        content=[ # Content is usually a list
+             types.TextMessage(text="Hello from the client model!")
+        ],
+        model="simulated-client-model", # Indicate the model used
+        stop_reason="stop", # Reason generation stopped
+        # usage=None # Optional usage stats
+    )
+
+async def run_client():
+    """Connects to the server and performs basic operations."""
+    print("Starting client...")
+    try:
+        # Connect using stdio_client context manager
+        async with stdio_client(server_params) as (reader, writer):
+            print("Server process started, establishing session...")
+            # Create a ClientSession
+            async with ClientSession(
+                reader, writer, sampling_callback=handle_sampling_message
+            ) as session:
+                print("Session created. Initializing connection...")
+                # Initialize the connection (negotiates capabilities)
+                init_response = await session.initialize(
+                    client_capabilities=types.ClientCapabilities( # Declare client caps
+                        sampling=types.SamplingClientCapabilities(),
+                        roots=types.RootsClientCapabilities(list_changed=True)
+                    )
+                )
+                print(f"Initialization successful. Server capabilities: {init_response.capabilities}")
+
+                # Example operations:
+                # List available prompts
+                prompts = await session.list_prompts()
+                print(f"Available prompts: {prompts}")
+
+                # Get a specific prompt (if 'example-prompt' exists on server)
+                try:
+                    prompt = await session.get_prompt(
+                        name="example-prompt", arguments={"arg1": "value"}
+                    )
+                    print(f"Got prompt 'example-prompt': {prompt}")
+                except Exception as e:
+                    print(f"Could not get prompt 'example-prompt': {e}")
+
+                # List available resources
+                resources = await session.list_resources()
+                print(f"Available resources: {resources}")
+
+                # List available tools
+                tools = await session.list_tools()
+                print(f"Available tools: {tools}")
+
+                # Read a resource (if 'file://some/path' is valid and exposed)
+                try:
+                    content, mime_type = await session.read_resource("file://some/path")
+                    print(f"Read resource 'file://some/path': {len(content)} bytes, type {mime_type}")
+                except Exception as e:
+                    print(f"Could not read resource 'file://some/path': {e}")
+
+                # Call a tool (if 'tool-name' exists on server)
+                try:
+                    result = await session.call_tool(
+                        name="tool-name", arguments={"arg1": "value"}
+                    )
+                    print(f"Called tool 'tool-name': Result: {result}")
+                except Exception as e:
+                    print(f"Could not call tool 'tool-name': {e}")
+
+                print("Client operations complete. Closing session.")
+    except Exception as e:
+        print(f"Client error: {e}")
+    finally:
+        print("Client finished.")
+
+# To run this client code:
+# 1. Ensure you have a `server.py` file with an MCP server.
+# 2. Save this client code as `client.py`.
+# 3. Run `python client.py`.
+# if __name__ == "__main__":
+#     asyncio.run(run_client()) # Uncomment to make runnable
+</code></pre>
+                </section>
+            </section>
+
+            <hr>
+
+            <section id="documentation">
+                <h2>Documentation</h2>
+                 <ul>
+                    <li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener noreferrer">Model Context Protocol documentation</a> (Link assumes official site)</li>
+                    <li>Model Context Protocol specification (Link not provided in text, assumed part of main docs)</li>
+                    <li>Officially supported servers (Link not provided in text)</li>
+                 </ul>
+            </section>
+
+             <hr>
+
+            <section id="contributing">
+                <h2>Contributing</h2>
+                <p>We are passionate about supporting contributors of all levels of experience and would love to see you get involved in the project. See the contributing guide to get started. (Link to guide not provided in text).</p>
+            </section>
+
+            <hr>
+
+            <section id="license">
+                <h2>License</h2>
+                <p>This project is licensed under the MIT License - see the LICENSE file for details. (Link to file not provided in text).</p>
+            </section>
+
+        </main>
+
+        <footer class="mt-12 pt-6 border-t border-gray-300 text-center text-sm text-gray-600">
+            <p>Model Context Protocol (MCP) - Generated Document</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>

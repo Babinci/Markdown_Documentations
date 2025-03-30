@@ -1,14 +1,12 @@
-Auth
-
-# User sessions
-
-* * *
+# User Sessions
 
 Supabase Auth provides fine-grained control over your user's sessions.
 
+## Overview
+
 Some security sensitive applications, or those that need to be SOC 2, HIPAA, PCI-DSS or ISO27000 compliant will require some sort of additional session controls to enforce timeouts or provide additional security guarantees. Supabase Auth makes it easy to build compliant applications.
 
-## What is a session? [\#](https://supabase.com/docs/guides/auth/sessions\#what-is-a-session)
+## What is a Session?
 
 A session is created when a user signs in. By default, it lasts indefinitely and a user can have an unlimited number of active sessions on as many devices.
 
@@ -26,11 +24,11 @@ A session terminates, depending on configuration, when:
 - It reaches its maximum lifetime.
 - A user signs in on another device.
 
-## Access token (JWT) claims [\#](https://supabase.com/docs/guides/auth/sessions\#access-token-jwt-claims)
+## Access Token (JWT) Claims
 
 Every access token contains a `session_id` claim, a UUID, uniquely identifying the session of the user. You can correlate this ID with the primary key of the `auth.sessions` table.
 
-## Initiating a session [\#](https://supabase.com/docs/guides/auth/sessions\#initiating-a-session)
+## Initiating a Session
 
 A session is initiated when a user signs in. The session is stored in the `auth.sessions` table, and your app should receive the access and refresh tokens.
 
@@ -39,7 +37,7 @@ There are two flows for initiating a session and receiving the tokens:
 - [Implicit flow](https://supabase.com/docs/guides/auth/sessions/implicit-flow)
 - [PKCE flow](https://supabase.com/docs/guides/auth/sessions/pkce-flow)
 
-## Limiting session lifetime and number of allowed sessions per user [\#](https://supabase.com/docs/guides/auth/sessions\#limiting-session-lifetime-and-number-of-allowed-sessions-per-user)
+## Limiting Session Lifetime and Number of Allowed Sessions Per User
 
 This feature is only available on Pro Plans and up.
 
@@ -63,9 +61,9 @@ Sessions are not proactively destroyed when you change these settings, but rathe
 
 Otherwise sessions are progressively deleted from the database 24 hours after they expire, which prevents you from causing a high load on your project by accident and allows you some freedom to undo changes without adversely affecting all users.
 
-## Frequently asked questions [\#](https://supabase.com/docs/guides/auth/sessions\#frequently-asked-questions)
+## Frequently Asked Questions
 
-### What are recommended values for access token (JWT) expiration? [\#](https://supabase.com/docs/guides/auth/sessions\#what-are-recommended-values-for-access-token-jwt-expiration)
+### What are recommended values for access token (JWT) expiration?
 
 Most applications should use the default expiration time of 1 hour. This can be customized in your project's [Auth settings](https://supabase.com/dashboard/project/_/settings/auth) in the Advanced Settings section.
 
@@ -78,7 +76,7 @@ Values below 5 minutes, and especially below 2 minutes, should not be used in mo
 - Supabase's client libraries always try to refresh the session ahead of time, which won't be possible if the expiration time is too short.
 - Access tokens should generally be valid for at least as long as the longest running request in your application. This helps you avoid issues where the access token becomes invalid midway through processing.
 
-### What is refresh token reuse detection and what does it protect from? [\#](https://supabase.com/docs/guides/auth/sessions\#what-is-refresh-token-reuse-detection-and-what-does-it-protect-from)
+### What is refresh token reuse detection and what does it protect from?
 
 As your users continue using your app, refresh tokens are being constantly exchanged for new access tokens.
 
@@ -95,7 +93,7 @@ Should the reuse attempt not fall under these two exceptions, the whole session 
 
 The purpose of this mechanism is to guard against potential security issues where a refresh token could have been stolen from the user, for example by exposing it accidentally in logs that leak (like logging cookies, request bodies or URL params) or via vulnerable third-party servers. It does not guard against the case where a user's session is stolen from their device.
 
-### What are the benefits of using access and refresh tokens instead of traditional sessions? [\#](https://supabase.com/docs/guides/auth/sessions\#what-are-the-benefits-of-using-access-and-refresh-tokens-instead-of-traditional-sessions)
+### What are the benefits of using access and refresh tokens instead of traditional sessions?
 
 Traditionally user sessions were implemented by using a unique string stored in cookies that identified the authorization that the user had on a specific browser. Applications would use this unique string to constantly fetch the attached user information on every API call.
 
@@ -109,7 +107,7 @@ Supabase Auth prefers a JWT-based approach using access and refresh tokens becau
 
 It's better for cost optimization and scaling as well, as the authentication system's servers and database only handle traffic for this use case.
 
-### How to ensure an access token (JWT) cannot be used after a user signs out [\#](https://supabase.com/docs/guides/auth/sessions\#how-to-ensure-an-access-token-jwt-cannot-be-used-after-a-user-signs-out)
+### How to ensure an access token (JWT) cannot be used after a user signs out
 
 Most applications rarely need such strong guarantees. Consider adjusting the JWT expiry time to an acceptable value. If this is still necessary, you should try to use this validation logic only for the most sensitive actions within your application.
 
@@ -117,7 +115,7 @@ When a user signs out, the sessions affected by the logout are removed from the 
 
 Note that sessions are not proactively terminated when their maximum lifetime (time-box) or inactivity timeout are reached. These sessions are cleaned up progressively 24 hours after reaching that status. This allows you to tweak the values or roll back changes without causing unintended user friction.
 
-### Using HTTP-only cookies to store access and refresh tokens [\#](https://supabase.com/docs/guides/auth/sessions\#using-http-only-cookies-to-store-access-and-refresh-tokens)
+### Using HTTP-only cookies to store access and refresh tokens
 
 This is possible, but only for apps that use the traditional server-only web app approach where all of the application logic is implemented on the server and it returns rendered HTML only.
 
@@ -125,38 +123,16 @@ If your app uses any client side JavaScript to build a rich user experience, usi
 
 Because of this, the Supabase JavaScript libraries provide only limited support. You can override the `storage` option when creating the Supabase client **on the server** to store the values in cookies or your preferred storage choice, for example:
 
-```flex
+```javascript
+import { createClient } from '@supabase/supabase-js'
 
-1
-2
-3
-4
-5
-6
-7
-import { createClient } from '@supabase/supabase-js'const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {  auth: {    storage: customStorageObject,  },})
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    storage: customStorageObject,
+  },
+})
 ```
 
 The `customStorageObject` should implement the `getItem`, `setItem`, and `removeItem` methods from the [`Storage` interface](https://developer.mozilla.org/en-US/docs/Web/API/Storage). Async versions of these methods are also supported.
 
 When using cookies to store access and refresh tokens, make sure that the [`Expires` or `Max-Age` attributes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#attributes) of the cookies is set to a timestamp very far into the future. Browsers will clear the cookies, but the session will remain active in Supabase Auth. Therefore it's best to let Supabase Auth control the validity of these tokens and instruct the browser to always store the cookies indefinitely.
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[What is a session?](https://supabase.com/docs/guides/auth/sessions#what-is-a-session) [Access token (JWT) claims](https://supabase.com/docs/guides/auth/sessions#access-token-jwt-claims) [Initiating a session](https://supabase.com/docs/guides/auth/sessions#initiating-a-session) [Limiting session lifetime and number of allowed sessions per user](https://supabase.com/docs/guides/auth/sessions#limiting-session-lifetime-and-number-of-allowed-sessions-per-user) [Frequently asked questions](https://supabase.com/docs/guides/auth/sessions#frequently-asked-questions) [What are recommended values for access token (JWT) expiration?](https://supabase.com/docs/guides/auth/sessions#what-are-recommended-values-for-access-token-jwt-expiration) [What is refresh token reuse detection and what does it protect from?](https://supabase.com/docs/guides/auth/sessions#what-is-refresh-token-reuse-detection-and-what-does-it-protect-from) [What are the benefits of using access and refresh tokens instead of traditional sessions?](https://supabase.com/docs/guides/auth/sessions#what-are-the-benefits-of-using-access-and-refresh-tokens-instead-of-traditional-sessions) [How to ensure an access token (JWT) cannot be used after a user signs out](https://supabase.com/docs/guides/auth/sessions#how-to-ensure-an-access-token-jwt-cannot-be-used-after-a-user-signs-out) [Using HTTP-only cookies to store access and refresh tokens](https://supabase.com/docs/guides/auth/sessions#using-http-only-cookies-to-store-access-and-refresh-tokens)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

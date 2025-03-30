@@ -1,80 +1,112 @@
-Platform
-
 # Migrate from Render to Supabase
 
-## Migrate your Render Postgres database to Supabase.
+This guide demonstrates how to migrate your Render Postgres database to Supabase to take advantage of Postgres extensions, row-level security, and other Supabase features.
 
-* * *
+## Overview
 
-Render is a popular Web Hosting service in the online services category that also has a managed Postgres service. Render has a great developer experience, allowing users to deploy straight from GitHub or GitLab. This is the core of their product and they do it really well. However, when it comes to Postgres databases, it may not be the best option.
+Render is a popular web hosting service that offers managed Postgres databases. While Render excels at providing a great developer experience for deploying applications directly from GitHub or GitLab, Supabase offers a more comprehensive solution for working with Postgres databases.
 
-Supabase is one of the best free alternative to Render Postgres. Supabase provide all the backend features developers need to build a product: a Postgres database, authentication, instant APIs, edge functions, realtime subscriptions, and storage. Postgres is the core of Supabase—for example, you can use row-level security and there are more than 40 Postgres extensions available.
+Supabase provides:
+- A Postgres database with 40+ extensions
+- Built-in authentication and authorization
+- Instant APIs
+- Edge functions
+- Realtime subscriptions
+- Storage
+- Row-level security
 
-This guide demonstrates how to migrate from Render to Supabase to get the most out of Postgres while gaining access to all the features you need to build a project.
+## Migration Process
 
-## Retrieve your Render database credentials [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/render\#retrieve-render-credentials)
+### 1. Retrieve Your Render Database Credentials
 
 1. Log in to your [Render account](https://render.com/) and select the project you want to migrate.
-2. Click **Dashboard** in the menu and click in your **Postgres** database.
+2. Click **Dashboard** in the menu and click on your **Postgres** database.
 3. Scroll down in the **Info** tab.
-4. Click on **PSQL Command** and edit it adding the content after `PSQL_COMMAND=`.
+4. Click on **PSQL Command** and copy the content that appears after `PSQL_COMMAND=`.
 
 ![Copying PSQL command from Render dashboard](https://supabase.com/docs/img/guides/resources/migrating-to-supabase/render/render_dashboard.png)
+
 Example:
-
-```flex
-
-1
+```bash
 %env PSQL_COMMAND=PGPASSWORD=RgaMDfTS_password_FTPa7 psql -h dpg-a_server_in.oregon-postgres.render.com -U my_db_pxl0_user my_db_pxl0
 ```
 
-## Retrieve your Supabase connection string [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/render\#retrieve-supabase-connection-string)
+### 2. Retrieve Your Supabase Connection String
 
 1. If you're new to Supabase, [create a project](https://supabase.com/dashboard).
-Make a note of your password, you will need this later. If you forget it, you can [reset it here](https://supabase.com/dashboard/project/_/settings/database).
+   - Make a note of your password, you will need this later.
+   - If you forget your password, you can [reset it here](https://supabase.com/dashboard/project/_/settings/database).
 
 2. Go to the [Database settings](https://supabase.com/dashboard/project/_/settings/database) for your project in the Supabase Dashboard.
 
-3. Under **Connection string**, make sure `Use connection pooling` is enabled. Copy the URI and replace the password placeholder with your database password.
+3. Under **Connection string**, make sure **Use connection pooling** is enabled. Copy the URI and replace the password placeholder with your database password.
 
+### 3. Migrate the Database
 
-## Migrate the database [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/render\#migrate-the-database)
+#### Option A: Using Google Colab (Recommended)
 
-The fastest way to migrate your database is with the Supabase migration tool on [Google Colab](https://colab.research.google.com/github/mansueli/Supa-Migrate/blob/main/Migrate_Postgres_Supabase.ipynb). Alternatively, you can use the [pg\_dump](https://www.postgresql.org/docs/current/app-pgdump.html) and [psql](https://www.postgresql.org/docs/current/app-psql.html) command line tools, which are included in a full Postgres installation.
+The fastest way to migrate your database is with the Supabase migration tool on [Google Colab](https://colab.research.google.com/github/mansueli/Supa-Migrate/blob/main/Migrate_Postgres_Supabase.ipynb).
 
-Migrate using ColabMigrate using CLI tools
+1. Open [the Colab notebook](https://colab.research.google.com/github/mansueli/Supa-Migrate/blob/main/Migrate_Postgres_Supabase.ipynb).
 
-1. Set the environment variables ( `PSQL_COMMAND`, `SUPABASE_HOST`, `SUPABASE_PASSWORD`) in the Colab notebook.
-2. Run the first two steps in [the notebook](https://colab.research.google.com/github/mansueli/Supa-Migrate/blob/main/Migrate_Postgres_Supabase.ipynb) in order. The first sets the variables and the second installs PSQL and the migration script.
-3. Run the third step to start the migration. This will take a few minutes.
+2. Set the environment variables:
+   - `PSQL_COMMAND` - The PSQL command from Render
+   - `SUPABASE_HOST` - Your Supabase connection string
+   - `SUPABASE_PASSWORD` - Your Supabase database password
 
-- If you're planning to migrate a database larger than 6 GB, we recommend [upgrading to at least a Large compute add-on](https://supabase.com/docs/guides/platform/compute-add-ons). This will ensure you have the necessary resources to handle the migration efficiently.
+3. Run the first two steps in the notebook in order:
+   - The first step sets the variables
+   - The second step installs PSQL and the migration script
 
-- For databases smaller than 150 GB, you can increase the size of the disk on paid projects by navigating to [Database Settings](https://supabase.com/dashboard/project/_/settings/database).
+4. Run the third step to start the migration. This will take a few minutes depending on your database size.
 
-- If you're dealing with a database larger than 150 GB, we strongly advise you to [contact our support team](https://supabase.com/dashboard/support/new) for assistance in provisioning the required resources and ensuring a smooth migration process.
+#### Option B: Using CLI Tools
 
+If you prefer using command-line tools, you can use `pg_dump` and `psql`, which are included in a full Postgres installation.
 
-## Enterprise [\#](https://supabase.com/docs/guides/platform/migrating-to-supabase/render\#enterprise)
+1. Extract connection details from your Render PSQL command:
+   ```bash
+   # Example Render command
+   PGPASSWORD=RgaMDfTS_password_FTPa7 psql -h dpg-a_server_in.oregon-postgres.render.com -U my_db_pxl0_user my_db_pxl0
+   ```
 
-[Contact us](https://forms.supabase.com/enterprise) if you need more help migrating your project.
+2. Use `pg_dump` to export your database:
+   ```bash
+   PGPASSWORD=RgaMDfTS_password_FTPa7 pg_dump -h dpg-a_server_in.oregon-postgres.render.com -U my_db_pxl0_user -d my_db_pxl0 -F c -f render_backup.dump
+   ```
 
-### Is this helpful?
+3. Restore the database to Supabase:
+   ```bash
+   pg_restore -h db.your-project-ref.supabase.co -U postgres -d postgres -p 5432 render_backup.dump
+   ```
+   
+   You'll be prompted for your Supabase database password.
 
-NoYes
+## Resource Considerations
 
-### On this page
+- **Database Size < 6 GB**: The free tier should be sufficient.
+- **Database Size > 6 GB**: We recommend [upgrading to at least a Large compute add-on](https://supabase.com/docs/guides/platform/compute-add-ons) to ensure you have the necessary resources for migration.
+- **Database Size < 150 GB**: You can increase the disk size on paid projects by navigating to [Database Settings](https://supabase.com/dashboard/project/_/settings/database).
+- **Database Size > 150 GB**: [Contact our support team](https://supabase.com/dashboard/support/new) for assistance in provisioning the required resources.
 
-[Retrieve your Render database credentials](https://supabase.com/docs/guides/platform/migrating-to-supabase/render#retrieve-render-credentials) [Retrieve your Supabase connection string](https://supabase.com/docs/guides/platform/migrating-to-supabase/render#retrieve-supabase-connection-string) [Migrate the database](https://supabase.com/docs/guides/platform/migrating-to-supabase/render#migrate-the-database) [Enterprise](https://supabase.com/docs/guides/platform/migrating-to-supabase/render#enterprise)
+## Post-Migration Steps
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+After migrating your database, you should:
 
+1. **Verify Data Integrity**: Check that all your tables, data, and relationships have been correctly migrated.
+2. **Set Up Row-Level Security**: Configure RLS policies to secure your database access.
+3. **Configure Authentication**: Set up authentication methods for your application.
+4. **Update Connection Strings**: Update your application's connection strings to point to your Supabase database.
+5. **Test Your Application**: Thoroughly test your application with the new database.
 
+## Troubleshooting
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+### Common Issues
 
+- **Connection Issues**: If you're having trouble connecting to either database, check that your IP is allowed in the respective database firewall settings.
+- **Permission Errors**: Ensure the database user has sufficient permissions to read from or write to the database.
+- **Timeouts**: For large databases, the migration might timeout. Consider breaking down the migration into smaller chunks or [contact support](https://supabase.com/dashboard/support/new).
 
+## Enterprise Support
 
-
-
-   AcceptOpt outPrivacy settings
+For enterprise migrations or if you need more help migrating your project, [contact us](https://forms.supabase.com/enterprise).

@@ -1,33 +1,39 @@
-31 APR - 04 MAR / 7AM PT
+# pg_cron: Schedule Recurring Jobs with Cron Syntax in PostgreSQL
 
-Launch Week 14
+## Introduction
 
-03d
+[`pg_cron`](https://github.com/citusdata/pg_cron) is a PostgreSQL extension that enables scheduling recurring jobs using cron syntax directly within your database. It serves as the foundation for Supabase Cron, allowing you to automate database tasks and operations.
 
-:
+## How pg_cron Works
 
-18h
+Under the hood, Supabase Cron uses the `pg_cron` PostgreSQL extension as the scheduling and execution engine for your jobs. The extension:
 
-:
+- Creates a `cron` schema in your database
+- Stores all jobs in the `cron.job` table
+- Records each job's execution and status in the `cron.job_run_details` table
 
-17m
+With pg_cron, you can schedule jobs to run anywhere from every second to once a year, depending on your use case.
 
-:
+## Capabilities
 
-42s
+Jobs created with pg_cron can:
+- Run SQL snippets or database functions with zero network latency
+- Make HTTP requests, such as invoking a Supabase Edge Function
+- Perform database maintenance tasks
+- Update materialized views
+- Clean up old data
 
-[Claim ticket](https://supabase.com/launch-week)Dismiss
+## Performance Recommendations
 
-![](https://supabase.com/docs/_next/image?url=%2Fdocs%2Fimg%2Flaunchweek%2F14%2Fpromo-banner-bg.png&w=3840&q=100&dpl=dpl_9WgBm3X43HXGqPuPh4vSvQgRaZyZ)
+For best performance, consider the following guidelines:
+- No more than 8 jobs should run concurrently
+- Each job should run no more than 10 minutes
 
-Database
+## Limitations
 
-# pg\_cron: Schedule Recurring Jobs with Cron Syntax in Postgres
+Note that `pg_cron` is not fully supported on Fly Postgres. See the [Fly Postgres limitations](https://supabase.com/docs/guides/platform/fly-postgres#limitations) documentation for more details.
 
-* * *
+## Resources
 
-See the [Supabase Cron docs](https://supabase.com/docs/guides/cron).
-
-### Is this helpful?
-
-NoYes
+- [pg_cron GitHub Repository](https://github.com/citusdata/pg_cron)
+- [Supabase Cron Documentation](https://supabase.com/docs/guides/cron)

@@ -1,122 +1,169 @@
-Database
-
 # Replication
 
-* * *
+Replication is a technique for copying data from one database to another. Supabase uses replication functionality to provide a real-time API, allowing your application to receive database changes as they happen.
 
-Replication is a technique for copying the data from one database to another. Supabase uses replication functionality to provide a real-time API. Replication is useful for:
+## Benefits of Replication
 
-- Spreading out the "load." For example, if your database has a lot of reads, you might want to split it between two databases.
-- Reducing latency. For example, you may want one database in London to serve your European customers, and one in New York to serve the US.
+Replication offers several advantages:
 
-Replication is done through _publications_, a method of choosing which changes to send to other systems (usually another Postgres database). Publications can be managed in the [Dashboard](https://supabase.com/dashboard) or with SQL.
+- **Load Distribution**: Spread database load across multiple instances, improving performance during high-traffic periods
+- **Geographic Optimization**: Reduce latency by placing database replicas closer to users in different regions
+- **Real-time Updates**: Enable instant data synchronization across clients and services
+- **Fault Tolerance**: Improve system reliability with redundant data copies
+- **Analytics**: Create read-only replicas for running complex analytics without affecting your primary database
 
-## Manage publications in the dashboard [\#](https://supabase.com/docs/guides/database/replication\#manage-publications-in-the-dashboard)
+## Publication Basics
 
-1. Go to the [Database](https://supabase.com/dashboard/project/_/database/tables) page in the Dashboard.
-2. Click on **Publications** in the sidebar.
-3. Control which database events are sent by toggling **Insert**, **Update**, and **Delete**.
-4. Control which tables broadcast changes by selecting **Source** and toggling each table.
+In PostgreSQL, replication is managed through _publications_, which allow you to specify which changes to send to other systems (typically another PostgreSQL database). Publications can be managed through the Supabase Dashboard or using SQL directly.
 
-## Create a publication [\#](https://supabase.com/docs/guides/database/replication\#create-a-publication)
+## Managing Publications in the Dashboard
 
-This publication contains changes to all tables.
+1. Go to the [Database](https://supabase.com/dashboard/project/_/database/tables) page in the Dashboard
+2. Click on **Publications** in the sidebar
+3. Control which database events are sent by toggling **Insert**, **Update**, and **Delete**
+4. Control which tables broadcast changes by selecting **Source** and toggling each table
 
-```flex
+## SQL Commands for Managing Publications
 
-1
-2
-create publication publication_namefor all tables;
+### Create a Publication for All Tables
+
+This publication contains changes to all tables in the database:
+
+```sql
+create publication publication_name
+for all tables;
 ```
 
-## Create a publication to listen to individual tables [\#](https://supabase.com/docs/guides/database/replication\#create-a-publication-to-listen-to-individual-tables)
+### Create a Publication for Specific Tables
 
-```flex
-
-1
-2
-create publication publication_namefor table table_one, table_two;
+```sql
+create publication publication_name
+for table table_one, table_two;
 ```
 
-## Add tables to an existing publication [\#](https://supabase.com/docs/guides/database/replication\#add-tables-to-an-existing-publication)
+### Add Tables to an Existing Publication
 
-```flex
-
-1
-2
-alter publication publication_nameadd table table_name;
+```sql
+alter publication publication_name
+add table table_name;
 ```
 
-## Listen to `insert` [\#](https://supabase.com/docs/guides/database/replication\#listen-to-insert)
+### Listen to Specific Operations
 
-```flex
+#### Insert Events Only
 
-1
-2
-3
-create publication publication_namefor all tableswith (publish = 'insert');
+```sql
+create publication publication_name
+for all tables
+with (publish = 'insert');
 ```
 
-## Listen to `update` [\#](https://supabase.com/docs/guides/database/replication\#listen-to-update)
+#### Update Events Only
 
-```flex
-
-1
-2
-3
-create publication publication_namefor all tableswith (publish = 'update');
+```sql
+create publication publication_name
+for all tables
+with (publish = 'update');
 ```
 
-## Listen to `delete` [\#](https://supabase.com/docs/guides/database/replication\#listen-to-delete)
+#### Delete Events Only
 
-```flex
-
-1
-2
-3
-create publication publication_namefor all tableswith (publish = 'delete');
+```sql
+create publication publication_name
+for all tables
+with (publish = 'delete');
 ```
 
-## Remove a publication [\#](https://supabase.com/docs/guides/database/replication\#remove-a-publication)
+### Multiple Operations
 
-```flex
+You can combine operation types:
 
-1
+```sql
+create publication publication_name
+for all tables
+with (publish = 'insert, update');
+```
+
+### Remove a Publication
+
+```sql
 drop publication if exists publication_name;
 ```
 
-## Recreate a publication [\#](https://supabase.com/docs/guides/database/replication\#recreate-a-publication)
+### Recreate a Publication
 
-If you're recreating a publication, it's best to do it in a transaction to ensure the operation succeeds.
+If you're recreating a publication, it's best to do it in a transaction to ensure the operation succeeds:
 
-```flex
-
-1
-2
-3
-4
-5
-6
-7
-begin;  -- remove the realtime publication  drop publication if exists publication_name;  -- re-create the publication but don't enable it for any tables  create publication publication_name;commit;
+```sql
+begin;
+  -- remove the publication
+  drop publication if exists publication_name;
+  
+  -- re-create the publication but don't enable it for any tables
+  create publication publication_name;
+commit;
 ```
 
-### Is this helpful?
+## Replication with Supabase Realtime
 
-NoYes
+Supabase Realtime uses PostgreSQL's replication functionality to deliver database changes to clients. By default, Supabase creates a publication called `supabase_realtime` that powers the Realtime feature.
 
-### On this page
+### Setting Up Realtime for a Table
 
-[Manage publications in the dashboard](https://supabase.com/docs/guides/database/replication#manage-publications-in-the-dashboard) [Create a publication](https://supabase.com/docs/guides/database/replication#create-a-publication) [Create a publication to listen to individual tables](https://supabase.com/docs/guides/database/replication#create-a-publication-to-listen-to-individual-tables) [Add tables to an existing publication](https://supabase.com/docs/guides/database/replication#add-tables-to-an-existing-publication) [Listen to insert](https://supabase.com/docs/guides/database/replication#listen-to-insert) [Listen to update](https://supabase.com/docs/guides/database/replication#listen-to-update) [Listen to delete](https://supabase.com/docs/guides/database/replication#listen-to-delete) [Remove a publication](https://supabase.com/docs/guides/database/replication#remove-a-publication) [Recreate a publication](https://supabase.com/docs/guides/database/replication#recreate-a-publication)
+To enable Realtime for a specific table:
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+1. Go to the Database > Replication section in the Supabase Dashboard
+2. Find your table under the "Source" dropdown
+3. Enable the publication for your table
+4. Choose which operations (Insert, Update, Delete) to broadcast
 
+## Advanced Replication Scenarios
 
+### Filtering Replicated Data
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+You can use Row Level Security (RLS) policies to filter what data gets replicated through Supabase Realtime:
 
+```sql
+-- Only replicate rows where status is 'public'
+create policy "Only replicate public items"
+on items
+for select
+to authenticated
+using (status = 'public');
+```
 
+### External Replication Targets
 
+While Supabase primarily uses replication for its Realtime feature, you can set up external replication targets for scenarios like:
 
+- Data warehousing
+- Cross-region replication
+- Disaster recovery
 
-   AcceptOpt outPrivacy settings
+For these scenarios, you may need to configure a logical replication slot and use tools like `pg_recvlogical` or third-party replication solutions.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Publication not working**: Verify the publication exists with:
+   ```sql
+   select * from pg_publication;
+   ```
+
+2. **Tables missing from publication**: Check which tables are included:
+   ```sql
+   select * from pg_publication_tables;
+   ```
+
+3. **Replication lag**: If changes are delayed, check for replication lag:
+   ```sql
+   select * from pg_stat_replication;
+   ```
+
+4. **Permissions issues**: Ensure the replication user has appropriate permissions
+
+## Resources
+
+- [PostgreSQL Logical Replication Documentation](https://www.postgresql.org/docs/current/logical-replication.html)
+- [Supabase Realtime Documentation](https://supabase.com/docs/guides/realtime)

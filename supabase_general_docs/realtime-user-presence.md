@@ -1,73 +1,194 @@
-Realtime
-
 # Using Realtime Presence with Flutter
 
-* * *
+Supabase Presence enables you to track and display which users are currently online in your Flutter application, a common feature for real-time collaborative applications.
 
-Use Supabase Presence to display the currently online users on your Flutter application.
+## Overview
 
-Displaying the list of currently online users is a common feature for real-time collaborative applications. Supabase Presence makes it easy to track users joining and leaving the session so that you can make a collaborative app.
+Presence allows you to:
 
-Track online users with Supabase Realtime Presence \| Flutter Figma Clone #3 - YouTube
+- Track when users join or leave a session
+- Show which users are currently online
+- Display user status and activity
+- Enable real-time collaboration features
 
-Supabase
+## Implementation
 
-47.5K subscribers
+To implement Realtime Presence in your Flutter application, you'll need to:
 
-[Track online users with Supabase Realtime Presence \| Flutter Figma Clone #3](https://www.youtube.com/watch?v=B2NZvZ2uLNs)
+1. Set up a Supabase project with Realtime enabled
+2. Connect to Supabase Realtime from your Flutter app
+3. Track user presence using the Presence API
+4. Listen to presence changes and update your UI accordingly
 
-Supabase
+## Video Tutorial
 
-Search
+For a detailed walkthrough of implementing Presence in a Flutter app, check out this tutorial:
 
-Info
+<iframe width="560" height="315" src="https://www.youtube.com/embed/B2NZvZ2uLNs" title="Track online users with Supabase Realtime Presence | Flutter Figma Clone #3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Shopping
+[Watch on YouTube](https://www.youtube.com/watch?v=B2NZvZ2uLNs)
 
-Tap to unmute
+## Example Code
 
-If playback doesn't begin shortly, try restarting your device.
+Here's an example implementation of Realtime Presence in a Flutter application:
 
-You're signed out
+```dart
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-Videos you watch may be added to the TV's watch history and influence TV recommendations. To avoid this, cancel and sign in to YouTube on your computer.
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-CancelConfirm
+  await Supabase.initialize(
+    url: 'YOUR_SUPABASE_URL',
+    anonKey: 'YOUR_SUPABASE_ANON_KEY',
+  );
+  
+  runApp(MyApp());
+}
 
-Share
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: PresenceExample(),
+    );
+  }
+}
 
-Include playlist
+class PresenceExample extends StatefulWidget {
+  @override
+  _PresenceExampleState createState() => _PresenceExampleState();
+}
 
-An error occurred while retrieving sharing information. Please try again later.
+class _PresenceExampleState extends State<PresenceExample> {
+  final supabase = Supabase.instance.client;
+  final channel = Supabase.instance.client.channel('room:123');
+  final myUserId = 'user-${DateTime.now().millisecondsSinceEpoch}';
+  Map<String, dynamic> presenceState = {};
+  
+  @override
+  void initState() {
+    super.initState();
+    
+    // Subscribe to presence changes
+    channel
+      .on(RealtimeListenTypes.presence, ChannelFilter(event: 'sync'), 
+        (payload, [ref]) {
+          setState(() {
+            presenceState = channel.presenceState();
+          });
+        })
+      .on(RealtimeListenTypes.presence, ChannelFilter(event: 'join'), 
+        (payload, [ref]) {
+          setState(() {
+            presenceState = channel.presenceState();
+          });
+        })
+      .on(RealtimeListenTypes.presence, ChannelFilter(event: 'leave'), 
+        (payload, [ref]) {
+          setState(() {
+            presenceState = channel.presenceState();
+          });
+        })
+      .subscribe(
+        (status, [ref]) async {
+          if (status == 'SUBSCRIBED') {
+            // Track presence with our own user data
+            await channel.track({
+              'user_id': myUserId,
+              'name': 'User ${myUserId.substring(5, 9)}',
+              'online_at': DateTime.now().toIso8601String(),
+            });
+          }
+        }
+      );
+  }
+  
+  @override
+  void dispose() {
+    channel.unsubscribe();
+    super.dispose();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Online Users'),
+      ),
+      body: ListView(
+        children: [
+          for (final entry in presenceState.entries)
+            for (final presence in entry.value)
+              ListTile(
+                leading: CircleAvatar(
+                  child: Text(presence['name'].substring(5, 6)),
+                ),
+                title: Text(presence['name']),
+                subtitle: Text('Online since ${DateTime.parse(presence['online_at']).toLocal().toString()}'),
+                trailing: presence['user_id'] == myUserId
+                    ? Chip(label: Text('You'))
+                    : null,
+              ),
+        ],
+      ),
+    );
+  }
+}
+```
 
-Watch later
+## Advanced Usage
 
-Share
+### Custom User Status
 
-Copy link
+You can extend Presence to include custom user status information:
 
-Watch on
+```dart
+await channel.track({
+  'user_id': myUserId,
+  'name': userName,
+  'online_at': DateTime.now().toIso8601String(),
+  'status': 'away', // or 'active', 'busy', etc.
+  'activity': 'viewing document 123',
+});
+```
 
-0:00
+### Handling User Activity
 
-/ •Live
+You can update a user's presence information to reflect their current activity:
 
-•
+```dart
+void updateUserActivity(String documentId) {
+  channel.track({
+    'user_id': myUserId,
+    'name': userName,
+    'online_at': DateTime.now().toIso8601String(),
+    'status': 'active',
+    'activity': 'editing document $documentId',
+    'last_activity_at': DateTime.now().toIso8601String(),
+  });
+}
+```
 
-[Watch on YouTube](https://www.youtube.com/watch?v=B2NZvZ2uLNs "Watch on YouTube")
+### Tracking Cursor Position
 
-### Is this helpful?
+For collaborative editing applications, you can track and share cursor positions:
 
-NoYes
+```dart
+void updateCursorPosition(double x, double y) {
+  channel.track({
+    'user_id': myUserId,
+    'name': userName,
+    'cursor_x': x,
+    'cursor_y': y,
+    'last_update': DateTime.now().toIso8601String(),
+  });
+}
+```
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+## Performance Considerations
 
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+- Presence data should be kept small to minimize network overhead
+- Consider debouncing updates for high-frequency changes (like cursor movement)
+- For very large user counts, consider using pagination or filtering

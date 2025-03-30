@@ -1,104 +1,97 @@
-Database
+# pg_repack: Physical Storage Optimization and Maintenance
 
-# pg\_repack: Physical storage optimization and maintenance
+## Introduction
 
-* * *
+[pg_repack](https://github.com/reorg/pg_repack) is a PostgreSQL extension to remove bloat from tables and indexes, and optionally restore the physical order of clustered indexes. Unlike CLUSTER and VACUUM FULL, pg_repack runs "online" and does not hold exclusive locks on the processed tables, allowing ongoing database operations to continue. pg_repack's efficiency is comparable to using CLUSTER directly.
 
-[pg\_repack](https://github.com/reorg/pg_repack) is a Postgres extension to remove bloat from tables and indexes, and optionally restore the physical order of clustered indexes. Unlike CLUSTER and VACUUM FULL, pg\_repack runs "online" and does not hold a exclusive locks on the processed tables that could prevent ongoing database operations. pg\_repack's efficiency is comparable to using CLUSTER directly.
+The extension provides the following methods to optimize physical storage:
 
-pg\_repack provides the following methods to optimize physical storage:
+- **Online CLUSTER**: Ordering table data by cluster index in a non-blocking way
+- **Custom ordering**: Ordering table data by specified columns
+- **Online VACUUM FULL**: Packing rows only in a non-blocking way
+- **Index optimization**: Rebuild or relocate only the indexes of a table
 
-- Online CLUSTER: ordering table data by cluster index in a non-blocking way
-- Ordering table data by specified columns
-- Online VACUUM FULL: packing rows only in a non-blocking way
-- Rebuild or relocate only the indexes of a table
+pg_repack has two components: the database extension and a client-side CLI to control it.
 
-pg\_repack has 2 components, the database extension and a client-side CLI to control it.
+## Requirements
 
-## Requirements [\#](https://supabase.com/docs/guides/database/extensions/pg_repack\#requirements)
+- A target table must have a PRIMARY KEY, or a UNIQUE total index on a NOT NULL column
+- Performing a full-table repack requires free disk space about twice as large as the target table and its indexes
 
-- A target table must have a PRIMARY KEY, or a UNIQUE total index on a NOT NULL column.
-- Performing a full-table repack requires free disk space about twice as large as the target table and its indexes.
+pg_repack requires the PostgreSQL superuser role by default. That role is not available to users on the Supabase platform. To avoid that requirement, use the `-k` or `--no-superuser-check` flags on every `pg_repack` CLI command.
 
-pg\_repack requires the Postgres superuser role by default. That role is not available to users on the Supabase platform. To avoid that requirement, use the `-k` or `--no-superuser-check` flags on every `pg_repack` CLI command.
+The first version of pg_repack with full support for non-superuser repacking is 1.5.2. You can check the version installed on your Supabase instance using:
 
-The first version of pg\_repack with full support for non-superuser repacking is 1.5.2. You can check the version installed on your Supabase instance using
-
-```flex
-
-1
-2
-3
-select default_versionfrom pg_available_extensionswhere name = 'pg_repack';
+```sql
+SELECT default_version
+FROM pg_available_extensions
+WHERE name = 'pg_repack';
 ```
 
-If pg\_repack is not present, or the version is < 1.5.2, [upgrade to the latest version](https://supabase.com/docs/guides/platform/upgrading) of Supabase to gain access.
+If pg_repack is not present, or the version is < 1.5.2, [upgrade to the latest version](https://supabase.com/docs/guides/platform/upgrading) of Supabase to gain access.
 
-## Usage [\#](https://supabase.com/docs/guides/database/extensions/pg_repack\#usage)
+## Usage
 
-### Enable the extension [\#](https://supabase.com/docs/guides/database/extensions/pg_repack\#enable-the-extension)
+### Enable the Extension
 
-Get started with pg\_repack by enabling the extension in the Supabase Dashboard.
+#### Using the Dashboard
 
-DashboardSQL
+1. Go to the [Database](https://supabase.com/dashboard/project/_/database/tables) page in the Dashboard
+2. Click on **Extensions** in the sidebar
+3. Search for "pg_repack" and enable the extension
 
-1. Go to the [Database](https://supabase.com/dashboard/project/_/database/tables) page in the Dashboard.
-2. Click on **Extensions** in the sidebar.
-3. Search for "pg\_repack" and enable the extension.
+#### Using SQL
 
-### Install the CLI [\#](https://supabase.com/docs/guides/database/extensions/pg_repack\#install-the-cli)
+```sql
+CREATE EXTENSION pg_repack;
+```
 
-Select an option from the pg\_repack docs to [install the client CLI](https://reorg.github.io/pg_repack/#download).
+### Install the CLI
 
-### Syntax [\#](https://supabase.com/docs/guides/database/extensions/pg_repack\#syntax)
+Select an option from the pg_repack docs to [install the client CLI](https://reorg.github.io/pg_repack/#download).
 
-All pg\_repack commands should include the `-k` flag to skip the client-side superuser check.
+### Command Syntax
 
-```flex
+All pg_repack commands should include the `-k` flag to skip the client-side superuser check:
 
-1
+```
 pg_repack -k [OPTION]... [DBNAME]
 ```
 
-## Example [\#](https://supabase.com/docs/guides/database/extensions/pg_repack\#example)
+Common options include:
+- `-h, --host=HOSTNAME`: Database server host
+- `-p, --port=PORT`: Database server port
+- `-U, --username=USERNAME`: Database user name
+- `-d, --dbname=DBNAME`: Database to connect to
+- `-t, --table=TABLE`: Repack only specified table(s)
+- `--no-order`: Do not order table (equivalent to VACUUM FULL)
+- `--dry-run`: Show what would be done, but don't actually repack
+- `-T, --tablespace=TBLSPC`: Move the repacked tables to the specified tablespace
+
+## Example
 
 Perform an online `VACUUM FULL` on the tables `public.foo` and `public.bar` in the database `postgres`:
 
-```flex
-
-1
+```bash
 pg_repack -k -h db.<PROJECT_REF>.supabase.co -p 5432 -U postgres -d postgres --no-order --table public.foo --table public.bar
 ```
 
-See the [official pg\_repack documentation](https://reorg.github.io/pg_repack/) for the full list of options.
+## When to Use pg_repack
 
-## Limitations [\#](https://supabase.com/docs/guides/database/extensions/pg_repack\#limitations)
+pg_repack is particularly useful in the following scenarios:
 
-- pg\_repack cannot reorganize temporary tables.
-- pg\_repack cannot cluster tables by GiST indexes.
-- You cannot perform DDL commands of the target tables except VACUUM or ANALYZE while pg\_repack is working.
-pg\_repack holds an ACCESS SHARE lock on the target table to enforce this restriction.
+1. **Tables with high bloat**: After many updates/deletes, tables can contain significant unused space
+2. **Performance degradation**: When queries slow down due to table fragmentation
+3. **Disk space concerns**: When reclaiming space without downtime is needed
+4. **Index clustering**: To improve read performance by physically ordering data
 
-## Resources [\#](https://supabase.com/docs/guides/database/extensions/pg_repack\#resources)
+## Limitations
 
-- [Official pg\_repack documentation](https://reorg.github.io/pg_repack/)
+- pg_repack cannot reorganize temporary tables
+- pg_repack cannot cluster tables by GiST indexes
+- You cannot perform DDL commands on the target tables except VACUUM or ANALYZE while pg_repack is working (pg_repack holds an ACCESS SHARE lock on the target table to enforce this restriction)
 
-### Is this helpful?
+## Resources
 
-NoYes
-
-### On this page
-
-[Requirements](https://supabase.com/docs/guides/database/extensions/pg_repack#requirements) [Usage](https://supabase.com/docs/guides/database/extensions/pg_repack#usage) [Enable the extension](https://supabase.com/docs/guides/database/extensions/pg_repack#enable-the-extension) [Install the CLI](https://supabase.com/docs/guides/database/extensions/pg_repack#install-the-cli) [Syntax](https://supabase.com/docs/guides/database/extensions/pg_repack#syntax) [Example](https://supabase.com/docs/guides/database/extensions/pg_repack#example) [Limitations](https://supabase.com/docs/guides/database/extensions/pg_repack#limitations) [Resources](https://supabase.com/docs/guides/database/extensions/pg_repack#resources)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings
+- [Official pg_repack documentation](https://reorg.github.io/pg_repack/)
+- [GitHub repository](https://github.com/reorg/pg_repack)

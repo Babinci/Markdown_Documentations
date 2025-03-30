@@ -1,8 +1,4 @@
-Platform
-
 # Enable SSO for Your Organization
-
-* * *
 
 Looking for docs on how to add Single Sign-On support in your Supabase project? Head on over to [Single Sign-On with SAML 2.0 for Projects](https://supabase.com/docs/guides/auth/enterprise-sso/auth-sso-saml).
 
@@ -10,7 +6,7 @@ Supabase offers single sign-on (SSO) as a login option to provide additional acc
 
 Supabase currently provides SAML SSO for [Team and Enterprise plan customers](https://supabase.com/pricing). Contact [Sales](https://forms.supabase.com/team) to have this enabled for your organization.
 
-## Setup and limitations [\#](https://supabase.com/docs/guides/platform/sso\#setup-and-limitations)
+## Setup and limitations
 
 Supabase supports practically all identity providers that support the SAML 2.0 SSO protocol. We've prepared these guides for commonly used identity providers to help you get started. If you use a different provider, our support stands ready to support you.
 
@@ -21,7 +17,7 @@ Supabase supports practically all identity providers that support the SAML 2.0 S
 Accounts signing in with SSO have certain limitations.
 The following sections outline the limitations when SSO is enabled or disabled for your team.
 
-### Enable SSO for your team [\#](https://supabase.com/docs/guides/platform/sso\#enable-sso)
+### Enable SSO for your team
 
 - Organization invites are restricted to company members belonging to the same identity provider.
 - Every user has an organization created by default. They can create as many projects as they want.
@@ -29,27 +25,7 @@ The following sections outline the limitations when SSO is enabled or disabled f
 - If an SSO user with the following email of `alice@foocorp.com` attempts to sign in with a GitHub account that uses the same email, a separate Supabase account is created and will not be linked to the SSO user's account.
 - An SSO user will not be able to see all organizations/projects created under the same identity provider. They will need to be invited to the Supabase organization first. Refer to [access control](https://supabase.com/docs/guides/platform/access-control) for more information.
 
-### Disable SSO for your team [\#](https://supabase.com/docs/guides/platform/sso\#disable-sso)
+### Disable SSO for your team
 
 - You can prevent a user's account from further access to Supabase by removing or disabling their account in your identity provider.
 - You should also remove or downgrade their permissions from any organizations inside Supabase.
-
-### Is this helpful?
-
-NoYes
-
-### On this page
-
-[Setup and limitations](https://supabase.com/docs/guides/platform/sso#setup-and-limitations) [Enable SSO for your team](https://supabase.com/docs/guides/platform/sso#enable-sso) [Disable SSO for your team](https://supabase.com/docs/guides/platform/sso#disable-sso)
-
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
-
-
-
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
-
-
-
-
-
-   AcceptOpt outPrivacy settings

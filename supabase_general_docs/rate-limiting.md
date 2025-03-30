@@ -1,29 +1,35 @@
-Edge Functions
-
 # Rate Limiting Edge Functions
 
-* * *
+Rate limiting is an important security and performance feature for controlling the traffic to your Edge Functions.
 
-[iframe](https://www.youtube-nocookie.com/embed/o4ooiE-SdUg)
+## Using Redis with Upstash for Rate Limiting
 
-[Redis](https://redis.io/docs/about/) is an open source (BSD licensed), in-memory data structure store used as a database, cache, message broker, and streaming engine. It is optimized for atomic operations like incrementing a value, for example for a view counter or rate limiting. We can even rate limit based on the user ID from Supabase Auth!
+[Redis](https://redis.io/docs/about/) is an open source (BSD licensed), in-memory data structure store used as a database, cache, message broker, and streaming engine. It is optimized for atomic operations like incrementing a value, which makes it perfect for implementing rate limiting functionality.
 
 [Upstash](https://upstash.com/) provides an HTTP/REST based Redis client which is ideal for serverless use-cases and therefore works well with Supabase Edge Functions.
 
-Find the code on [GitHub](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/upstash-redis-ratelimit).
+## Implementation
 
-### Is this helpful?
+You can implement rate limiting based on various identifiers, such as:
 
-NoYes
+- IP addresses
+- User IDs from Supabase Auth
+- API keys
+- Session IDs
 
-1. We use first-party cookies to improve our services. [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)
+## Example
 
+Check out a complete implementation example on [GitHub](https://github.com/supabase/supabase/tree/master/examples/edge-functions/supabase/functions/upstash-redis-ratelimit).
 
+## Video Tutorial
 
-   [Learn more](https://supabase.com/privacy#8-cookies-and-similar-technologies-used-on-our-european-services)•Privacy settings
+Watch the following tutorial for a step-by-step implementation guide:
 
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/o4ooiE-SdUg" title="Rate Limiting with Redis and Upstash" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+## Benefits of Rate Limiting
 
-
-
-   AcceptOpt outPrivacy settings
+1. **Prevent abuse**: Protect your functions from potential DDoS attacks or abuse
+2. **Control costs**: Limit the number of function invocations to prevent unexpected billing
+3. **Improve reliability**: Ensure service availability by preventing resource exhaustion
+4. **Enhance security**: Add an additional layer of protection against brute force attacks

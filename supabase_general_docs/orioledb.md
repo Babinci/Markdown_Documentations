@@ -1,14 +1,20 @@
 # OrioleDB Overview
 
+## Introduction
+
 The [OrioleDB](https://www.orioledb.com/) Postgres extension provides a drop-in replacement storage engine for the default heap storage method. It is designed to improve Postgres' scalability and performance.
+
+## Performance Benefits
 
 OrioleDB addresses PostgreSQL's scalability limitations by removing bottlenecks in the shared memory cache under high concurrency. It also optimizes write-ahead-log (WAL) insertion through row-level WAL logging. These changes lead to significant improvements in the industry standard TPC-C benchmark, which approximates a real-world transactional workload. The following benchmark was performed on a c7g.metal instance and shows OrioleDB's performance outperforming the default Postgres heap method with a 3.3x speedup.
 
 ![TPC-C (warehouses = 500)](https://supabase.com/docs/img/database/orioledb-tpc-c-500-warehouse.png)
 
+## Current Status and Limitations
+
 OrioleDB is in active development and currently has [certain limitations](https://www.orioledb.com/docs/usage/getting-started#current-limitations). Currently, only B-tree indexes are supported, so features like pg_vector's HNSW indexes are not yet available. An Index Access Method bridge to unlock support for all index types used with heap storage is under active development. In the Supabase OrioleDB image the default storage method has been updated to use OrioleDB, granting better performance out of the box.
 
-## Concepts
+## Key Concepts
 
 ### Index-organized Tables
 
@@ -26,9 +32,9 @@ Multi-Version Concurrency Control (MVCC) is implemented using an undo log. The u
 
 OrioleDB implements copy-on-write checkpoints to persist data efficiently. This approach writes only modified data during a checkpoint, reducing the I/O overhead compared to traditional Postgres checkpointing and allowing row-level WAL logging.
 
-## Usage
+## Getting Started
 
-### Creating OrioleDB Project
+### Creating an OrioleDB Project
 
 You can get started with OrioleDB by enabling the extension in your Supabase dashboard.
 To get started with OrioleDB you need to [create a new Supabase project](https://supabase.com/dashboard/new/_) and choose `OrioleDB Public Alpha` Postgres version.
@@ -37,32 +43,32 @@ To get started with OrioleDB you need to [create a new Supabase project](https:/
 
 ### Creating Tables
 
-To create a table using the OrioleDB storage engine just execute the standard `CREATE TABLE` statement. By default it will create a table using OrioleDB storage engine. For example:
+To create a table using the OrioleDB storage engine, simply execute the standard `CREATE TABLE` statement. By default it will create a table using OrioleDB storage engine. For example:
 
 ```sql
 -- Create a table
-create table blog_post (
-  id int8 not null,
-  title text not null,
-  body text not null,
-  author text not null,
-  published_at timestamptz not null default CURRENT_TIMESTAMP,
-  views bigint not null,
-  primary key (id)
+CREATE TABLE blog_post (
+  id int8 NOT NULL,
+  title text NOT NULL,
+  body text NOT NULL,
+  author text NOT NULL,
+  published_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  views bigint NOT NULL,
+  PRIMARY KEY (id)
 );
 ```
 
 ### Creating Indexes
 
 OrioleDB tables always have a primary key. If it wasn't defined explicitly, a hidden primary key is created using the `ctid` column.
-Additionally you can create secondary indexes.
+Additionally, you can create secondary indexes.
 
 Currently, only B-tree indexes are supported, so features like pg_vector's HNSW indexes are not yet available.
 
 ```sql
 -- Create an index
-create index blog_post_published_at on blog_post (published_at);
-create index blog_post_views on blog_post (views) where (views > 1000);
+CREATE INDEX blog_post_published_at ON blog_post (published_at);
+CREATE INDEX blog_post_views ON blog_post (views) WHERE (views > 1000);
 ```
 
 ### Data Manipulation
