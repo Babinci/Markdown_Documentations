@@ -39,11 +39,11 @@ The reflected API is designed to retain as much of Postgres' capability as possi
 
 The REST API resolves all requests to a single SQL statement leading to fast response times and high throughput.
 
-Reference:
+## References
 
-- [Docs](https://postgrest.org/)
-- [Source Code](https://github.com/PostgREST/postgrest)
+- [PostgREST Docs](https://postgrest.org/)
+- [PostgREST Source Code](https://github.com/PostgREST/postgrest)
 
-## API URL and keys
+## API URL and Keys
 
 You can find the API URL and Keys in the [Dashboard](https://supabase.com/dashboard/project/_/settings/api).

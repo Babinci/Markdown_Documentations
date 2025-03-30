@@ -4,7 +4,7 @@ Supabase Storage is designed to work perfectly with Postgres [Row Level Security
 
 You can use RLS to create [Security Access Policies](https://www.postgresql.org/docs/current/sql-createpolicy.html) that are incredibly powerful and flexible, allowing you to restrict access based on your business needs.
 
-## Access policies
+## Access Policies
 
 By default Storage does not allow any uploads to buckets without RLS policies. You selectively allow certain operations by creating RLS policies on the `storage.objects` table.
 
@@ -16,7 +16,7 @@ For example, the only RLS policy required for [uploading](https://supabase.com/d
 
 To allow overwriting files using the `upsert` functionality you will need to additionally grant `SELECT` and `UPDATE` permissions.
 
-## Policy examples
+## Policy Examples
 
 An easy way to get started would be to create RLS policies for `SELECT`, `INSERT`, `UPDATE`, `DELETE` operations and restrict the policies to meet your security requirements. For example, one can start with the following `INSERT` policy:
 
@@ -75,7 +75,7 @@ to authenticated
 using ( (select auth.uid()) = owner_id::uuid );
 ```
 
-## Bypassing access controls
+## Bypassing Access Controls
 
 If you exclusively use Storage from trusted clients, such as your own servers, and need to bypass the RLS policies, you can use the `service key` in the `Authorization` header. Service keys entirely bypass RLS policies, granting you unrestricted access to all Storage APIs.
 

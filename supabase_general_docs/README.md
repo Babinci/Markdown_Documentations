@@ -108,6 +108,7 @@ This repository contains the documentation for Supabase, organized into differen
 - [Error 401: Invalid Claim: Missing Sub](auth-error-401-invalid-claim-missing-sub--AFwMR.md) - How to fix the "missing sub claim" error in Supabase Auth.
 - [Google Auth Fails for Some Users](google-auth-fails-for-some-users-XcFXEu.md) - How to fix Google authentication failures by explicitly requesting the email scope.
 - [HTTP API Issues](http-api-issues.md) - How to diagnose and resolve common HTTP API issues, including timeouts, 5xx errors, and connection problems.
+- [Invalid Response from Upstream Server](an-invalid-response-was-received-from-the-upstream-server-error-when-querying-auth-RI4Vl-.md) - How to fix the "invalid response from upstream server" error related to auth migrations.
 - [JWT Expired Error in Dashboard](jwt-expired-error-in-supabase-dashboard-F06k3x.md) - How to fix "JWT Expired" errors in the Supabase Dashboard by syncing your computer's time.
 - [Next.js Auth Issues](how-do-you-troubleshoot-nextjs---supabase-auth-issues-riMCZV.md) - Comprehensive guide for troubleshooting authentication issues with Next.js and Supabase.
 - [Amazon Cognito (Amplify)](aws-cognito.md) - How to use Amazon Cognito (Amplify) as an authentication provider with your Supabase project.
@@ -115,6 +116,8 @@ This repository contains the documentation for Supabase, organized into differen
 ## Database
 
 - [Tables and Data](tables.md) - Comprehensive guide to managing tables in Postgres, including data types, primary keys, foreign keys, schemas, views, and loading data.
+- [REST API](api.md) - Overview of the auto-generated RESTful API that Supabase creates directly from your database schema.
+- [Arrays](arrays.md) - Working with PostgreSQL array types in Supabase, including creating tables with array columns and querying array data.
 - [Testing Your Database](testing.md) - Guide to writing automated tests for your PostgreSQL database, including client-based testing and SQL testing with pgTAP.
 - [Cascade Deletes](cascade-deletes.md) - Guide to different options for handling foreign key constraints when deleting parent records.
 - [Column Level Security](column-level-security.md) - How to restrict access to specific columns in your database tables.
@@ -204,6 +207,7 @@ This repository contains the documentation for Supabase, organized into differen
 ## Storage
 
 - [Storage Overview](storage.md) - Introduction to Supabase Storage features and capabilities for storing and serving files of any size.
+- [Access Control](access-control.md) - How to use Row Level Security policies to control access to buckets and files in Supabase Storage.
 - [Ownership](ownership.md) - Understanding ownership management for buckets and objects in Supabase Storage, including access control using Row Level Security.
 - [Resumable Uploads](resumable-uploads.md) - How to implement resumable file uploads to Supabase Storage using the TUS protocol for large files and unstable networks.
 - [S3 Uploads](s3-uploads.md) - How to upload files to Supabase Storage using the S3 protocol for both single requests and multipart uploads.
@@ -251,6 +255,7 @@ This repository contains the documentation for Supabase, organized into differen
 
 - [Performance Tuning](performance.md) - Optimizing your Supabase PostgreSQL database performance, including query optimization and connection management.
 - [Permissions](permissions.md) - Understanding service ownership requirements and permissions for Supabase services like Auth and Storage.
+- [Self-Hosted Feature Availability](are-all-features-available-in-self-hosted-supabase-THPcqw.md) - Comparison of features available in self-hosted Supabase versus the hosted platform.
 - [Read Replicas](read-replicas.md) - Deploy read-only databases across multiple regions for lower latency and better resource management.
 - [Regions](regions.md) - List of available regions where you can deploy Supabase projects globally.
 - [Regional Invocation](regional-invocation.md) - How to execute Edge Functions in specific regions for optimized performance.
@@ -335,6 +340,8 @@ This repository contains the documentation for Supabase, organized into differen
 - [Organization SSO](sso.md) - Enable and manage Single Sign-On (SAML 2.0) for your Supabase organization.
 - [Storage Image Transformations](storage-image-transformations.md) - Understanding billing, quotas, and optimizing usage for image transformation features.
 - [Storage Size](storage-size.md) - Managing and understanding billing for storage size usage with quota information and usage monitoring.
+- [Understanding Egress](all-about-supabase-egress-a_Sg_e.md) - Comprehensive guide explaining what egress is, what contributes to it, and how to reduce egress usage.
+- [Your Monthly Invoice](your-monthly-invoice.md) - Detailed explanation of billing cycles, invoice components, and how to interpret your Supabase invoice.
 
 ## Local Development
 
@@ -352,6 +359,7 @@ This repository contains the documentation for Supabase, organized into differen
 - [Migrating to Supabase](migrating-to-supabase.md) - Comprehensive guide with migration paths from services like Firebase, Auth0, Heroku, AWS RDS, MySQL, and more.
 - [Migrating to SSR from Auth Helpers](migrating-to-ssr-from-auth-helpers.md) - Guide for migrating from the deprecated Auth Helpers package to the new SSR package.
 - [Migrating within Supabase](migrating-within-supabase.md) - How to migrate data and settings between Supabase projects.
+- [Migrate from Amazon RDS](amazon-rds.md) - How to migrate MySQL, MS SQL, or PostgreSQL databases from Amazon RDS to Supabase.
 - [Migrate from Neon](neon.md) - Step-by-step guide for migrating a PostgreSQL database from Neon to Supabase using pg_dump and psql.
 - [Migrate from Postgres](postgres.md) - How to migrate an existing Postgres database to Supabase using Colab or CLI tools.
 - [Migrate from Render](render.md) - How to migrate your Render Postgres database to Supabase.
@@ -370,8 +378,10 @@ This repository contains the documentation for Supabase, organized into differen
 - [RedwoodJS](with-redwoodjs.md) - How to build a user management app with RedwoodJS using Supabase for authentication, database, and storage.
 - [Refine](with-refine.md) - How to build a user management app with Refine framework using Supabase for authentication, database, and storage.
 - [SolidJS](with-solidjs.md) - How to build a user management app with SolidJS using Supabase for authentication, database, and storage.
+- [Swift and SwiftUI](with-swift.md) - How to build a user management app with Swift and SwiftUI using Supabase for authentication, database, and storage.
 - [Svelte](with-svelte.md) - How to build a user management app with Svelte using Supabase for authentication, database, and storage.
 - [SvelteKit](with-sveltekit.md) - How to build a user management app with SvelteKit using Supabase for authentication, database, and storage.
+- [Vue 3](with-vue-3.md) - How to build a user management app with Vue 3 using Supabase for authentication, database, and storage.
 - [RedwoodJS](redwoodjs.md) - How to create a Supabase project and connect it to a RedwoodJS application using Prisma.
 - [Refine](refine.md) - How to create a Supabase project and connect it to a Refine application with auto-generated UI.
 - [SolidJS](solidjs.md) - How to create a Supabase project, add sample data, and query the data from a SolidJS app.

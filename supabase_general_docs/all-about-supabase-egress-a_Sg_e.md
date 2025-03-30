@@ -1,4 +1,4 @@
-# All about Supabase Egress
+# All About Supabase Egress
 
 ## What is Egress?
 
@@ -8,7 +8,7 @@ You can read about Unified egress, included quota, and how to check the egress u
 
 - Example: Log Explorer -> Custom Reports -> Add/Remove charts -> Database API -> API Egress.
 
-## What is contributing to Egress?
+## What is Contributing to Egress?
 
 While pointing out the exact cause for egress may not be straightforward, there are various steps you can take to determine the source of these issues:
 
@@ -18,7 +18,7 @@ While pointing out the exact cause for egress may not be straightforward, there 
 - For Storage Egress, all outgoing traffic for storage-related requests to download/view your Storage items are considered as Storage egress. We have a "Storage Egress Requests" template in logs explorer that you can use to get the number of requests for each Storage object
 - If you pull 1mb of data out of the database using the Supavisor connection in your edge function, but only sends 100kb back to the user, you will have the Egress from the Supavisor to your Edge function plus from the edge function to your user
 
-## How can you decrease egress?
+## How Can You Decrease Egress?
 
 - Reduce the number of fields selected or entries when querying
 - Reduce the number of queries/calls by optimising client code or use caches to reduce the number of requests/queries being done: [https://github.com/psteinroe/supabase-cache-helpers/](https://github.com/psteinroe/supabase-cache-helpers/)
