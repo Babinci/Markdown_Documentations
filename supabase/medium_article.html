@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Supa-Introduction to Supabase</title>
+    <style>
+        /* Base styles for e-reader optimization */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            font-family: 'Georgia', serif;
+            font-size: 18px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 10px;
+            background-color: #fff;
+            color: #000;
+        }
+        
+        /* Typography */
+        h1 {
+            font-size: 2.2rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+        
+        h2 {
+            font-size: 1.6rem;
+            margin: 1.3rem 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 0.3rem;
+        }
+        
+        p {
+            margin: 1rem 0;
+            text-align: justify;
+        }
+        
+        a {
+            color: #000;
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            font-weight: bold;
+        }
+        
+        a:hover {
+            text-decoration-thickness: 2px;
+        }
+        
+        blockquote {
+            border-left: 3px solid #000;
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+        }
+        
+        strong, b {
+            font-weight: 700;
+        }
+        
+        em, i {
+            font-style: italic;
+        }
+        
+        /* Layout elements */
+        .header {
+            text-align: center;
+            margin: 2rem 0 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #000;
+        }
+        
+        .tagline {
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            margin: 2.5rem 0;
+        }
+        
+        .highlight-box {
+            border: 2px solid #000;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            position: relative;
+            background-color: #f8f8f8;
+        }
+        
+        .highlight-box:before {
+            content: "✦";
+            position: absolute;
+            top: -0.8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            padding: 0 10px;
+            font-size: 1.3rem;
+        }
+        
+        .signature {
+            margin-top: 3rem;
+            text-align: right;
+            font-style: italic;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.5rem;
+            letter-spacing: 0.5rem;
+        }
+        
+        /* Visual elements */
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            margin-right: 0.3em;
+            vertical-align: middle;
+        }
+        
+        .featured-quote {
+            font-size: 1.3rem;
+            text-align: center;
+            font-style: italic;
+            margin: 2rem 0;
+            padding: 1rem;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+        }
+        
+        /* Specific components */
+        .key-feature {
+            display: flex;
+            margin: 1.5rem 0;
+            align-items: flex-start;
+        }
+        
+        .key-feature-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-right: 1rem;
+            line-height: 1;
+        }
+        
+        .key-feature-content {
+            flex: 1;
+        }
+        
+        .key-feature-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #000;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        /* Decorative elements */
+        .corner-decoration {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #000;
+        }
+        
+        .corner-decoration.top-left {
+            top: -5px;
+            left: -5px;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .corner-decoration.top-right {
+            top: -5px;
+            right: -5px;
+            border-left: none;
+            border-bottom: none;
+        }
+        
+        .corner-decoration.bottom-left {
+            bottom: -5px;
+            left: -5px;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .corner-decoration.bottom-right {
+            bottom: -5px;
+            right: -5px;
+            border-left: none;
+            border-top: none;
+        }
+        
+        .pg-container {
+            position: relative;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>A Supa-Introduction to Supabase</h1>
+        <div class="tagline">The Firebase of SQL Land — But Actually Good</div>
+    </div>
+    
+    <div class="section">
+        <p>In my long professional SQL dabbler career, I've used numerous databases, methodologies, and software, yet none were to my liking.</p>
+        
+        <p>A couple years ago I came across a <strong>bold</strong> statement, The Firebase of SQL Land, and I thought, Hmm, <strong>why</strong> would someone brag about anything Firebase-related?</p>
+        
+        <p>Oh, was I wrong or were they wrong? But one thing is certain, <a href="https://supabase.com/">Supabase</a> was cool; it had a decent CMS, JS library and provided direct access to the <a href="https://www.postgresql.org/">Postgres DB</a> underneath.</p>
+    </div>
+    
+    <div class="featured-quote">
+        "A solution for your database troubles, a Postgres wrapper hosted and scaled automagically and accessible through a clean web UI."
+    </div>
+    
+    <div class="section">
+        <h2>Supa-what?</h2>
+        
+        <p>After a rather uninviting introduction, let me explain in mundane terms <strong>what <em>supa</em> is</strong>:</p>
+        
+        <blockquote>
+            A solution for your database troubles, a Postgres wrapper hosted and scaled automagically (in AWS) and accessible through a clean web UI.
+        </blockquote>
+        
+        <p>Everything that you could do with your custom Postgres Docker images deployed on unnecessarily complex infrastructure is at your fingertips without the hassle.</p>
+        
+        <p>I'm not to bash on necessary custom maintained globally distributed orchestrated magical database systems (CMGDOMDS for short) but to encourage new projects in need of quick iteration to start less complex than last time.</p>
+    </div>
+    
+    <div class="pg-container">
+        <div class="corner-decoration top-left"></div>
+        <div class="corner-decoration top-right"></div>
+        <div class="corner-decoration bottom-left"></div>
+        <div class="corner-decoration bottom-right"></div>
+        
+        <h2>Why Supabase Stands Out</h2>
+        
+        <div class="key-feature">
+            <div class="key-feature-number">1</div>
+            <div class="key-feature-content">
+                <div class="key-feature-title">Flexibility</div>
+                <p>Migrations to other platforms are easy to manage since, in the end, it's all just Postgres, not some proprietary software. You can quickly obtain an export of your database using the classic pg_dump and pg_restore.</p>
+            </div>
+        </div>
+        
+        <div class="key-feature">
+            <div class="key-feature-number">2</div>
+            <div class="key-feature-content">
+                <div class="key-feature-title">Authentication</div>
+                <p>Base makes it easy to get going via their OAuth integrations and row-level security policies, which are rules that dictate whether an authenticated user should have access to data.</p>
+            </div>
+        </div>
+        
+        <div class="key-feature">
+            <div class="key-feature-number">3</div>
+            <div class="key-feature-content">
+                <div class="key-feature-title">AI Capabilities</div>
+                <p>Storage is where Supabase excels. As a database, pgvector (a native Postgres extension) comes to the rescue. Without getting knee deep in AI theory, it allows for storing embeddings to
